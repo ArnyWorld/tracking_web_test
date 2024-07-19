@@ -1,0 +1,34 @@
+<div class="div-panel-right-content">
+	<tabset>
+	  <tab heading="{{tabs?tabs[0]:'Dispositivos'}}" id="tab1" [active]="selected=='Dispositivos'">
+		 <div class="div-panel-right  d-flex flex-column align-items-stretch flex-shrink-0 bg-white" >
+		<!--	<a href="/" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+			 
+			  <span class="fs-5 fw-semibold">Dispositivos (1 dispositivo)</span>
+			</a>
+			<div class="list-group list-group-flush border-bottom scrollarea">
+			  <a href="#" class="list-group-item list-group-item-action active py-3 lh-tight" aria-current="true">
+				<div class="d-flex w-100 align-items-center justify-content-between">
+				  <strong class="mb-1">Pixel 5</strong>
+				  <small>bat:30%</small>
+				</div>
+				<div class="col-10 mb-1 small">Personal: Luis Gamarra, Trayetos Hoy: 2, Recorrido:1.5km, Route:321, completado: 20%, latencia: 323ms</div>
+			  </a>
+			</div>-->
+			
+			<ng-content select="Devices"></ng-content>
+		  </div>
+
+	  </tab>
+	  <tab heading="{{tabs?tabs[1]:'Routes'}}" [active]="selected=='Routes'"> 
+		<div class="div-panel-right  d-flex flex-column align-items-stretch flex-shrink-0 bg-white" >
+			<ng-content select="Routes"></ng-content>			
+		  </div>			
+	  </tab>	  
+	  <tab heading="{{tabs?tabs[2]:'Sugerencias'}}" [active]="selected=='Sugerencias'"> 
+		<div class="div-panel-right  d-flex flex-column align-items-stretch flex-shrink-0 bg-white" >
+			<ng-content select="Sugerencias"></ng-content>			
+		  </div>			
+	  </tab>	  
+	</tabset>
+</div>

@@ -1,0 +1,128 @@
+<div class="container bg-light">
+	<!-- Start Header form -->
+	<div class="text-center pt-5">
+		<!-- <img src="https://i.ibb.co/8cDgdFX/Logo.png" alt="network-logo" width="72" height="72" /> -->
+		<h2>Administración de Users</h2>
+		<p>
+			<span href="#" class="btn btn-sm btn-outline-dark rounded-full" (click)="openModal(modalNew)">Crear user</span>
+
+		</p>
+	</div>
+	<!-- End Header form -->
+
+	<!-- Start Card -->
+	<div class="card ">
+		<div class="card-body ">
+			<!-- Start Form -->
+			<form id="bookingForm" action="#" method="" class="needs-validation" novalidate autocomplete="off">
+				<table class="table table-sm table-borderless">
+					<thead>
+						<tr>
+							<td scope="col">Users</td>
+							<td scope="col">Estado</td>
+							<td scope="col">Acciones</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let user of Users;index as i" class="fw-light">
+							<td> {{user.nombre}}</td>
+							<td> {{user.estado}}</td>
+							<td> 
+								<span role="button" (click)="openModal(modalEdit,user)" class="btn  p-1 btn-sm btn-outline-dark font-weight-light rounded-full"><i class="fas fa-pen d-block fa-2xs" ></i></span>
+								<span role="button" (click)="openModal(modalDelete,user)" class="btn  btn-sm btn-outline-danger font-weight-light"><i class="fas fa-trash d-block fa-2xs" ></i> </span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
+
+	<ng-template #modalNew role="document" let-modal class="center-modal">
+		<form #userForm="ngForm" (ngSubmit)="saveUsuario(userForm)" >
+		<div class="modal-header">
+			<h4 class="modal-title pull-left">Nuevo user</h4>
+			<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+				<span aria-hidden="true" class="visually-hidden">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-group mb-1">
+					<label class="fw-light" for="nombre">Nombre de user</label>
+					<input class="form-control" id="nombre" [(ngModel)]="user.nombre" name="nombre" type="text" required>
+					<div *ngIf="userForm.controls['nombre']?.touched && userForm.controls['nombre']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">el nombre es requerido</p>
+					</div>
+
+					<label class="fw-light" for="clave">Contraseña</label>
+					<input class="form-control" id="clave" name="clave" id="clave" [(ngModel)]="user.clave"  type="password" required>
+					<div *ngIf="userForm.controls['clave']?.touched && userForm.controls['clave']?.invalid" class="text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">debe introducir una clave</p>
+					</div>
+
+					<label class="fw-light" for="clave2">Introducir contraseña nuevamente</label>
+					<input class="form-control" id="clave2" name="clave2" id="clave2" [(ngModel)]="user.clave2" type="password" required>
+					
+					<div *ngIf="userForm.controls['clave2']?.touched && userForm.controls['clave'].value!= userForm.controls['clave2'].value" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">las claves deben coincidir </p>
+					</div>
+			</div>
+		</div>		
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-sm btn-outline-success rounded-full " >Guardar</button>
+			<button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+		  </div>
+		</form>
+	</ng-template>
+	
+	<ng-template #modalEdit role="document" let-modal class="center-modal">
+		<form #userForm="ngForm" (ngSubmit)="editUsuario(userForm)" >
+		<div class="modal-header">
+			<h4 class="modal-title pull-left">Modificar user : {{user.nombre}}</h4>
+			<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+				<span aria-hidden="true" class="visually-hidden">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="form-group mb-1">
+					<label class="fw-light" for="nombre">Nombre de user</label>
+					<input class="form-control" id="nombre" [(ngModel)]="user.nombre" name="nombre" type="text" required>
+					<div *ngIf="userForm.controls['nombre']?.touched && userForm.controls['nombre']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">el nombre es requerido</p>
+					</div>
+
+					<label class="fw-light" for="clave">Contraseña</label>
+					<input class="form-control" id="clave" name="clave" id="clave" [(ngModel)]="user.clave"  type="password" required>
+					<div *ngIf="userForm.controls['clave']?.touched && userForm.controls['clave']?.invalid" class="text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">debe introducir una clave</p>
+					</div>
+
+					<label class="fw-light" for="clave2">Introducir contraseña nuevamente</label>
+					<input class="form-control" id="clave2" name="clave2" id="clave2" [(ngModel)]="user.clave2" type="password" required>
+					
+					<div *ngIf="userForm.controls['clave2']?.touched && userForm.controls['clave'].value!= userForm.controls['clave2'].value" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">las claves deben coincidir </p>
+					</div>
+			</div>
+		</div>		
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-sm btn-outline-success rounded-full " >Guardar cambios</button>
+			<button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+		  </div>
+		</form>
+	</ng-template>
+
+	
+	<ng-template #modalDelete role="document" let-modal class="center-modal">		
+		<div class="modal-header">
+			<h4 class="modal-title pull-left">Eliminar user: {{user.nombre}}?</h4>
+			<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+				<span aria-hidden="true" class="visually-hidden">&times;</span>
+			</button>
+		</div>
+		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-sm btn-outline-success rounded-full " (click)="deleteUsuario(user)">Si</button>
+			<button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">No</button>
+		  </div>
+	</ng-template>

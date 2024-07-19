@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand:400,500');
+body {
+	background-color: #f1f5f8;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.min-vh-100 {
+	min-height: 100vh !important;
+	/* IE11 - https://stackoverflow.com/a/25386261 */
+	height: 100px;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.rounded-full {
+	border-radius: 1.25em;
+}
+
+.form-control {
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #d9d9d9;
+	border-radius: 0;
+	padding: .375rem 0;
+	font-size: 1.25em;
+}
+
+.form-control:focus {
+	box-shadow: none;
+
+	border-bottom: 1px solid #7f7f7f;
+}
+
+label {
+	font-size: 0.85em;
+	font-weight: 500;
+}
+
+.custom-control-label {
+	font-size: 1em;
+}
+
+.btn {
+	font-weight: 500;
+}
+
+.btn:focus {
+	box-shadow: none;
+	border: 2px solid;
+}
+
+.btn:hover {
+	box-shadow: none;
+	background-color: transparent;
+	color: inherit;
+	border: 2px solid;
+}
+
+.error {
+	color: #dc3545;
+}
+
+.form-control.has-error {
+	border-color: #dc3545;
+}
+/* ........ */

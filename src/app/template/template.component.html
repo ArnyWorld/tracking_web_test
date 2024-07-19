@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+</head>
+
+<body class="bg-dark">
+
+  <header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <!-- title -->
+      <!-- <a class="navbar-brand" href="/"><i class="fas fa-braille mr-1 text-orange"></i> -->
+        <img src="./assets/water-drop.svg" width="30" height="30"><a class="navbar-brand" href="/">
+        <span class="text-white text-bolder">Track <small style="font-size:7pt">version 2</small></span>
+      </a>
+
+      <!-- sidebar toggle -->
+      <button class="navbar-toggler btn btn-link border-0" type="button" id="sidebar" aria-label="Toggle navigation" (click)="cambiarNavbar()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- navbar navigation -->
+      <div class="collapse  navbar-collapse">
+
+        <!-- breadcrumb temporal-->
+        <!-- <ul class="navbar-nav navbar-nav-breadcrumb">
+          <li class="nav-item"><a class="nav-link" href="#">Panel de control</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Opciones</a></li>
+        </ul>
+      -->
+      </div>
+    </nav>
+  </header>
+
+
+
+
+  <div class="d-flex wrapper wrapper-navbar-used wrapper-navbar-fixed">
+    <nav role="navigation" class="sidebar  sidebar-rounded-top-right shadow-sm" id="navigation"> <!-- style="background-color: #212529; #282b2e" -->
+
+      <div class="sidebar-menu">
+
+        <!-- menu fixed -->
+        <div class="sidebar-menu-fixed">
+
+       
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid" id="contentBody" style="background-color: white;">
+      <div class="bodyTemplate">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+
+  <!-- javascript library -->
+  <script>
+    $(function () {
+      new Nanobar().go(100);
+      new PerfectScrollbar('.scrollbar', {
+        wheelSpeed: 0.3
+      });
+    });
+
+  </script>
+
+  <script>
+    let menu = [
+      {
+        name: 'Login', icon: 'fa-user', class: ["list-icon-orange"], submenu: [
+          {
+            name: 'Perfil', icon: 'fa-address-card', class: [], submenu: [
+              { name: 'Notificaciones', icon: 'fa-lightbulb', class: [], submenu: [], link: "" },
+              { name: 'Cerrar Sesión', icon: 'fa-key', class: [], submenu: [] }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Gestión de formularios', icon: 'fa-book-open', class: ["list-icon-orange"], submenu: [
+          { name: 'Formularios', icon: 'fa-book-open', class: [], submenu: [], link: "/formularios/" },
+          { name: 'Tabla de datos', icon: 'fa-table', class: [], submenu: [] }
+        ]
+      },
+      /*   {name:'Contabilidad', icon: 'fa-book-open', class:["list-icon-orange"], submenu : [
+             {name:'Agregar Facturas', icon: 'fa-plus', class:[], submenu : []},
+             {name:'Enviar Comprobantes', icon: 'fa-table', class:[], submenu : []}
+         ]},*/
+      {
+        name: 'Configuración', icon: 'fa-gears', class: ["list-icon-orange"], submenu: [
+          { name: 'Users', icon: 'fa-user', class: [], submenu: [], link: "/Users/" },
+          { name: 'Parámetros', icon: 'fa-gear', class: [], submenu: [] }
+        ]
+      },
+    ];
+
+    let menu2 = [{
+      name: 'Login', icon: 'fa-user', class: ["list-icon-orange"], submenu: [
+        { name: 'Iniciar Sesión', icon: 'fa-key', class: [], submenu: [], link: "/login/" }
+      ]
+    }];
+
+
+  </script>
+</body>
+
+</html>

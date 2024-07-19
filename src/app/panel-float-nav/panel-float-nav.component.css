@@ -1,0 +1,12 @@
+  /* search button*/
+  .search-and-account {
+    position: fixed;
+    z-index: 15;
+    top: .9rem;
+    right: 50%;
+}
+.search-and-account a svg {
+    -webkit-filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
+}
+  /*search button*/

@@ -1,0 +1,387 @@
+<div class="divMain">
+	<app-panel-float-nav></app-panel-float-nav>
+	<div class="divMid">
+		<div  id="overlayMenu" style="z-index:9999">
+			<button>Track</button>
+			<button type="button" class="btn btn-sm btn-secondary">Tracking</button>
+		</div>
+		<div style="height: 100%">
+			<aol-map #map width="100%" height="100%">
+				<aol-interaction-default></aol-interaction-default>
+				<aol-interaction-select [layers]="isMarkerLayer" (olSelect)="select($event)" [wrapX]="false"></aol-interaction-select>
+				<aol-control-defaults></aol-control-defaults>
+
+				<aol-view [zoom]="zoom">
+					<!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+					<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+				</aol-view>
+
+				<aol-layer-tile [opacity]="1"> <aol-source-osm></aol-source-osm> </aol-layer-tile>
+
+				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
+				<aol-layer-group>
+
+					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
+						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
+							<aol-feature>
+								<aol-geometry-point>
+									<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'"></aol-coordinate>
+								</aol-geometry-point>
+								<aol-style>
+									<aol-style-text [text]="device.config.INFO_MODEL + ' ' + i" [font]="'10px sans-serif'"></aol-style-text>
+									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 1]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?0.6:0.4" [opacity]="device.controls.show?0.9:0.4" [anchorOrigin]="'top-left'">
+									</aol-style-icon>
+								</aol-style>
+							</aol-feature>
+						</aol-source-vector>					
+					</aol-layer-vector>
+					
+
+					<aol-overlay [positioning]="'center-center'" [stopEvent]="false">
+						<aol-coordinate [x]="tooltip.lon" [y]="tooltip.lat" [srid]="'EPSG:4326'"> </aol-coordinate>
+						<aol-content>
+							<div class="tooltip tooltip-static">
+								<h1> {{ tooltip.text }}</h1>
+							</div>
+						</aol-content>
+					</aol-overlay>
+
+				<!--
+					<div *ngIf="devices">
+						<aol-layer-vector *ngFor="let device of devices" >
+							<aol-source-vector *ngIf="device.routeSelected && device.controls.show">
+								<aol-style>
+									<aol-style-stroke [color]="'rgba(100, 0, 0)'" [width]="3"></aol-style-stroke>
+								</aol-style>
+								<aol-feature #selectedFeatureString>
+									<aol-geometry-linestring>
+										<aol-collection-coordinates [coordinates]="device.routeSelected?.string.geometry.coordinates" [srid]="'EPSG:4326'">
+										</aol-collection-coordinates>
+									</aol-geometry-linestring>
+								</aol-feature>
+							</aol-source-vector>
+						</aol-layer-vector>
+					</div>
+				-->	
+					<div *ngIf="devices">
+						<aol-layer-vector *ngFor="let device of devices" >
+							<aol-source-vector *ngIf="device.tracksPolyline && device.controls.show ">
+								<aol-style>
+									<aol-style-stroke [color]="'rgba(150, 20, 20)'" [width]="30"></aol-style-stroke>
+									<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+								</aol-style>
+								<aol-feature #selectedFeatureString *ngFor="let polyline of device.tracksPolyline">
+									<aol-geometry-linestring *ngIf="polyline!=null&&polyline.length>0">
+										<aol-collection-coordinates [coordinates]="polyline" [srid]="'EPSG:4326'">
+										</aol-collection-coordinates>
+									</aol-geometry-linestring>
+								</aol-feature>
+							</aol-source-vector>
+						</aol-layer-vector>
+					</div>
+					
+					<div *ngIf="devices">
+						<div *ngFor="let device of devices" >
+							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
+								<aol-source-vector>
+									<aol-feature *ngFor="let p of device.routeSelected?.string.geometry.coordinates">
+									<aol-geometry-point>
+										<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+									</aol-geometry-point>
+									</aol-feature>
+								</aol-source-vector>
+							
+								<aol-style>
+									<aol-style-circle [radius]="10">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#3399CC'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>
+							
+							</aol-layer-vector>
+						</div>
+					</div>
+					
+					<div *ngIf="devices">
+						<div *ngFor="let device of devices" >
+							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
+								<aol-source-vector>
+									<div *ngFor="let section of device.splitPointsCoordsCheck">
+										<aol-feature *ngFor="let p of section">
+										<aol-geometry-point>
+											<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+										</aol-geometry-point>
+										</aol-feature>
+									</div>
+								</aol-source-vector>
+							
+								<aol-style>
+									<aol-style-circle [radius]="5">
+										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+										<aol-style-fill [color]="'#229942'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+										<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>
+							
+							</aol-layer-vector>
+						</div>
+					</div>
+					<div *ngIf="devices" #forsplitpoints>
+						<aol-layer-vector *ngFor="let device of devices" >
+							<div *ngIf="device.routeSelected && device.controls.show">							
+						<!--		<aol-source-vector>
+									<aol-feature *ngFor="let p of device.routeSelected.splitPointsCoords">
+									<aol-geometry-point>
+										<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+									</aol-geometry-point>
+									</aol-feature>
+								</aol-source-vector>
+							
+								<aol-style>
+									<aol-style-circle [radius]="7">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#3399CC88'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>-->
+									<aol-source-vector>
+										<aol-style>
+											<aol-style-stroke [color]="device.routeSelected.controls.selected?'rgba(100, 0, 0,255)':'rgba(0, 0, 100,255)'" [width]="10"></aol-style-stroke>
+											<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+										</aol-style>
+										<aol-feature *ngFor="let section of device.routeSelected?.sections">
+											<aol-geometry-linestring >
+												<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+												</aol-collection-coordinates>
+											</aol-geometry-linestring>
+										</aol-feature>
+									</aol-source-vector>
+							
+							
+							</div>
+						</aol-layer-vector>
+					</div>
+					<div *ngIf="devices" #forsplitpoints>
+						<aol-layer-vector *ngFor="let device of devices" >
+							<div *ngIf="device.routeSelected && device.controls.show">
+								<aol-source-vector>
+									<aol-feature *ngFor="let p of device.splitPointsCoordsCheck">
+									<aol-geometry-point>
+										<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+									</aol-geometry-point>
+									</aol-feature>
+								</aol-source-vector>
+							
+								<aol-style>
+									<aol-style-circle [radius]="5">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>
+							
+							</div>
+						</aol-layer-vector>
+					</div>
+					<!-- ROUTES -->		
+					<div *ngFor="let route of routes" >
+						<div  *ngIf="route.controls.show" >
+							<!-- <div *ngFor="let section of route?.sections" > --> <!-- *ngIf="route.controls.show" -->
+								<aol-layer-vector  [opacity]="route.controls.selected?0.9:0.4">
+									<aol-source-vector>
+										<aol-style>
+											<aol-style-stroke [color]="route.controls.selected?'rgba(100, 0, 0,255)':'rgba(0, 0, 100,255)'" [width]="8"></aol-style-stroke>
+											<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+										</aol-style>
+										<aol-feature *ngFor="let section of route?.sections">
+											<aol-geometry-linestring >
+												<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+												</aol-collection-coordinates>
+											</aol-geometry-linestring>
+										</aol-feature>
+									</aol-source-vector>
+								</aol-layer-vector>
+								<!-- 
+								<aol-layer-vector [visible]="route.controls.showSplit" *ngFor="let section of route.sections" [opacity]="route.controls.selected?0.9:0.4">
+									<aol-source-vector >
+										<aol-feature *ngFor="let pc of section.splitCoords">
+											<aol-geometry-point >
+												<aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+											</aol-geometry-point>
+										</aol-feature>
+									</aol-source-vector>
+								
+									<aol-style>
+										<aol-style-circle [radius]="5">
+										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+										<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+										</aol-style-circle>
+										<aol-style-text [text]="''">
+										<aol-style-fill [color]="'#fff'"></aol-style-fill>
+										</aol-style-text>
+									</aol-style>
+								</aol-layer-vector>
+-->
+
+							<!-- </div> -->
+						</div>
+					</div>
+					<!-- END ROUTES -->
+<!-- SELECTED ROUTE -->
+						<div *ngFor="let route of selectedRoutes" >
+
+							<aol-layer-vector  *ngFor="let section of route.sections" [opacity]="0.9">
+								<aol-source-vector >
+									<aol-feature *ngFor="let pc of section.splitCoords">
+										<aol-geometry-point >
+											<aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+										</aol-geometry-point>
+									</aol-feature>
+								</aol-source-vector>
+
+								<aol-style>
+									<aol-style-circle [radius]="5">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>
+							</aol-layer-vector>
+						</div>
+
+<!-- END SELECTED ROUTE -->
+
+
+					<div *ngIf="devices">
+						<aol-layer-vector *ngFor="let device of devices" >
+							<aol-source-vector *ngIf="device.tracksCoord && device.controls.show && device.controls.showTrack">
+								<aol-style>
+									<aol-style-stroke [color]="'rgba(0, 0, 100)'" [width]=1 [lineDash]="[5.5, 5]"></aol-style-stroke>
+									<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+							<!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
+								</aol-style>
+
+								<aol-feature #selectedFeatureString>
+									<aol-geometry-linestring>
+										<aol-collection-coordinates [coordinates]="device.tracksCoord" [srid]="'EPSG:4326'">
+										</aol-collection-coordinates>
+									</aol-geometry-linestring>
+								</aol-feature>
+							</aol-source-vector>
+						</aol-layer-vector>
+					</div>
+				</aol-layer-group>
+				
+				<div *ngIf="devices">
+					<aol-layer-vector *ngFor="let device of devices" >
+						<div *ngIf="device.controls!=undefined">
+							<aol-source-vector *ngIf="device.controls.show && device.controls.showTrack">
+								<aol-feature *ngFor="let p of device.tracksCoord ">
+								<aol-geometry-point>
+									<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+								</aol-geometry-point>
+								</aol-feature>
+							</aol-source-vector>
+						
+							<aol-style>
+								<aol-style-circle [radius]="5">
+								<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+								<aol-style-fill [color]="'#33CC99'"></aol-style-fill>
+								</aol-style-circle>
+								<aol-style-text [text]="''">
+								<aol-style-fill [color]="'#fff'"></aol-style-fill>
+								</aol-style-text>
+							</aol-style>
+						</div>
+					</aol-layer-vector>
+
+				</div>
+			
+			</aol-map>
+		</div>
+	</div>
+	<app-panel-right [selected]="'Dispositivos'" [tabs]="tabs">
+
+		<div ngProjectAs="Devices">
+			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
+				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true">
+				<div class="d-flex w-100 align-items-center justify-content-between">
+					<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-{{device.id}}" [(ngModel)]="device?.controls.show">
+					<strong class="mb-1">{{ device.config.INFO_BRAND}} <small>{{ device.config.INFO_MODEL}}</small></strong>
+					<small>bat:{{ device.last.bat}}%</small>
+				</div>
+				<div>
+					<div class="form-check form-check-sm">
+						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showTrack">
+						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Trayecto </label>
+					</div>					
+				</div>
+				<div class="col-10 mb-1 small" *ngIf="device && device?.last ">Lat: {{device.last.lat}}, Lon: {{device.last.lon}} ,Personal: {{device?.personal?.nombre}}, Route: {{device?.routeSelected?.nombre}}, completado: {{device?.routeSelected?.completed}}, latencia: {{device.ms}}ms</div>
+				</a>
+			</div>
+		</div>
+
+		<div ngProjectAs="Routes">
+			<label for="inp-check-route-{{route.id}}-selected" role="button" class="container row border-bottom hover" [style]="{'background':route.controls.selected?'#1111cc22':'#fff'}" *ngFor="let route of routes" (click)="selectRoute(route)" >
+				<div class="col-4 row"> 
+					<div class="col-2">
+						<input id="inp-check-route-{{route.id}}-show" type="checkbox" [(ngModel)]="route.controls.show" />
+						<input id="inp-check-route-{{route.id}}-selected" type="checkbox" [(ngModel)]="route.controls.selected" /> 
+						<input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showSplit" />  
+					</div>
+					<div class="col-10">
+						<div class="border">
+							<img [src]="route.thumb" style="width:100%" />
+						</div>
+					</div>
+				</div>
+				<div class="col-8"> 
+					<strong class="mb-1">{{route.nombre}}</strong><br>
+					<small>Recorrido: {{route.distancia}} metros</small>
+				</div>
+			</label>
+			<!-- 
+			<div class="list-group list-group-flush border-bottom scrollarea">									
+				<a role="button" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let route of routes" (click)="selectRoute(route)">
+					<div class="d-flex w-100 align-items-center justify-content-between">  
+						<strong class="mb-1">{{route.nombre}}</strong>
+						<small>Recorrido: {{route.distancia}} metros</small>
+					</div>
+					<div class="col-10 mb-1 small">
+						
+					</div>
+				</a>
+			</div>-->
+		</div>
+		
+		<div ngProjectAs="Sugerencias">
+			<div >
+				<div *ngFor="let suggestion of suggestions" class="container row border-bottom hover">
+					<div class="col-2"><span class="small">{{suggestion.fechahora | date:'HH:mm'}}</span></div>
+					<div class="col-8 row"><span class="small col-12">{{suggestion.motivo}}</span><span class="small col-12">{{suggestion.descripcion}}</span></div>
+					<div class="col-2"> 
+						<div class="btn-group" style="width:100%">
+							<span role="button" (click)="suggestion.viewImage=!suggestion.viewImage" class="btn  p-1 btn-sm btn-outline-dark font-weight-light rounded-full"><i class="fas fa-image d-block fa-xs"></i></span>
+							<span role="button" class="btn  btn-sm btn-outline-dark font-weight-light"><i class="fas fa-trash d-block fa-xs"></i> </span>
+						</div> 
+					</div> 
+					<div class="col-12" *ngIf="suggestion.viewImage">
+						<img src="{{'data:image/jpg;base64,' + suggestion.foto}}"  style="width:100%">
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</app-panel-right> 
+</div>

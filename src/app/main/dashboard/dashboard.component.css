@@ -1,0 +1,23 @@
+
+.scroll {
+    height: 100%;
+}
+
+#map {
+    height: 100%;
+}
+.tooltip {
+	margin-top: 35%;
+	right: 50%;
+	position: relative;
+	border-radius: 4px;
+	color: white;
+	padding: 4px 8px;
+	white-space: nowrap;
+  }
+
+  .tooltip-static {
+	background-color: #000000;
+	color: white;
+	border: 1px solid white;
+  }

@@ -1,0 +1,35 @@
+
+.rounded-full {
+	border-radius: 1.25em;
+}
+.form-control {
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #d9d9d9;
+	border-radius: 0;
+	padding: .375rem 0;
+	font-size: 1.25em;
+}
+
+.form-control:focus {
+	box-shadow: none;
+
+	border-bottom: 1px solid #7f7f7f;
+}
+.center-modal {
+    position: fixed;
+    top: 10%;
+    left: 18.5%;
+    z-index: 1050;
+    width: 80%;
+    height: 80%;
+    margin-left: -10%;
+}
+
+.fa-3xs{ font-size: 8px}
+.fa-2xs{ font-size: 10px}
+.fa-xs{ font-size: 12px}
+.fa-sm{ font-size: 14px}
+.fa-lg{ font-size: 20px}
+.fa-xl{ font-size: 24px}
+.fa-2xl{ font-size: 32px}

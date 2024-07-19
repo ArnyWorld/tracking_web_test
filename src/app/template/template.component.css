@@ -1,0 +1,23 @@
+
+html {
+  font-size: 10pt
+}
+
+.container-fluid div {
+  transition: all 0.3s ease-in-out;
+}
+
+.showBody {
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.navbar {
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+
+.link-current{
+  color:orange
+}
