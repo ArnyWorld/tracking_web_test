@@ -15,6 +15,7 @@ import { PersonalService } from '../../api/personal.service';
 import { RoutesService } from '../../api/routes.service';
 import { WSapiService } from '../../api/wsapi.service';
 import { SuggestionsService } from '../../api/suggestions.service';
+import { ImagesService } from '../../api/images.service';
 
 
 
@@ -32,6 +33,7 @@ export class DashboardmapComponent implements OnInit {
 	constructor(private socket: SocketOne,
 		private personalService: PersonalService,
 		private routesService: RoutesService,
+		private imagesService: ImagesService,
 		private suggestionsService: SuggestionsService,
 		private wsapiService: WSapiService
 	) { }
@@ -206,6 +208,22 @@ export class DashboardmapComponent implements OnInit {
 			this.suggestions = result.content;
 			this.suggestions.forEach((s:any) =>this.suggestions['viewImage']=false );
 			this.tabs[2] = `Sugerencias(${this.suggestions.length})`
+		});
+	}
+	loadImages(suggestion:any){
+		suggestion.viewImage=!suggestion.viewImage;
+		console.log("loading images",suggestion.images);
+		suggestion.images.forEach((image:any) => {
+			console.log("typeof", typeof(image['image']));
+			if (typeof(image['image']) ===  'undefined'){
+				console.log("loading image");
+				this.imagesService.find(image.image_id).subscribe(
+					(result:any)=>{
+						image['image'] = result.content[0];
+						console.log("image['image']",image);
+					}
+				);
+			}
 		});
 	}
 	calcMs(time:number){

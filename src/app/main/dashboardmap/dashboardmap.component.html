@@ -368,16 +368,22 @@
 		<div ngProjectAs="Sugerencias">
 			<div >
 				<div *ngFor="let suggestion of suggestions" class="container row border-bottom hover">
-					<div class="col-2"><span class="small">{{suggestion.fechahora | date:'HH:mm'}}</span></div>
-					<div class="col-8 row"><span class="small col-12">{{suggestion.motivo}}</span><span class="small col-12">{{suggestion.descripcion}}</span></div>
+					<div class="col-2"><span class="small">{{suggestion.date_time | date:'HH:mm'}}</span></div>
+					<div class="col-8 row">
+						<span class="small col-12 text-bold">{{suggestion.title}}</span>
+						<span class="small col-12">{{suggestion.description}}</span>
+					</div>
 					<div class="col-2"> 
 						<div class="btn-group" style="width:100%">
-							<span role="button" (click)="suggestion.viewImage=!suggestion.viewImage" class="btn  p-1 btn-sm btn-outline-dark font-weight-light rounded-full"><i class="fas fa-image d-block fa-xs"></i></span>
+							<span role="button" (click)="loadImages(suggestion)" class="btn  p-1 btn-sm btn-outline-dark font-weight-light rounded-full"><i class="fas fa-image d-block fa-xs"></i></span>
 							<span role="button" class="btn  btn-sm btn-outline-dark font-weight-light"><i class="fas fa-trash d-block fa-xs"></i> </span>
 						</div> 
 					</div> 
-					<div class="col-12" *ngIf="suggestion.viewImage">
-						<img src="{{'data:image/jpg;base64,' + suggestion.foto}}"  style="width:100%">
+					<div class="col-12" *ngIf="suggestion.viewImage" >
+						<div *ngFor="let image of suggestion.images">
+
+							 <img  src="{{'data:image/jpg;base64,' + image.image?.base64}}"  style="width:100%"> 
+						</div>
 					</div>
 				</div>
 				
