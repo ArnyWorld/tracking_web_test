@@ -177,11 +177,12 @@ export class DashboardmapComponent implements OnInit {
 				route['controls'] = this.createRouteControls();
 				////route['splitPoints'] = this.routesService.splitPoints(route.points, 4, 10 ); 
 				////route['splitPointsCoords'] = this.routesService.toCoord(route['splitPoints']);
-				route['string']={
+				/*route['string']={
 					'geometry':{
 						coordinates:route.points.map(p => [p.lon, p.lat] )
 					}				
-				};
+				};*/
+				
 				route['extend'] = [+180,90,-180,-90];
 				route['sections'] = Array.from(this.routesService.groupBy(route.points, p => p.section)).map(
 					(p:any,index:number )=>{

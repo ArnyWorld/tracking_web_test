@@ -29,7 +29,7 @@
 								</aol-geometry-point>
 								<aol-style>
 									<aol-style-text [text]="device.config.INFO_MODEL + ' ' + i" [font]="'10px sans-serif'"></aol-style-text>
-									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 1]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?0.6:0.4" [opacity]="device.controls.show?0.9:0.4" [anchorOrigin]="'top-left'">
+									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 1]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?0.6:0.4" [opacity]="device.controls.show?0.98:0.7" [anchorOrigin]="'top-left'">
 									</aol-style-icon>
 								</aol-style>
 							</aol-feature>
@@ -200,7 +200,7 @@
 									<aol-source-vector>
 										<aol-style>
 											<aol-style-stroke [color]="route.controls.selected?'rgba(100, 0, 0,255)':'rgba(0, 0, 100,255)'" [width]="8"></aol-style-stroke>
-											<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+											 <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill>
 										</aol-style>
 										<aol-feature *ngFor="let section of route?.sections">
 											<aol-geometry-linestring >
