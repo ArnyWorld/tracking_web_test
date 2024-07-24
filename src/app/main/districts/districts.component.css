@@ -1,0 +1,110 @@
+html,
+body {
+	width: 100%;
+	height: 100%;
+}
+
+.scroll {
+	height: 100%;
+}
+
+.map {
+	width: 100%;
+	height: 100vh;
+}
+
+#overlayMenuBottom{
+	position: absolute;
+	z-index: 1;
+	bottom: 10px;
+	left: 550px;
+}
+
+.form-control {
+	outline: none;
+	border: none;
+	border-bottom: 1px solid #d9d9d9;
+	border-radius: 0;
+	padding: .375rem 0;
+	font-size: 1.25em;
+}
+
+.form-control:focus {
+	box-shadow: none;
+
+	border-bottom: 1px solid #7f7f7f;
+}
+
+/*#map {
+    height: 100%;
+}*/
+.divMain{
+	display:flex;
+	flex-wrap: nowrap;
+	height: 100vh;
+	height: -webkit-fill-available;
+	max-height: 100vh;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.divMid{
+	
+	width: -webkit-fill-available;
+	flex-shrink: 2;
+	height: 100vh;	
+	/*width: 100%;*/
+	/*flex-grow: 3;*/
+	border: solid rgba(0, 0, 0, .15);
+	border-width: 1px 0;
+	box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+  }
+
+
+.map {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+.map:fullscreen {
+	height: 100%;
+}
+
+.map .ol-rotate {
+	top: 3em;
+}
+
+
+.tooltip1 {
+	margin-top: 35%;
+	right: 50%;
+	position: relative;
+	border-radius: 4px;
+	color: white;
+	padding: 4px 8px;
+	white-space: nowrap;
+}
+
+.tooltip-static2 {
+	background-color: #000000;
+	color: white;
+	border: 1px solid white;
+}
+
+#overlayMenu {
+	
+	
+	position: absolute;
+	z-index: 1;
+	top: 10px;
+	left: 550px;
+}
+
+.info{
+}
+
+
+.rounded-full {
+	border-radius: 1.25em;
+}

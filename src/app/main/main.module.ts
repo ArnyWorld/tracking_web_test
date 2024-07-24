@@ -14,6 +14,7 @@ import { environment } from '../../environments/environment';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ModalImportComponent } from './modal-import/modal-import.component';
 import { RoutessectionsComponent } from './routessections/routessections.component';
+import { DistrictsComponent } from './districts/districts.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -29,7 +30,8 @@ export class SocketOne extends Socket {
 	PanelRightComponent,
 	ModalImportComponent,
 	DashboardmappolyComponent,
-	RoutessectionsComponent
+	RoutessectionsComponent,
+	DistrictsComponent,
   ],
   imports: [
 	TabsModule,
