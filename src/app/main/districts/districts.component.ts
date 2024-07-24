@@ -2,11 +2,11 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AngularOpenlayersModule, FeatureComponent,MapComponent } from 'ng-openlayers';
 import { LayerVectorComponent } from 'ng-openlayers';
 
-
 import Projection from 'ol/proj/Projection';
 import olMapScreenshot from 'ol-map-screenshot';
 import * as olSphere from 'ol/sphere';
 import { Feature } from 'ol';
+import { Polygon } from 'ol/geom';
 import { Layer as OlLayer } from 'ol/layer';
 import { transform, fromLonLat } from 'ol/proj';
 import { SelectEvent } from 'ol/interaction/Select';
@@ -33,6 +33,7 @@ export class DistrictsComponent implements OnInit{
 
 	@ViewChild('map') map: MapComponent;
 	@ViewChild('layerMarkers') layerMarkers: LayerVectorComponent;
+	
 	@ViewChild('selectedFeatureString') selectedFeatureStringRef: FeatureComponent;
 
 	public StatesEnum: typeof StatesEnum = StatesEnum;
@@ -109,6 +110,8 @@ export class DistrictsComponent implements OnInit{
 	}
 	async endDraw(feature2: Feature, $event: any) {
 		const olGeomPolygon:any = feature2.getGeometry();
+		console.log("endDraw:",feature2);
+		console.log("endDraw.getStyle:",feature2.getStyle());
 		olGeomPolygon.transform(
 			new Projection({ code: 'EPSG:3857' }),
 			new Projection({ code: 'EPSG:4326' })
@@ -163,6 +166,27 @@ export class DistrictsComponent implements OnInit{
 		if (this.selectedDistrict!== undefined) this.selectedDistrict.controls.show = false;
 		this.selectedDistrict = route;
 		console.log("this.selectedDistrict",this.selectedDistrict);
+		
+		let coordinatesPolygon = [[[48.12345, 25.1234], [46.12345, 25.1234], [46.12345, 28.1234], [48.12345, 28.1234], [48.12345, 25.1234]]];
+
+		this.map.instance.getLayers().forEach(function(layer:any,index) {
+			if (index < 1) return;
+			let geometry = new Polygon(coordinatesPolygon);
+			console.log("this.vectorSource.instance",geometry);
+			console.log("layer",layer);
+			console.log("layer.getLayers()",layer.getLayers());
+			layer.getLayers().forEach( (lay:any,ind)=>{
+				if (ind == 4){
+					console.log("lay",lay);
+					lay.getSource().addFeature(new Feature(geometry));
+				}
+			} );
+			
+			//layer.getSource().addFeature(new Feature(geometry));
+			
+		});
+		//console.log("this.map.instance.getLayers()",this.map.instance.getLayers());
+		
 		
 		this.map.instance.getView().fit( this.selectedDistrict.extend_3857, {
 			padding: [100, 100, 100, 100],

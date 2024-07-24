@@ -32,7 +32,6 @@ export class RoutessectionsComponent implements OnInit{
 	@ViewChild('map') map: MapComponent;
 	@ViewChild('layerMarkers') layerMarkers: LayerVectorComponent;
 
-	@ViewChild('selectedFeatureString') selectedFeatureStringRef: FeatureComponent;
 
 	
 
