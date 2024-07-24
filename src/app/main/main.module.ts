@@ -13,6 +13,7 @@ import { DashboardmappolyComponent } from './dashboardmappoly/dashboardmappoly.c
 import { environment } from '../../environments/environment';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { ModalImportComponent } from './modal-import/modal-import.component';
+import { ModalImportDistrictsComponent } from './modal-import-districts/modal-import-districts.component';
 import { RoutessectionsComponent } from './routessections/routessections.component';
 import { DistrictsComponent } from './districts/districts.component';
 
@@ -29,6 +30,7 @@ export class SocketOne extends Socket {
 	PanelFloatNavComponent,
 	PanelRightComponent,
 	ModalImportComponent,
+	ModalImportDistrictsComponent,
 	DashboardmappolyComponent,
 	RoutessectionsComponent,
 	DistrictsComponent,

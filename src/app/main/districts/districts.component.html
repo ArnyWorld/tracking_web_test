@@ -21,11 +21,11 @@
 				<aol-layer-group>
 
 							<aol-layer-vector *ngIf="selectedDistrict">
+                                <aol-style>
+                                    <aol-style-stroke [color]="selectedDistrict.color" [width]="6"></aol-style-stroke>
+                                    <aol-style-fill [color]="'red'"></aol-style-fill> 
+                                </aol-style>
 								<aol-source-vector>
-                                        <aol-style>
-                                            <aol-style-stroke [color]="'rgba(100, 0, 0)'" [width]="6"></aol-style-stroke>
-                                            <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> 
-                                        </aol-style>
                                         <aol-feature #selectedFeatureString>
                                             <aol-geometry-linestring>
                                                 <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
@@ -55,7 +55,7 @@
     </div>
 
     <ng-template #modalImport role="document" let-modal class="center-modal">
-        <app-modal-import (onClose)="this.modalRef.hide();"></app-modal-import>
+        <app-modal-import-districts (onClose)="this.modalRef.hide();"></app-modal-import-districts>
     </ng-template>
 
     <app-panel-right [selected]="'Routes'">
@@ -66,6 +66,7 @@
 
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
                         
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Distritos</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Distrito</span>
                     </a>
 
