@@ -165,29 +165,6 @@ export class DistrictsComponent implements OnInit{
 	selectDistrict (route:any){
 		if (this.selectedDistrict!== undefined) this.selectedDistrict.controls.show = false;
 		this.selectedDistrict = route;
-		console.log("this.selectedDistrict",this.selectedDistrict);
-		
-		let coordinatesPolygon = [[[48.12345, 25.1234], [46.12345, 25.1234], [46.12345, 28.1234], [48.12345, 28.1234], [48.12345, 25.1234]]];
-/*
-		this.map.instance.getLayers().forEach(function(layer:any,index) {
-			if (index < 1) return;
-			let geometry = new Polygon(coordinatesPolygon);
-			console.log("this.vectorSource.instance",geometry);
-			console.log("layer",layer);
-			console.log("layer.getLayers()",layer.getLayers());
-			layer.getLayers().forEach( (lay:any,ind)=>{
-				if (ind == 4){
-					console.log("lay",lay);
-					lay.getSource().addFeature(new Feature(geometry));
-				}
-			} );
-			
-			//layer.getSource().addFeature(new Feature(geometry));
-			
-		});
-		//console.log("this.map.instance.getLayers()",this.map.instance.getLayers());
-		*/
-		
 		this.map.instance.getView().fit( this.selectedDistrict.extend_3857, {
 			padding: [100, 100, 100, 100],
 			maxZoom: 23,
