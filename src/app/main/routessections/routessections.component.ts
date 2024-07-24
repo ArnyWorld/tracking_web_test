@@ -217,6 +217,7 @@ export class RoutessectionsComponent implements OnInit{
 	selectRoute (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
 		this.selectedRoute = route;
+		console.log("this.selectedRoute",this.selectedRoute);
 		
 		/*
 		console.log("this.selectedRoute",this.selectedRoute);

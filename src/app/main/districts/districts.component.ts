@@ -16,6 +16,7 @@ import { PointsService } from '../../api/points.service';
 import { RoutesService } from '../../api/routes.service';
 import { ImagesService } from '../../api/images.service';
 import { DistrictsService } from '../../api/districts.service';
+import { DistrictPointsService } from '../../api/districtspoints.service';
 
 enum StatesEnum {
 	ROUTE_VIEWER = 1,
@@ -32,10 +33,7 @@ export class DistrictsComponent implements OnInit{
 
 	@ViewChild('map') map: MapComponent;
 	@ViewChild('layerMarkers') layerMarkers: LayerVectorComponent;
-
 	@ViewChild('selectedFeatureString') selectedFeatureStringRef: FeatureComponent;
-
-	
 
 	public StatesEnum: typeof StatesEnum = StatesEnum;
 	public mode: StatesEnum = StatesEnum.ROUTE_VIEWER;
@@ -49,10 +47,12 @@ export class DistrictsComponent implements OnInit{
 	thumbRoute:string		= "";
 	distance:number		= 0;
 	createProgress:string	= "Crear"
-	selectedRoute:any;
+	selectedDistrict:any;
 	newDistrict = {
 		id: '',
 		name: '',		
+		coords:[],
+		show: false,
 	}
 	defaulsection = {
 		uuid:0,
@@ -67,6 +67,7 @@ export class DistrictsComponent implements OnInit{
 		private personalService: PersonalService,
 		private imagesService: ImagesService,
 		private districtsService: DistrictsService,
+		private districtPointsService: DistrictPointsService,
 		private modalService: BsModalService){}
 
 	ngOnInit(): void {
@@ -87,6 +88,7 @@ export class DistrictsComponent implements OnInit{
 			this.districts.forEach(district => {
 				district['controls'] = this.createRouteControls();				
 				district['coords']= district.points.map(p => [p.lon, p.lat] );
+				this.districtsService.getExtends(district);
 				console.log("route",district);
 			});
 		});
@@ -121,18 +123,14 @@ export class DistrictsComponent implements OnInit{
 				coords[i]
 			);
 		}
-		var newSection = {... this.defaulsection};
-		newSection.uuid = this.newRoute.currentSection;
-		newSection.coords = coords;
-		newSection.show = true;		
-
-		this.newRoute.sections.push(newSection);
-		this.newRoute.currentSection++;
+		
+		this.newDistrict.coords = coords;
+		this.newDistrict.show = true;		
 		
 		
 		this.thumbRoute = "assets/loading.gif";
-		this.routesService.processExtend(this.newRoute);
-		const extent = this.newRoute['extend_3857'];
+		this.districtsService.processExtend(this.newDistrict);
+		const extent = this.newDistrict['extend_3857'];
 
 		setTimeout(async () => {
 			const response = await olMapScreenshot.getScreenshot(this.map.instance, {
@@ -143,7 +141,7 @@ export class DistrictsComponent implements OnInit{
 			this.thumbRoute = await this.routesService.resizeImage(response.img);
 		}, 200);
 		
-		console.log("section creado", this.newRoute);
+		console.log("polygon created", this.newDistrict);
 	}
 	startDraw(feature2: Feature){
 
@@ -161,18 +159,12 @@ export class DistrictsComponent implements OnInit{
 	/*ROUTES*/
 	lineString2:any;
 	lineString3:any;
-	selectRoute (route:any){
-		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
-		this.selectedRoute = route;
+	selectDistrict (route:any){
+		if (this.selectedDistrict!== undefined) this.selectedDistrict.controls.show = false;
+		this.selectedDistrict = route;
+		console.log("this.selectedDistrict",this.selectedDistrict);
 		
-		/*
-		console.log("this.selectedRoute",this.selectedRoute);
-		const extent = this.selectedRoute.extend;		
-		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
-		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
-		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];*/
-		
-		this.map.instance.getView().fit( this.selectedRoute.extend_3857, {
+		this.map.instance.getView().fit( this.selectedDistrict.extend_3857, {
 			padding: [100, 100, 100, 100],
 			maxZoom: 23,
 			duration: 300
@@ -185,8 +177,8 @@ export class DistrictsComponent implements OnInit{
 	createThumb(callback){
 		this.thumbRoute = "assets/loading.gif";
 		setTimeout(async () => {
-			this.routesService.processExtend(this.newRoute);
-			const extent = this.newRoute['extend_3857'];
+			this.districtsService.processExtend(this.newDistrict);
+			const extent = this.newDistrict['extend_3857'];
 
 			this.map.instance.getView().fit(extent, {
 				padding: [100, 100, 100, 100],
@@ -217,42 +209,36 @@ export class DistrictsComponent implements OnInit{
 	}
 	saveDistrict() {
 		this.createThumb( (image)=> {
-			this.newDistrict.image = image;
-			this.newDistrict.image_id = image.id;
-			this.newDistrict.distance = this.distance;
-			console.log('route', this.newRoute);
+			console.log('district', this.newDistrict);
 			this.districtsService.register(this.newDistrict).subscribe((result: any) => {
 				console.log("result", result);
 				if ( result.content instanceof Array)
-					this.savePoints(result.content[0],()=>{ this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;	});//this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[]});
+					this.savePoints(result.content[0],()=>{ this.loadDistricts(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;	});//this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[]});
 				else
-					this.savePoints(result.content,()=>{ this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER; });//this.loadRoutes();  this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[] });
+					this.savePoints(result.content,()=>{ this.loadDistricts(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER; });//this.loadRoutes();  this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[] });
 				
 			});
 		})		
 	}
-	savePoints(contentRoute: any,callback) {
-		contentRoute.sections.forEach( ((section:any,indexSection:number) =>{
-			this.regPoint(0, contentRoute, section, indexSection, callback);
-		}) );
+	savePoints(contentDistrict: any,callback) {
+			this.regPoint(0, contentDistrict, contentDistrict.coords, 0, callback);
 	}
-	regPoint(index, contentRoute:any, section, indexSection, callback){
-		if (section.coords.length == index ){ 
+	regPoint(index, contentDistrict:any, coord_points, indexSection, callback){
+		if (coord_points.length == index ){ 
 			this.createProgress = "Completado";
 			callback();
 			return;
 		}
 		//this.createProgress = "Guardando " + Math.round((index/section.coords.length)*100) + "%"
-		let coord = section.coords[index];
+		let coord = coord_points[index];
 		let punto = {
-			route_id: contentRoute.id,
+			district_id: contentDistrict.id,
 			lat: coord[1],
-			lon: coord[0],
-			section: indexSection,
+			lon: coord[0]
 		}
-		this.pointsService.register(punto).subscribe((result: any) => {
-			console.log("punto creado result:", result)
-			this.regPoint(index+1,contentRoute,section,indexSection,callback);			
+		this.districtPointsService.register(punto).subscribe((result: any) => {
+			console.log("punto de distrito creado creado result:", result)
+			this.regPoint(index+1,contentDistrict,coord_points,indexSection,callback);			
 		});
 	}
 	/*END ROUTES*/

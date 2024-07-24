@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Socket } from 'ngx-socket-io';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { MainRoutingModule } from './main-routing.module';
-import { AngularOpenlayersModule} from "ng-openlayers";
+import { AngularOpenlayersModule } from "ng-openlayers";
 import { DashboardmapComponent } from './dashboardmap/dashboardmap.component';
 import { PanelFloatNavComponent } from '../panel-float-nav/panel-float-nav.component';
 import { PanelRightComponent } from '../panel-right/panel-right.component';
@@ -37,7 +37,7 @@ export class SocketOne extends Socket {
 	TabsModule,
     FormsModule,
     ReactiveFormsModule,
-    AngularOpenlayersModule,
+    AngularOpenlayersModule ,
     CommonModule,
     MainRoutingModule,
     SocketIoModule,

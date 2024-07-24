@@ -11,4 +11,5 @@ export const routes: Routes = [
 	{ path: 'administrar', component: null, loadChildren: () => import('./administration/administration.module').then(m => m.AdministrationModule)  }, //canActivate: [AutenticadorGuard]
 	{ path: 'dashboardmap', component: null, loadChildren: () => import('./main/main.module').then(m => m.MainModule)  }, //canActivate: [AutenticadorGuard]
 	{ path: 'routes', component: null, loadChildren: () => import('./main/main.module').then(m => m.MainModule)  }, //canActivate: [AutenticadorGuard]
+	
 ];

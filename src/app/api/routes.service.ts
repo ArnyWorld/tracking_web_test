@@ -97,7 +97,6 @@ export class RoutesService {
 		console.log("extend_3857",route['extend_3857']);
 		console.log("extend_latlon",route['extend_latlon']);
 	}	
-
 		
 	resizeImage(base64Str):any {
 
