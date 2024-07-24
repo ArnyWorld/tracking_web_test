@@ -3,7 +3,7 @@
     <div class="divMid">
 
         <div style="height: 100%">
-            <aol-map #map width="100%" height="100%"  (onkeypress)="keyPress($event)">
+            <aol-map #map width="100%" height="100%" (onkeypress)="keyPress($event)">
                 <aol-interaction-default> </aol-interaction-default>
                 <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="LineString" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
                 </aol-interaction-draw>
@@ -18,38 +18,54 @@
                     <aol-source-osm></aol-source-osm>
                 </aol-layer-tile>
 
-				<aol-layer-group>
+                <aol-layer-group>
 
-							<aol-layer-vector *ngIf="selectedDistrict">
-                                <aol-style>
-                                    <aol-style-stroke [color]="selectedDistrict.color" [width]="6"></aol-style-stroke>
-                                    <aol-style-fill [color]="'red'"></aol-style-fill> 
-                                </aol-style>
-								<aol-source-vector>
-                                        <aol-feature #selectedFeatureString>
-                                            <aol-geometry-linestring>
-                                                <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
-                                                </aol-collection-coordinates>
-                                            </aol-geometry-linestring>
-                                        </aol-feature>
-								</aol-source-vector>
-							</aol-layer-vector>
-						<aol-layer-vector  [opacity]="1.0">
-							<aol-source-vector  >
-								<aol-style>
-									<aol-style-stroke [color]="'rgba(10, 10, 150)'" [width]="8"></aol-style-stroke>
-									 <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> 
-								</aol-style>
-								<aol-feature >
-									<aol-geometry-linestring>
-										<aol-collection-coordinates [coordinates]="newDistrict.coords" [srid]="'EPSG:4326'">
-										</aol-collection-coordinates>
-									</aol-geometry-linestring>
-								</aol-feature>
-							</aol-source-vector>
-						</aol-layer-vector>
-					
-				</aol-layer-group>
+                    <div  *ngFor="let district of districts">
+                        <aol-layer-vector [opacity]="0.5">
+                            <aol-style>
+                                <aol-style-stroke [color]="district.color" [width]="3"></aol-style-stroke>
+                                <aol-style-fill [color]="district.color"></aol-style-fill>
+                            </aol-style>
+                            <aol-source-vector>
+                                <aol-feature #selectedFeatureString>
+                                    <aol-geometry-linestring>
+                                        <aol-collection-coordinates [coordinates]="district.coords" [srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-linestring>
+                                </aol-feature>
+                            </aol-source-vector>
+                        </aol-layer-vector>
+                    </div>
+                    <aol-layer-vector *ngIf="selectedDistrict">
+                        <aol-style>
+                            <aol-style-stroke [color]="selectedDistrict.color" [width]="6"></aol-style-stroke>
+                            <aol-style-fill [color]="selectedDistrict.color"></aol-style-fill>
+                        </aol-style>
+                        <aol-source-vector>
+                            <aol-feature #selectedFeatureString>
+                                <aol-geometry-linestring>
+                                    <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
+                                    </aol-collection-coordinates>
+                                </aol-geometry-linestring>
+                            </aol-feature>
+                        </aol-source-vector>
+                    </aol-layer-vector>
+                    <aol-layer-vector [opacity]="1.0">
+                        <aol-source-vector>
+                            <aol-style>
+                                <aol-style-stroke [color]="'rgba(10, 10, 150)'" [width]="8"></aol-style-stroke>
+                                <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill>
+                            </aol-style>
+                            <aol-feature>
+                                <aol-geometry-linestring>
+                                    <aol-collection-coordinates [coordinates]="newDistrict.coords" [srid]="'EPSG:4326'">
+                                    </aol-collection-coordinates>
+                                </aol-geometry-linestring>
+                            </aol-feature>
+                        </aol-source-vector>
+                    </aol-layer-vector>
+
+                </aol-layer-group>
             </aol-map>
         </div>
     </div>
@@ -65,7 +81,7 @@
                 <div class="list-group list-group-flush border-bottom scrollarea">
 
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
-                        
+
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Distritos</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Distrito</span>
                     </a>
@@ -85,7 +101,7 @@
 
             </div>
             <div *ngIf="mode == StatesEnum.ROUTE_CREATOR" class="m-5">
-                <h3>Creación de Route</h3>
+                <h3>Creación de Distrito</h3>
                 <label class="fw-light" for="route">NOMBRE DE DISTRITO</label>
                 <input class="form-control" id="name" name="route" type="text" required [(ngModel)]="newDistrict.name" />
 
@@ -95,7 +111,7 @@
                         Valores por defecto
                     </label>
                 </div>
-				
+
 
 
                 <label class="fw-light" for="name">distance <small>(metros)</small></label>
