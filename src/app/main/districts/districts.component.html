@@ -27,10 +27,10 @@
                                             <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> 
                                         </aol-style>
                                         <aol-feature #selectedFeatureString>
-                                            <aol-geometry-polygon>
+                                            <aol-geometry-linestring>
                                                 <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
                                                 </aol-collection-coordinates>
-                                            </aol-geometry-polygon>
+                                            </aol-geometry-linestring>
                                         </aol-feature>
 								</aol-source-vector>
 							</aol-layer-vector>
