@@ -168,7 +168,7 @@ export class DistrictsComponent implements OnInit{
 		console.log("this.selectedDistrict",this.selectedDistrict);
 		
 		let coordinatesPolygon = [[[48.12345, 25.1234], [46.12345, 25.1234], [46.12345, 28.1234], [48.12345, 28.1234], [48.12345, 25.1234]]];
-
+/*
 		this.map.instance.getLayers().forEach(function(layer:any,index) {
 			if (index < 1) return;
 			let geometry = new Polygon(coordinatesPolygon);
@@ -186,7 +186,7 @@ export class DistrictsComponent implements OnInit{
 			
 		});
 		//console.log("this.map.instance.getLayers()",this.map.instance.getLayers());
-		
+		*/
 		
 		this.map.instance.getView().fit( this.selectedDistrict.extend_3857, {
 			padding: [100, 100, 100, 100],

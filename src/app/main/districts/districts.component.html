@@ -5,7 +5,7 @@
         <div style="height: 100%">
             <aol-map #map width="100%" height="100%" (onkeypress)="keyPress($event)">
                 <aol-interaction-default> </aol-interaction-default>
-                <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="Polygon" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
+                <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="LineString" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
                 </aol-interaction-draw>
                 <aol-interaction-select [layers]="" (olSelect)="select($event)" [wrapX]="false"></aol-interaction-select>
                 <aol-control-defaults></aol-control-defaults>
@@ -19,34 +19,34 @@
                 </aol-layer-tile>
 
                 <aol-layer-group>
-
-                    <aol-layer-vector *ngIf="selectedDistrict" #vectorSource>
-                        <aol-style>
-                            <aol-style-stroke [color]="selectedDistrict.color" [width]="6"></aol-style-stroke>
-                            <aol-style-fill [color]="selectedDistrict.color"></aol-style-fill>
-                        </aol-style>
-                        <aol-source-vector>
-                            <aol-feature >
-                                <aol-geometry-polygon>
-                                    <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
-                                    </aol-collection-coordinates>
-                                </aol-geometry-polygon>
-                            </aol-feature>
-                        </aol-source-vector>
-                    </aol-layer-vector>
-                    
+					<div *ngIf="selectedDistrict">
+						<aol-layer-vector  #vectorSource [opacity]="0.5">
+							<aol-style>
+								<aol-style-stroke [color]="selectedDistrict.color" [width]="8"></aol-style-stroke>
+								<aol-style-fill [color]="selectedDistrict.color" ></aol-style-fill>
+							</aol-style>
+							<aol-source-vector >
+								<aol-feature >
+									<aol-geometry-polygon>
+										<aol-collection-coordinates [coordinates]="[selectedDistrict.coords]" [srid]="'EPSG:4326'">
+										</aol-collection-coordinates>
+									</aol-geometry-polygon>
+								</aol-feature>
+							</aol-source-vector>
+						</aol-layer-vector>
+					</div>
                     <div  *ngFor="let district of districts">
-                        <aol-layer-vector [opacity]="1.0">
+                        <aol-layer-vector [opacity]="0.2">
                             <aol-style>
                                 <aol-style-stroke [color]="district.color" [width]="3"></aol-style-stroke>
                                 <aol-style-fill [color]="district.color"></aol-style-fill>
                             </aol-style>
                             <aol-source-vector>
                                 <aol-feature >
-                                    <aol-geometry-linestring>
-                                        <aol-collection-coordinates [coordinates]="district.coords" [srid]="'EPSG:4326'">
+                                    <aol-geometry-polygon>
+                                        <aol-collection-coordinates [coordinates]="[district.coords]" [srid]="'EPSG:4326'">
                                         </aol-collection-coordinates>
-                                    </aol-geometry-linestring>
+                                    </aol-geometry-polygon>
                                 </aol-feature>
                             </aol-source-vector>
                         </aol-layer-vector>
