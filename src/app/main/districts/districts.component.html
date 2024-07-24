@@ -27,7 +27,7 @@
                                 <aol-style-fill [color]="district.color"></aol-style-fill>
                             </aol-style>
                             <aol-source-vector>
-                                <aol-feature #selectedFeatureString>
+                                <aol-feature >
                                     <aol-geometry-linestring>
                                         <aol-collection-coordinates [coordinates]="district.coords" [srid]="'EPSG:4326'">
                                         </aol-collection-coordinates>
@@ -36,20 +36,22 @@
                             </aol-source-vector>
                         </aol-layer-vector>
                     </div>
+
                     <aol-layer-vector *ngIf="selectedDistrict">
                         <aol-style>
                             <aol-style-stroke [color]="selectedDistrict.color" [width]="6"></aol-style-stroke>
                             <aol-style-fill [color]="selectedDistrict.color"></aol-style-fill>
                         </aol-style>
                         <aol-source-vector>
-                            <aol-feature #selectedFeatureString>
-                                <aol-geometry-linestring>
+                            <aol-feature >
+                                <aol-geometry-multipolygon>
                                     <aol-collection-coordinates [coordinates]="selectedDistrict.coords" [srid]="'EPSG:4326'">
                                     </aol-collection-coordinates>
-                                </aol-geometry-linestring>
+                                </aol-geometry-multipolygon>
                             </aol-feature>
                         </aol-source-vector>
                     </aol-layer-vector>
+
                     <aol-layer-vector [opacity]="1.0">
                         <aol-source-vector>
                             <aol-style>
