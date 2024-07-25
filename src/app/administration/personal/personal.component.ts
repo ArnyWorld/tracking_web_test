@@ -75,7 +75,7 @@ export class PersonalComponent implements OnInit {
 			this.personal = Object.assign({}, data);
 			//this.personal['Assignments']			
 			this.Assignments = [];
-
+			
 			this.routes.forEach((route:any,i:number)=>{
 				
 				let asignacion = this.personal['assignments'].find((asignacion)=>asignacion.route_id == route.id);
@@ -102,8 +102,10 @@ export class PersonalComponent implements OnInit {
 		});
 	}
 	loadRoutes(){
+		console.log("loading routes");
 		this.routesService.getAll(100, 1, 'id',false,'').subscribe((res: any) => {
 			this.routes = res.content;			
+			console.log("routes loaded", this.routes);
 		});
 	}
 	load(){
