@@ -57,15 +57,40 @@ export class ModalImportDistrictsComponent {
 				var district = {
 					name : districtName,
 					color : fillColor,					
-					points : points,			
+					points : points,
+					order : this.getOrder(districtName),
 				};
-				if (districtName != undefined)
+				if (districtName != undefined && districtName != "")
 					importData.districts.push(district);
 			} );
+			importData.districts = importData.districts.sort((a:any,b:any)=>{
+				if (a.order<b.order) return -1;
+				if (a.order>b.order) return 1;
+				return 0;
+			});
 			console.log("importData",importData);
 			
 		};
+
     	reader.readAsText(file);
+	}
+	getOrder(name){
+		if (name == "Distrito 1") return 1;
+		if (name == "Distrito 2") return 2;
+		if (name == "Distrito 3") return 3;
+		if (name == "Distrito 4") return 4;
+		if (name == "Distrito 5") return 5;
+		if (name == "Distrito 6") return 6;
+		if (name == "Distrito 7") return 7;
+		if (name == "Distrito 8") return 8;
+		if (name == "Distrito 9") return 9;
+		if (name == "Distrito 10") return 10;
+		if (name == "Distrito 11") return 11;
+		if (name == "Distrito 12") return 12;
+		if (name == "Distrito 13") return 13;
+		if (name == "Distrito 14") return 14;
+		if (name == "Distrito 15") return 15;
+		return 0;
 	}
 	saveOnDb(){
 		this.registerCount = 0;

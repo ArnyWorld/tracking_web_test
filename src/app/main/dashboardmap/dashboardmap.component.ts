@@ -16,6 +16,7 @@ import { RoutesService } from '../../api/routes.service';
 import { WSapiService } from '../../api/wsapi.service';
 import { SuggestionsService } from '../../api/suggestions.service';
 import { ImagesService } from '../../api/images.service';
+import { TracksService } from '../../api/tracks.service';
 
 
 
@@ -35,6 +36,7 @@ export class DashboardmapComponent implements OnInit {
 		private routesService: RoutesService,
 		private imagesService: ImagesService,
 		private suggestionsService: SuggestionsService,
+		private tracksService: TracksService,
 		private wsapiService: WSapiService
 	) { }
 	tabs:any = ['Dispositivos','Routes','Sugerencias'];
@@ -284,10 +286,21 @@ export class DashboardmapComponent implements OnInit {
 			console.log("personal",this.personal);
 		});
 	}
+	tracks = [];
+	async loadTracks(){
+		this.tracksService.getAll(1,1,'id',false,'').subscribe(async (res:any)=>{
+			this.tracks = res.content;
+			this.tracks.forEach(async t=>{
+				t.coords = await this.tracksService.getCoords(t);
+			} );
+			console.log("this.tracks",this.tracks);
+		});
+	}
 	ngOnInit() {
 		this.cargarPersonal();
 		this.cargarRoutes();
 		this.loadSuggestions();
+		this.loadTracks();
 		setInterval(() => {
 			this.updateConnection();
 		}, 2000);

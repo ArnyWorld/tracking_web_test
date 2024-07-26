@@ -17,6 +17,7 @@ import { RoutesService } from '../../api/routes.service';
 import { ImagesService } from '../../api/images.service';
 import { DistrictsService } from '../../api/districts.service';
 import { DistrictPointsService } from '../../api/districtspoints.service';
+import { TracksService } from '../../api/tracks.service';
 
 enum StatesEnum {
 	ROUTE_VIEWER = 1,
@@ -68,12 +69,23 @@ export class DistrictsComponent implements OnInit{
 		private personalService: PersonalService,
 		private imagesService: ImagesService,
 		private districtsService: DistrictsService,
+		private tracksService: TracksService,
 		private districtPointsService: DistrictPointsService,
 		private modalService: BsModalService){}
 
 	ngOnInit(): void {
-		this.loadDistricts();
+		//this.loadDistricts();
+		this.loadTracks();
 	}	
+	tracks = [];
+	async loadTracks(){
+		this.tracksService.find('9f875b16-af00-4b3b-b9d6-3210fd3c9c85').subscribe(async (res:any)=>{
+			this.tracks = res.content;
+			this.tracks.forEach( t=>{
+				t.coords =  this.tracksService.getCoords(t);
+			} );
+		});
+	}
 	createRouteControls(){
 		return {
 			selected:false,
