@@ -290,10 +290,6 @@ export class DashboardmapComponent implements OnInit {
 	async loadTracks(){
 		this.tracksService.getAll(1,1,'id',false,'').subscribe(async (res:any)=>{
 			this.tracks = res.content;
-			this.tracks.forEach(async t=>{
-				t.coords = await this.tracksService.getCoords(t);
-			} );
-			console.log("this.tracks",this.tracks);
 		});
 	}
 	ngOnInit() {

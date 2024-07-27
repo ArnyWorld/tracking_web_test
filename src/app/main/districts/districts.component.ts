@@ -81,9 +81,7 @@ export class DistrictsComponent implements OnInit{
 	async loadTracks(){
 		this.tracksService.find('9f875b16-af00-4b3b-b9d6-3210fd3c9c85').subscribe(async (res:any)=>{
 			this.tracks = res.content;
-			this.tracks.forEach( t=>{
-				t.coords =  this.tracksService.getCoords(t);
-			} );
+			console.log("tracks",this.tracks);
 		});
 	}
 	createRouteControls(){

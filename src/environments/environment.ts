@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiserver: 'https://trackingserver.kernotec.com/trackingdb/',
+  apiserver: 'http://192.168.100.7:9988/trackingdb/',
   wsserver: 'https://trackingserver.kernotec.com',
   wsapiserver: 'https://trackingserver.kernotec.com',
   /*apiserver: 'http://192.168.100.7:9988/trackingdb/',
