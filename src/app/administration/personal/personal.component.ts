@@ -111,6 +111,7 @@ export class PersonalComponent implements OnInit {
 	load(){
 		this.personalApi.getAll(100, 1, 'id',false,'').subscribe((res: any) => {
 			this.personals = res.content;
+			console.log("this.personals",this.personals);
 		});
 	}
 	saveAssignments(){

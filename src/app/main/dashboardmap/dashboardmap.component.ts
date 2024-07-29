@@ -65,7 +65,7 @@ export class DashboardmapComponent implements OnInit {
 		},
 	};
 	zoom: number = 18;
-	personal:any;
+	personal = [];
 	styleLineDash: number[] = [10.0, 10.0];
 	public graticuleStyle = new Stroke({
 		color: 'rgba(255,120,0,0.9)',
@@ -124,7 +124,7 @@ export class DashboardmapComponent implements OnInit {
 			task: ()=> {this.loadSuggestions()}
 		}
 	];
-	routes:any;
+	routes = [];
 	selectedRoute:any;
 	selectedLineString:any;
 	selectedRoutes = [];
@@ -151,7 +151,6 @@ export class DashboardmapComponent implements OnInit {
 	selectRoute (route:any){
 		if (!this.selectedRoutes.includes(route))
 			this.selectedRoutes.push(route);
-		//if (this.selectedRoute!== undefined) this.selectedRoute.controls.selected = false;
 		this.selectedRoute = route;
 		
 		
@@ -172,20 +171,13 @@ export class DashboardmapComponent implements OnInit {
 	}
 	cargarRoutes() {
 		this.routesService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
-			this.routes = result.content;
-			this.routes.forEach( (route:any)=>{
-				
+			let routes = result.content;
+			console.log("routes--",routes);
+			if (routes == null) return;
+			routes.forEach( (route:any)=>{				
 
-				route['controls'] = this.createRouteControls();
-				////route['splitPoints'] = this.routesService.splitPoints(route.points, 4, 10 ); 
-				////route['splitPointsCoords'] = this.routesService.toCoord(route['splitPoints']);
-				/*route['string']={
-					'geometry':{
-						coordinates:route.points.map(p => [p.lon, p.lat] )
-					}				
-				};*/
-				
-				route['extend'] = [+180,90,-180,-90];
+				route['controls'] = this.createRouteControls();				
+				route['extend'] = [+180,90,-180,-90];				
 				route['sections'] = Array.from(this.routesService.groupBy(route.points, p => p.section)).map(
 					(p:any,index:number )=>{
 						return {uuid:index,coords:(p[1].map( (pp:any) => { 
@@ -201,6 +193,7 @@ export class DashboardmapComponent implements OnInit {
 				});
 				console.log("route['sections']:",route['sections']);
 			});
+			this.routes = routes;
 			this.tabs[1] = `Routes(${this.routes.length})`;
 			console.log("routes",this.routes);
 		});
@@ -299,6 +292,7 @@ export class DashboardmapComponent implements OnInit {
 		this.loadTracks();
 		setInterval(() => {
 			this.updateConnection();
+			
 		}, 2000);
 		setTimeout(() => {
 			this.socketComm();

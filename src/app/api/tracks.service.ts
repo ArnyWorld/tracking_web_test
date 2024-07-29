@@ -78,6 +78,7 @@ export class TracksService {
 	}
 
 	async processB64(track: any) {
+		if (track['trackb64'] == "") return;
 		let txt:any = await this.unzip(track.trackb64);
 		let lines = txt.split("\n");		
 		track['trackb64'] = lines.map(l=>{

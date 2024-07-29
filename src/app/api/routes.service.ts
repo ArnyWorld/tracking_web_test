@@ -38,6 +38,7 @@ export class RoutesService {
  		if (calcType == "AREA") this.calcAdvanceOmni(PolyRouteTrack,tracks,polyAdvanced,maxPointDistance);
 	}
 	groupBy(list, keyGetter) {
+		if (list==null) return new Map(); 
 		const map = new Map();
 		const mapAr = [];
 		list.forEach((item) => {

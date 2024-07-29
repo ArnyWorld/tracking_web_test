@@ -17,8 +17,8 @@
 				</aol-view>
 
 				<aol-layer-tile [opacity]="1"> 
-				 	<aol-source-osm></aol-source-osm>  
-					
+				 	<!-- <aol-source-osm></aol-source-osm>   -->
+					 <!-- <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz> -->
 				</aol-layer-tile>
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
@@ -319,13 +319,13 @@
 		<div ngProjectAs="Devices">
 			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
 				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true">
-				<div class="d-flex w-100 align-items-center justify-content-between" *ngIf="device">
+				<div class="d-flex w-100 align-items-center justify-content-between" *ngIf="device.controls!=null">
 					<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-{{device.id}}" [(ngModel)]="device?.controls.show">
 					<strong class="mb-1">{{ device.config.INFO_BRAND}} <small>{{ device.config.INFO_MODEL}}</small></strong>
 					<small>bat:{{ device.last.bat}}%</small>
 				</div>
 				<div>
-					<div class="form-check form-check-sm">
+					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showTrack">
 						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Trayecto </label>
 					</div>					
