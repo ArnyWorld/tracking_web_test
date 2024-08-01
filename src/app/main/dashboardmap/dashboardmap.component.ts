@@ -172,30 +172,11 @@ export class DashboardmapComponent implements OnInit {
 	cargarRoutes() {
 		this.routesService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
 			let routes = result.content;
-			console.log("routes--",routes);
-			if (routes == null) return;
 			routes.forEach( (route:any)=>{				
-
 				route['controls'] = this.createRouteControls();				
-				route['extend'] = [+180,90,-180,-90];				
-				route['sections'] = Array.from(this.routesService.groupBy(route.points, p => p.section)).map(
-					(p:any,index:number )=>{
-						return {uuid:index,coords:(p[1].map( (pp:any) => { 
-							route['extend'][0]=pp.lon<route['extend'][0]?pp.lon:route['extend'][0];
-							route['extend'][1]=pp.lat<route['extend'][1]?pp.lat:route['extend'][1];
-							route['extend'][2]=pp.lon>route['extend'][2]?pp.lon:route['extend'][2];
-							route['extend'][3]=pp.lat>route['extend'][3]?pp.lat:route['extend'][3];
-							;return [pp.lon,pp.lat]} ))};
-					}
-				);
-				route['sections'].forEach( t => {
-					t['splitCoords'] = this.routesService.splitPointsCoord(t.coords,4,10);
-				});
-				console.log("route['sections']:",route['sections']);
 			});
+			console.log("cargarRoutes.routes" , routes);
 			this.routes = routes;
-			this.tabs[1] = `Routes(${this.routes.length})`;
-			console.log("routes",this.routes);
 		});
 	}
 	loadSuggestions(){
@@ -326,7 +307,7 @@ export class DashboardmapComponent implements OnInit {
 	}
 
 	socketComm(){
-		//this.socket.emit('message', "enviando");
+		this.socket.emit('message', "enviando");
 		this.socket.on('message', (msg: any) => {
 			console.log('mensaje:', msg);
 		});
@@ -573,8 +554,6 @@ export class DashboardmapComponent implements OnInit {
 			let device = data;
 			this.devices.push(device);
 			
-			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
-			device['msl'] = new Date().getTime();
 			device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 			device['tracksCoord'] = [];
 			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{

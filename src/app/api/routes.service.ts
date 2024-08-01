@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ServicioApi } from './servicio-api';
 
@@ -276,7 +276,26 @@ export class RoutesService {
 		  `/${this.apiName}?size=${size}&page=${
 			page - 1
 		  }&sortBy=${sortBy}&descending=${descending}&keyword=${keyword}`
-	  );
+	  ).pipe( tap( (result:any) =>{
+			result.content.forEach( (route:any)=>{						
+				route['extend'] = [+180,90,-180,-90];				
+				route['sections'] = Array.from(this.groupBy(route.points, p => p.section)).map(
+					(p:any,index:number )=>{
+						return {uuid:index,coords:(p[1].map( (pp:any) => { 
+							route['extend'][0]=pp.lon<route['extend'][0]?pp.lon:route['extend'][0];
+							route['extend'][1]=pp.lat<route['extend'][1]?pp.lat:route['extend'][1];
+							route['extend'][2]=pp.lon>route['extend'][2]?pp.lon:route['extend'][2];
+							route['extend'][3]=pp.lat>route['extend'][3]?pp.lat:route['extend'][3];
+							;return [pp.lon,pp.lat]} ))};
+					}
+				);
+				route['sections'].forEach( t => {
+					t['splitCoords'] = this.splitPointsCoord(t.coords,4,10);
+				});
+			});
+		return result;
+
+	  }));
 	}
   
 	delete(id: string | number): Observable<any> {
