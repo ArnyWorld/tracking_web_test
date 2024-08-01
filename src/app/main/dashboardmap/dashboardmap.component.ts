@@ -313,12 +313,24 @@ export class DashboardmapComponent implements OnInit {
 			showTrack:false,
 		};
 	}
+	personal_filtrado = [];
+
+	conectar_persona(){
+		this.personal_filtrado.forEach( p=>{
+			this.devices.forEach(device => {
+				if (device.state["ID_USER"] == p.id){
+					p['device'] = device;
+				}
+			});
+		});
+	}
+
 	socketComm(){
-		this.socket.emit('message', "enviando");
+		//this.socket.emit('message', "enviando");
 		this.socket.on('message', (msg: any) => {
 			console.log('mensaje:', msg);
 		});
-		this.socket.on('devices', (data: any) => {
+		this.socket.on('devices', (data: any) => {			
 			console.log('devices:', data);
 			this.devices = data;
 			this.devices.forEach((device: any, index: number) => {
@@ -392,8 +404,6 @@ export class DashboardmapComponent implements OnInit {
 			},(err:any)=>console.log("err",err));
 				
 		});
-
-
 		this.socket.on('device.state', (data: any) => {
 			console.log('device.state',data);
 			let device = this.devices.find((d: any) => d.id == data.id);
@@ -532,6 +542,127 @@ export class DashboardmapComponent implements OnInit {
 		/*this.socket.on('connected', function (socket:any){
 			console.log(msg);
 		});*/
+	}
+	socketCommClean(){
+		this.socket.on('devices', (data: any) => {			
+			this.devices = data;
+			this.devices.forEach((device: any, index: number) => {				
+				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				device['tracksCoord'] = [];
+				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
+					let tracksCoord = [];
+					device['tracks'] = res.tracks;
+					res.tracks.forEach(track => {						
+						tracksCoord.push([track.lon, track.lat]);
+					});
+					device['tracksCoord'] = tracksCoord;	
+					device['tracksPolyline'] = [];
+					device['PolyRouteTrack'] = [];
+					if (device['routeSelected'] !=null){						
+						device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);	//PolyRouteTrack contiene los puntos particionados por cada tramo de una ruta
+						this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10); //AREA es para calcular en tramso, 10 son los metros de proximidad
+						device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));  //s[0] = lat , s[1] = lon  , s[2] = check si pasó cerca del punto, crea un conjunto de coordenadas donde si acercó el trayecto
+						device.routeSelected['completed']=0;
+					}
+				},(err:any)=>console.log("err",err));
+				
+			});
+			this.updateDevices();
+		});
+		this.socket.on('device', (data)=>{	//cuando un nuevo dispositivo se conecta despues del devices			
+			let device = data;
+			this.devices.push(device);
+			
+			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
+			device['msl'] = new Date().getTime();
+			device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+			device['tracksCoord'] = [];
+			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
+				console.log("this.wsapiService",res);
+				let tracksCoord = [];		//para dibujar coordendas
+				device['tracks'] = res.tracks;
+				res.tracks.forEach(track => {						
+					tracksCoord.push([track.lon, track.lat]);
+				});
+				device['tracksCoord'] = tracksCoord;					
+				console.log("this.calculating");	
+				device['tracksPolyline'] = [];
+				device['PolyRouteTrack'] = [];
+				if (device['routeSelected'] !=null){					
+					device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
+					this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
+					device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
+					device.routeSelected['completed']=0;
+				}
+			},(err:any)=>console.log("err",err));				
+		});
+		this.socket.on('device.state', (data: any) => {
+			console.log('device.state',data);			
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.states = data.states;
+			//solo en state se puede saber si cambió de ruta
+			device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);			
+		});
+		this.socket.on('device.config', (data: any) => {
+			console.log('device.config',data);
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.config = data.config;
+		});
+		this.socket.on('device.setup', (data: any) => {
+			console.log('device.setup',data);
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.setup = data.setup;
+		});
+		this.socket.on('device.tracks', (data: any) => {
+			console.log('device.tracks',data);
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.tracks = data.tracks;
+		});
+		this.socket.on('device.pause', (data: any) => {
+			console.log('device.pause',data.id);
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.last = data.last;
+			device.ms = (new Date().getTime() - device.msl);
+			device.msl = new Date().getTime();
+			
+		});
+		this.socket.on('device.last', (data: any) => {
+			console.log('device.last',data.id);
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null){
+				this.socket.emit("device",data.id);
+				return;
+			}
+			device.ms = (new Date().getTime() - device.msl);
+			device.msl = new Date().getTime();
+			device.last = data.last;	//last contiene la última posición enviada [ t=timestamp, bat=bateria, lat,lon, acc=accuracy]
+			if (device.states?.ON_ROUTE == "0") return;
+			device.tracksCoord.push([data.last.lon, data.last.lat]);
+			if (device['routeSelected']!=null){
+				this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
+				device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
+			}
+		});
 	}
 	select($event: SelectEvent) {
 		console.log($event);

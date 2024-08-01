@@ -154,22 +154,7 @@ export class RoutesService {
 				})
 			});
 		});
-		/*tracks.forEach(t => {			
-			for(let i = 0; i < splitPoints.length; i++ ) {
-				//if (splitPoints[currentPointIndex].check) continue;
-				let spt = splitPoints[i];
-				dist = olSphere.getDistance( [t.lon, t.lat], [spt.lon, spt.lat] ); //spt.sphericalDistance(t.getLatLong());
-				if ( !spt.check ) {
-					if (dist < maxPointDistance) {
-						currentPointIndex = i;
-						splitPoints[currentPointIndex].check = true;
-					}
-				}
-			}
-		});*/
 		let lastIndex:number = 0;
-		//let polyAdvancedTemp = [];
-		//polyAdvanced.splice(0, polyAdvanced.length)
 		
 		PolyRouteTrack.splitPointTracks.forEach((splitPoints:any)=>{
 			let currentPoly = null;
@@ -188,20 +173,12 @@ export class RoutesService {
 					currentPoly = [];
 					polyAdvanced.push(currentPoly);
 				}
-				//stIndex = i;
 			}
 			if (currentPoly == null) currentPoly=[];
 			if (currentPoly.length >0){
 				polyAdvanced.push(currentPoly);
 			}
-			/*else {
-				const index = polyAdvanced.indexOf(currentPoly);
-				polyAdvanced.splice(index,1);
-				console.log("index",index);
-			}*/
 		});
-		//polyAdvanced = polyAdvancedTemp;
-		//console.log("polyAdvanced",polyAdvanced);
 	}
 	calcAdvanceOne(splitPoints:any,tracks:any[],polyAdvanced:any[],maxPointDistance){
 
@@ -213,7 +190,6 @@ export class RoutesService {
 		points.forEach((p:any) => {
 			if (lastPoint==null) {
 				lastPoint = p;
-				//LatLong tLatLong  = new LatLong( lastPoint.lat , lastPoint.lng );
 				splitPoints.push({lat:lastPoint.lat , lon:lastPoint.lon, check:false });
 				return;
 			}
@@ -245,8 +221,7 @@ export class RoutesService {
 		points.forEach((p:any) => {
 			if (lastPoint==null) {
 				lastPoint = p;
-				//LatLong tLatLong  = new LatLong( lastPoint.lat , lastPoint.lng );
-				splitPoints.push([p[0],p[1],false]); //{lat:lastPoint.lat , lon:lastPoint.lon, check:false });
+				splitPoints.push([p[0],p[1],false]); 
 				return;
 			}
 			let currentDist = olSphere.getDistance( p, lastPoint );
