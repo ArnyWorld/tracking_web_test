@@ -169,14 +169,15 @@ export class DashboardmapComponent implements OnInit {
 			if (route!== undefined) route.controls.show = true;
 		}, 200);
 	}
-	cargarRoutes() {
-		this.routesService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
+	cargarRoutes(callback) {
+		this.routesService.getAll(200, 1, 'id',false,'').subscribe((result: any) => {
 			let routes = result.content;
 			routes.forEach( (route:any)=>{				
 				route['controls'] = this.createRouteControls();				
 			});
 			console.log("cargarRoutes.routes" , routes);
 			this.routes = routes;
+			if (callback!=null) callback();
 		});
 	}
 	loadSuggestions(){
@@ -254,10 +255,11 @@ export class DashboardmapComponent implements OnInit {
 
 	}
 	
-	cargarPersonal(){
+	cargarPersonal(callback){
 		this.personalService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
 			this.personal = result.content;
 			console.log("personal",this.personal);
+			if (callback!=null) callback();
 		});
 	}
 	tracks = [];
@@ -267,17 +269,21 @@ export class DashboardmapComponent implements OnInit {
 		});
 	}
 	ngOnInit() {
-		this.cargarPersonal();
-		this.cargarRoutes();
-		this.loadSuggestions();
-		this.loadTracks();
-		setInterval(() => {
-			this.updateConnection();
-			
-		}, 2000);
-		setTimeout(() => {
-			this.socketComm();
-		}, 1000);
+		this.cargarPersonal(()=>{
+			this.cargarRoutes(()=>{
+				this.loadSuggestions();
+				this.loadTracks();
+				setInterval(() => {
+					this.updateConnection();
+					
+				}, 2000);
+				setTimeout(() => {
+					this.socketComm();
+				}, 1000);
+			});
+		});
+		
+		
 	}
 	createControls(){
 		return {

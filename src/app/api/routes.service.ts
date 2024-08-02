@@ -264,7 +264,7 @@ export class RoutesService {
 	}
   	
 	getAll(
-	  size: number = 100,
+	  size: number = 300,
 	  page: number = 1,
 	  sortBy: string = 'id',
 	  descending: false,
