@@ -273,9 +273,7 @@ export class RoutesService {
 	  return this.http.get(
 		this.apiUrl +
 		  this.prefix +
-		  `/${this.apiName}?size=${size}&page=${
-			page - 1
-		  }&sortBy=${sortBy}&descending=${descending}&keyword=${keyword}`
+		  `/${this.apiName}`
 	  ).pipe( tap( (result:any) =>{
 			result.content.forEach( (route:any)=>{						
 				route['extend'] = [+180,90,-180,-90];				

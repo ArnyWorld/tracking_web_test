@@ -78,6 +78,14 @@
         <app-modal-import-districts (onClose)="this.modalRef.hide();"></app-modal-import-districts>
     </ng-template>
 
+    <ng-template #modalImportPersonal role="document" let-modal class="center-modal">
+        <app-modal-import-personal (onClose)="this.modalRef.hide();"></app-modal-import-personal>
+    </ng-template>
+
+    <ng-template #modalImportRoutes role="document" let-modal class="center-modal">
+        <app-modal-import-routes (onClose)="this.modalRef.hide();"></app-modal-import-routes>
+    </ng-template>
+
     <app-panel-right [selected]="'Routes'">
         <div ngProjectAs="Routes">
             <div *ngIf="mode == StatesEnum.ROUTE_VIEWER">
@@ -87,6 +95,8 @@
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
 
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Distritos</span>
+						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonal,null)">Importar Personal</span>
+						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportRoutes,null)">Importar Rutas</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Distrito</span>
                     </a>
 

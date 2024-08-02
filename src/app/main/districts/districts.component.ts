@@ -74,7 +74,7 @@ export class DistrictsComponent implements OnInit{
 		private modalService: BsModalService){}
 
 	ngOnInit(): void {
-		//this.loadDistricts();
+		this.loadDistricts();
 		this.loadTracks();
 	}	
 	tracks = [];

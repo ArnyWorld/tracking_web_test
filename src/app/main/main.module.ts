@@ -16,6 +16,9 @@ import { ModalImportComponent } from './modal-import/modal-import.component';
 import { ModalImportDistrictsComponent } from './modal-import-districts/modal-import-districts.component';
 import { RoutessectionsComponent } from './routessections/routessections.component';
 import { DistrictsComponent } from './districts/districts.component';
+import { ModalImportPersonalComponent } from './modal-import-personal/modal-import-personal.component';
+import { ModalImportRoutesComponent } from './modal-import-routes/modal-import-routes.component';
+
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -34,6 +37,8 @@ export class SocketOne extends Socket {
 	DashboardmappolyComponent,
 	RoutessectionsComponent,
 	DistrictsComponent,
+	ModalImportPersonalComponent,
+	ModalImportRoutesComponent,
   ],
   imports: [
 	TabsModule,

@@ -18,7 +18,7 @@
 
 				<aol-layer-tile [opacity]="1"> 
 				 	<!-- <aol-source-osm></aol-source-osm>   -->
-					 <!-- <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz> -->
+					 <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz> 
 				</aol-layer-tile>
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
@@ -202,7 +202,7 @@
 								<aol-layer-vector  [opacity]="route.controls.selected?0.9:0.8">
 									<aol-source-vector>
 										<aol-style>
-											<aol-style-stroke [color]="route.controls.selected?'rgba(100, 0, 0,255)':'rgba(70, 98, 112,255)'" [width]="8"></aol-style-stroke>
+											<aol-style-stroke [color]="route.controls.selected?'rgba(100, 0, 0,255)':route.color" [width]="8"></aol-style-stroke>
 											 <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill>
 										</aol-style>
 										<aol-feature *ngFor="let section of route?.sections">
@@ -343,15 +343,10 @@
 						<input id="inp-check-route-{{route.id}}-selected" type="checkbox" [(ngModel)]="route.controls.selected" /> 
 						<input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showSplit" />  
 					</div>
-					<div class="col-10">
-						<div class="border">
-							<img [src]="route.thumb" style="width:100%" />
-						</div>
-					</div>
 				</div>
 				<div class="col-8"> 
-					<strong class="mb-1">{{route.nombre}}</strong><br>
-					<small>Recorrido: {{route.distancia}} metros</small>
+					<strong class="mb-1">{{route.name}}</strong><br>
+					<small>Recorrido: {{route.distance}} metros</small>
 				</div>
 			</label>
 			<!-- 
