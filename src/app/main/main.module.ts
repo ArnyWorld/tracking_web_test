@@ -18,6 +18,8 @@ import { RoutessectionsComponent } from './routessections/routessections.compone
 import { DistrictsComponent } from './districts/districts.component';
 import { ModalImportPersonalComponent } from './modal-import-personal/modal-import-personal.component';
 import { ModalImportRoutesComponent } from './modal-import-routes/modal-import-routes.component';
+import { BotcomComponent } from './botcom/botcom.component';
+import { ModalImportDevicesComponent } from './modal-import-devices/modal-import-devices.component';
 
 
 @Injectable()
@@ -39,6 +41,8 @@ export class SocketOne extends Socket {
 	DistrictsComponent,
 	ModalImportPersonalComponent,
 	ModalImportRoutesComponent,
+	ModalImportDevicesComponent,
+	BotcomComponent
   ],
   imports: [
 	TabsModule,

@@ -72,9 +72,9 @@ export class RoutesService {
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		route['extend_3857'] = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		route['extend_latlon'] = route['extend'];
-		console.log("extend",route['extend']);
+	/*	console.log("extend",route['extend']);
 		console.log("extend_3857",route['extend_3857']);
-		console.log("extend_latlon",route['extend_latlon']);
+		console.log("extend_latlon",route['extend_latlon']);*/
 	}
 
 	
@@ -94,9 +94,9 @@ export class RoutesService {
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		route['extend_3857'] = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		route['extend_latlon'] = route['extend'];
-		console.log("extend",route['extend']);
-		console.log("extend_3857",route['extend_3857']);
-		console.log("extend_latlon",route['extend_latlon']);
+		//console.log("extend",route['extend']);
+		//console.log("extend_3857",route['extend_3857']);
+		//console.log("extend_latlon",route['extend_latlon']);
 	}	
 		
 	resizeImage(base64Str):any {
