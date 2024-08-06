@@ -46,7 +46,8 @@ export class PersonalService {
 	  return this.http.get(
 		this.apiUrl +
 		  this.prefix +
-		  `/${this.apiName}?[personal_type_id][equal]=14`
+		  `/${this.apiName}`
+		  //`/${this.apiName}?[personal_type_id][equal]=14`
 	  );
 	}
   

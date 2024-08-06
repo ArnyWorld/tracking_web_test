@@ -18,6 +18,7 @@ import { ImagesService } from '../../api/images.service';
 import { DevicesService } from '../../api/devices.service';
 import { Botpersonal } from '../../api/botpersonal.service';
 import { HttpClient } from '@angular/common/http';
+import { AssignmentsService } from '../../api/assignments.service';
 
 enum StatesEnum {
 	ROUTE_VIEWER = 1,
@@ -35,9 +36,6 @@ export class BotcomComponent implements OnInit{
 	@ViewChild('map') map: MapComponent;
 	@ViewChild('layerMarkers') layerMarkers: LayerVectorComponent;
 
-
-	
-
 	public StatesEnum: typeof StatesEnum = StatesEnum;
 	public mode: StatesEnum = StatesEnum.ROUTE_VIEWER;
 
@@ -48,7 +46,7 @@ export class BotcomComponent implements OnInit{
 	routes:any 				;
 	/* create */
 	thumbRoute:string		= "";
-	distance:number		= 0;
+	distance:number			= 0;
 	createProgress:string	= "Crear"
 	selectedRoute:any;
 	newRoute = {
@@ -71,10 +69,10 @@ export class BotcomComponent implements OnInit{
 		coords:[]
 	};
 	devices : any;
-	personal : any;
-	http: HttpClient;
+	personal : any;		
 
 	constructor(
+		private http: HttpClient,
 		private routesService: RoutesService,
 		private pointsService: PointsService,
 		private personalService: PersonalService,
@@ -83,28 +81,78 @@ export class BotcomComponent implements OnInit{
 		private modalService: BsModalService){}
 
 	ngOnInit(): void {
-		let loadParts = 0;
+		let taskCompleted = 0;
 		let callback = ()=>{
-			loadParts++;
-			if (loadParts ==3)
+			taskCompleted++;
+			if (taskCompleted==3){
 				this.loadBots();
+			}
 		};
-		this.loadRoutes( callback );
-		this.loadDevices( callback );
-		this.loadPersonal( callback );
+		this.loadPersonal(callback);
+		this.loadRoutes(callback);
+		this.loadDevices(callback);
 		
-	}	
+	}
+	b_states ={
+		0:'SELECT_PERSONAL',
+		1:'SELECT_DEVICE',
+		2:'LEAVE_DEVICE',
+		3:'SELECTION_ASSIGNMENT',
+		4:'TRAKING_CAPTURE',
+		5:'ON_SESSION',
+		6:'SEND_SESSION',
+		7:'SEND_ENDSESSION',
+		8:'IDDLE',
+	}
+	b_states_dev ={
+		0:'SELECT_ASSIGNMENT',
+		1:'ACCEPT_ROUTE',
+		2:'TRACKING',
+		3:'IDDLE',
+		4:'SEND_SUGGESTION',
+		5:'SEND_EMERGENCY',
+		6:'SEND_CLAIM',
+		7:'TAKING_PHOTO'
+	}
+
+	monitors=[];
+	monitorDefault:any = {
+		time:'',
+		state:'',
+		stateDevice:'',
+		personal:null,
+		route:null,
+		deviceHW:null,
+	}
 	loadBots(){
-		let bot = new Botpersonal(this.http);
-		bot.config(this.personal,this.devices,this.routes);
-		bot.start();
+		for(let i = 0; i < 1; i++){
+			let monitor = {... this.monitorDefault  };
+			let bot = new Botpersonal(this.http);
+			bot.setMonitor(monitor);
+			bot.setData(this.personal[i], this.devices, this.routes);
+			bot.setTime("2024-03-01 07:05:00", "2024-03-31 07:05:00", 100);
+			bot.start();
+			this.monitors.push(monitor);
+		}
 	}
 	loadPersonal(callback){
-		this.personalService.getAll(1000,0,'id',false).subscribe(
-			(result:any) => {
+		this.personalService.getAll(1000,1,"id",false).subscribe(
+			(result:any) =>{
 				this.personal = result.content;
 				console.log("personal:",this.personal);
-				callback();
+				this.personal.forEach(p => {
+					p['order'] = Math.random();
+				});
+				this.personal = this.personal.sort((a:any,b:any)=>{
+					if(a.order>b.order) return -1;
+					if(a.order<b.order) return 1;
+					return 0;
+				});
+				let personalValid = this.personal.filter( p =>  p.assignments.length >0 );
+				personalValid.forEach( (p:any) => {  p['used'] = false;  });
+				console.log("personalValid:", personalValid);
+				this.personal = personalValid;
+				if (callback!=null) callback();
 			}
 		);
 	}
@@ -112,10 +160,26 @@ export class BotcomComponent implements OnInit{
 		this.devicesService.getAll().subscribe(
 			(result:any) => {
 				this.devices = result.content;
+				this.devices.forEach(d=>{
+					d['used']=false;
+					d['order'] = Math.random();
+				});
+				this.devices = this.devices.sort((a:any,b:any)=>{
+					if(a.order>b.order) return -1;
+					if(a.order<b.order) return 1;
+					return 0;
+				});
 				console.log("devices:",this.devices);
-				callback();
+				if (callback!=null) callback();
 			}
 		);
+	}
+	createRouteControls(){
+		return {
+			selected:false,
+			show:false,
+			showTrack:false,
+		};
 	}
 	loadRoutes(callback){
 		this.routesService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
@@ -135,7 +199,8 @@ export class BotcomComponent implements OnInit{
 					t['splitCoords'] = this.routesService.splitPointsCoord(t.coords,4,10);
 				});
 			});
-			if (callback!=null)	callback();
+			console.log("routes:",this.routes);
+			if (callback!=null) callback();
 		});
 	}
 	createRouteControls(){
@@ -310,24 +375,6 @@ export class BotcomComponent implements OnInit{
 		contentRoute.sections.forEach( ((section:any,indexSection:number) =>{
 			this.regPoint(0, contentRoute, section, indexSection, callback);
 		}) );
-		
-/*
-
-		this.registerCount = 0;
-		this.registerComplete = this.lineString3.geometry.coordinates.length;
-		this.lineString3.geometry.coordinates.forEach((coord: any) => {
-			let punto = {
-				route_id: contentRoute.id,
-				lat: coord[1],
-				lon: coord[0],
-			}
-			this.pointsService.register(punto).subscribe((result: any) => {
-				console.log("punto creado result:", result)
-				this.registerCount++;
-				this.createProgress = "Guardando " + Math.round(((this.registerCount)/this.registerComplete)*100) + "%"
-				if (this.registerCount == this.registerComplete && callback != null) callback();
-			});
-		});*/
 	}
 	regPoint(index, contentRoute:any, section, indexSection, callback){
 		if (section.coords.length == index ){ 
