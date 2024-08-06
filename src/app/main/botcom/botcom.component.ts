@@ -71,6 +71,7 @@ export class BotcomComponent implements OnInit{
 		coords:[]
 	};
 	devices : any;
+	personal : any;
 	http: HttpClient;
 
 	constructor(
@@ -82,30 +83,41 @@ export class BotcomComponent implements OnInit{
 		private modalService: BsModalService){}
 
 	ngOnInit(): void {
-		this.loadRoutes();
-		this.loadDevices();
-		this.loadBots();
+		let loadParts = 0;
+		let callback = ()=>{
+			loadParts++;
+			if (loadParts ==3)
+				this.loadBots();
+		};
+		this.loadRoutes( callback );
+		this.loadDevices( callback );
+		this.loadPersonal( callback );
+		
 	}	
 	loadBots(){
 		let bot = new Botpersonal(this.http);
+		bot.config(this.personal,this.devices,this.routes);
 		bot.start();
 	}
-	loadDevices(){
+	loadPersonal(callback){
+		this.personalService.getAll(1000,0,'id',false).subscribe(
+			(result:any) => {
+				this.personal = result.content;
+				console.log("personal:",this.personal);
+				callback();
+			}
+		);
+	}
+	loadDevices(callback){
 		this.devicesService.getAll().subscribe(
 			(result:any) => {
 				this.devices = result.content;
 				console.log("devices:",this.devices);
+				callback();
 			}
 		);
 	}
-	createRouteControls(){
-		return {
-			selected:false,
-			show:false,
-			showTrack:false,
-		};
-	}
-	loadRoutes(){
+	loadRoutes(callback){
 		this.routesService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
 			this.routes = result.content;
 
@@ -123,7 +135,15 @@ export class BotcomComponent implements OnInit{
 					t['splitCoords'] = this.routesService.splitPointsCoord(t.coords,4,10);
 				});
 			});
+			if (callback!=null)	callback();
 		});
+	}
+	createRouteControls(){
+		return {
+			selected:false,
+			show:false,
+			showTrack:false,
+		};
 	}
 	select($event: SelectEvent) {
 		console.log("select:",$event);
@@ -279,9 +299,9 @@ export class BotcomComponent implements OnInit{
 			this.routesService.register(this.newRoute).subscribe((result: any) => {
 				console.log("result", result);
 				if ( result.content instanceof Array)
-					this.savePoints(result.content[0],()=>{ this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;	});//this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[]});
+					this.savePoints(result.content[0],()=>{ this.loadRoutes(null); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;	});//this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[]});
 				else
-					this.savePoints(result.content,()=>{ this.loadRoutes(); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER; });//this.loadRoutes();  this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[] });
+					this.savePoints(result.content,()=>{ this.loadRoutes(null); this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER; });//this.loadRoutes();  this.createProgress="Crear";this.mode = StatesEnum.ROUTE_VIEWER;this.lineString3.geometry.coordinates=[];this.lineString2.geometry.coordinates=[] });
 				
 			});
 		})		

@@ -15,8 +15,10 @@ export class Botpersonal {
 	constructor(private http: HttpClient) { }
 
 	handled:any
+	personal:any;
 	config(personal:any,devices:any,routes:any){
-
+		this.personal = personal[0];
+		console.log("this.personal:", this.personal);
 	}
 	start(){
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000");
@@ -32,8 +34,8 @@ export class Botpersonal {
 			//console.log(new Date(time).toISOString());
 			fromDate += elapsed;
 			//console.log(fromDate);
-			let strDate:any=new Date(fromDate).toISOString();
-			console.log(strDate,"day:"+strDate.getDay());
+			let strDate:any=new Date(fromDate);
+			console.log(strDate.toISOString(),"day:"+strDate.getDay());
 			
 			},1000
 		)
