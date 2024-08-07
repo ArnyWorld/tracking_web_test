@@ -236,7 +236,7 @@ export class Botpersonal {
 				reader.onloadend = function() {
 				var base64data = reader.result.replace("data:application/zip;base64,","");                
 				//console.log("b64",base64data.replace("data:application/zip;base64,",""));
-				console.log("b64",base64data);
+				//console.log("b64",base64data);
 				if (callback!=null) callback(base64data);
 				}
 			});
@@ -275,13 +275,14 @@ export class Botpersonal {
 	}
 	devicehw : any;
 	device :any;
+	factorRate = 2
 	setupCooldown(){
 		this.states_cooldown[BOT_STATES.IDDLE] = {
-				time : 60000,
+				time : 60000*this.factorRate,
 				last : 0,				
 			};			
 		this.states_cooldown[BOT_STATES.SELECTION_ASSIGNMENT] = {
-				time : 60000,
+				time : 60000*this.factorRate,
 				last : 0,
 			};
 		this.states_cooldown[BOT_STATES.ON_SESSION] = {
@@ -289,15 +290,15 @@ export class Botpersonal {
 			last : 0,
 		};
 		this.states_cooldown[BOT_STATES.SEND_SESSION] = {
-			time : 600000,
+			time : 600000*this.factorRate,
 			last : 0,
 		};
 		this.states_cooldown[BOT_STATES.SEND_ENDSESSION] = {
-			time : 600000,
+			time : 600000*this.factorRate,
 			last : 0,
 		};
 		this.states_dev_cooldown[BOT_DEV_STATES.IDDLE] = {
-			time : 60000,
+			time : 60000*this.factorRate,
 			last : 0,
 		};
 		this.states_dev_cooldown[BOT_DEV_STATES.TRACKING] = {
@@ -509,7 +510,9 @@ export class Botpersonal {
 	}
 	endSession(delta:number, date_now, str_date){
 		if (this.cSession == null ) {console.log("no have session"); return;}
-		this.cSession['logout_date'] = date_now;
+		this.cSession['logout_date'] = date_now;		
+		//this.cSession['start_lat'] = this.devicehw.getLat();
+		//this.cSession['start_lon'] = this.devicehw.getLon();
 		this.cSession['end_lat'] = this.devicehw.getLat();
 		this.cSession['end_lon'] = this.devicehw.getLon();
 		
@@ -517,7 +520,7 @@ export class Botpersonal {
 			async (result:any)=>{
 				console.log(`endSession: PUT this.apiUrl+"/session" `,result );
 				
-				console.log("tracks",this.devicehw.tracks);
+				//console.log("tracks",this.devicehw.tracks);
 				//console.log("tracks.b64", await this.devicehw.getTrackb64());
 				let trackPost = {
 					"assignment_id": this.cAssignment.id,
@@ -525,7 +528,7 @@ export class Botpersonal {
 					"route_id": this.cRoute.id,
 					"start_date": this.cSession.login_date,
 					"end_date": date_now,
-					"abandoned": this.devicehw.target.completed>95?true:false,
+					"abandoned": this.devicehw.target.completed>95?false:true,
 					"comments": "",
 					"complete": this.devicehw.target.completed,
 					"routeb64": null,
@@ -533,7 +536,7 @@ export class Botpersonal {
 				};
 				this.devicehw.getTrackb64((b64)=>{
 					trackPost.trackb64 = b64;
-					console.log("trackPost.tosend",trackPost);
+					// 	console.log("trackPost.tosend",trackPost);
 					this.http.post(this.apiUrl+"/tracks",trackPost).subscribe(
 						result=>{
 							console.log("trackPost.result",result);
@@ -577,6 +580,8 @@ export class Botpersonal {
 	}
 	saveSession(delta:number, date_now, str_date){
 		
+		this.devicehw.setRoute(this.cRoute);
+		this.devicehw.rndLatLonRoute(this.cRoute,10);
 		let data = {
 			"personal_id": this.cPersonal.id,
             "device_id": this.cDevice.id,
@@ -592,8 +597,6 @@ export class Botpersonal {
 			(result:any)=>{
 				console.log(`startSession: this.apiUrl+"/session" `,result );
 				this.cSession = result.content;
-				this.devicehw.setRoute(this.cRoute);
-				this.devicehw.rndLatLonRoute(this.cRoute,10);
 				this.currentState = BOT_STATES.ON_SESSION;
 				this.currentDeviceState = BOT_DEV_STATES.TRACKING;
 				
