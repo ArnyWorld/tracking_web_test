@@ -168,7 +168,7 @@ export class RoutesService {
 					if (currentPoly.length ==0){
 						const index = polyAdvanced.indexOf(currentPoly);
 						polyAdvanced.splice(index,1);
-						console.log("index",index);
+			//			console.log("index",index);
 					}
 					currentPoly = [];
 					polyAdvanced.push(currentPoly);
@@ -218,6 +218,7 @@ export class RoutesService {
 		let lastPoint = null;
 		let acumDist:number = 0;
 		let splitPoints = [];
+		console.log("points",points);
 		points.forEach((p:any) => {
 			if (lastPoint==null) {
 				lastPoint = p;

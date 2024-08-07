@@ -126,11 +126,11 @@ export class BotcomComponent implements OnInit{
 	}
 	loadBots(){
 		for(let i = 0; i < 1; i++){
-			let monitor = {... this.monitorDefault  };
-			let bot = new Botpersonal(this.http);
+			let monitor = {... this.monitorDefault};
+			let bot = new Botpersonal(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-03-01 07:05:00", "2024-03-31 07:05:00", 100);
+			bot.setTime("2024-06-03 07:58:50", "2024-03-31 07:05:00", 10);
 			bot.start();
 			this.monitors.push(monitor);
 		}
@@ -149,6 +149,10 @@ export class BotcomComponent implements OnInit{
 					return 0;
 				});
 				let personalValid = this.personal.filter( p =>  p.assignments.length >0 );
+				//let personalValid = this.personal.filter( p =>  p.id == '8430516c-b950-4b0c-a0d4-e111ce2cb8cf' );
+				//let personalValid = this.personal.filter( p =>  p.id == '36b9a30d-e199-4bce-bb6f-afbcdee894d3' );
+				
+				
 				personalValid.forEach( (p:any) => {  p['used'] = false;  });
 				console.log("personalValid:", personalValid);
 				this.personal = personalValid;
@@ -202,13 +206,6 @@ export class BotcomComponent implements OnInit{
 			console.log("routes:",this.routes);
 			if (callback!=null) callback();
 		});
-	}
-	createRouteControls(){
-		return {
-			selected:false,
-			show:false,
-			showTrack:false,
-		};
 	}
 	select($event: SelectEvent) {
 		console.log("select:",$event);

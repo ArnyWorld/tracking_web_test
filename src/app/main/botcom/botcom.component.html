@@ -27,14 +27,48 @@
                                         <aol-coordinate [x]="monitor.devicehw.lon" [y]="monitor.devicehw.lat" [srid]="'EPSG:4326'"></aol-coordinate>
                                     </aol-geometry-point>
                                     <aol-style>
-                                        <aol-style-text [text]="monitor.devicehw.lat+' '+monitor.devicehw.lon" [font]="'10px sans-serif'"></aol-style-text>
-                                        <aol-style-icon [src]="monitor.devicehw.marker.img" [anchor]="[0.5, 1]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="0.9" [opacity]="0.98" [anchorOrigin]="'top-left'">
-                                        </aol-style-icon>
-                                        
+                                        <!-- <aol-style-text [text]="monitor.devicehw.lat+' '+monitor.devicehw.lon" [offsetY]="25" [font]="'10px sans-serif'"></aol-style-text> -->
+                                        <aol-style-icon [src]="monitor.devicehw.marker.img" [anchor]="[0.5, 0.5]"  [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="0.9" [opacity]="0.98" [anchorOrigin]="'top-left'">
+                                        </aol-style-icon>                                        
                                     </aol-style>
-                                </aol-feature>
+                                </aol-feature>								
                             </aol-source-vector>					
                         </aol-layer-vector>
+						
+						<aol-layer-vector *ngIf="monitor.devicehw!=undefined">
+							<aol-source-vector>
+								<aol-feature>
+								<aol-geometry-point>
+									<aol-coordinate [x]="monitor.devicehw.target.lon" [y]="monitor.devicehw.target.lat" [srid]="'EPSG:4326'"></aol-coordinate>
+								</aol-geometry-point>
+								</aol-feature>
+							</aol-source-vector>						
+							<aol-style>
+								<aol-style-circle [radius]="2">
+									<aol-style-stroke [color]="'#000'"></aol-style-stroke>
+									<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+								</aol-style-circle>
+							</aol-style>
+						</aol-layer-vector>
+						<aol-layer-vector *ngIf="monitor.devicehw!=undefined">
+							<aol-source-vector>
+								<aol-feature>
+								<aol-geometry-point>
+									<aol-coordinate [x]="monitor.devicehw.target.lon" [y]="monitor.devicehw.target.lat" [srid]="'EPSG:4326'"></aol-coordinate>
+								</aol-geometry-point>
+								</aol-feature>
+							</aol-source-vector>						
+							<aol-style>
+								<aol-style-circle [radius]="10">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+								</aol-style-circle>
+								<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+								</aol-style-text>
+							</aol-style>
+						</aol-layer-vector>
+						
                     </div>
                 </aol-layer-group>
 
@@ -98,18 +132,17 @@
                                     </aol-source-vector>                                    
                                 </aol-layer-vector>
                                 
-                                
-                                <!-- <aol-layer-vector >                         
+                                 <aol-layer-vector >                         
                                     <aol-source-vector>
                                         <aol-feature *ngFor="let pc of section.splitCoords">
-                                        <aol-geometry-point>
+                                        <aol-geometry-point *ngIf="pc[2]">
                                             <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
                                         </aol-geometry-point>
                                         </aol-feature>
                                     </aol-source-vector>
                                 
                                     <aol-style>
-                                        <aol-style-circle [radius]="5">
+                                        <aol-style-circle [radius]="7">
                                         <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                                         <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
                                         </aol-style-circle>
@@ -117,10 +150,8 @@
                                         <aol-style-fill [color]="'#fff'"></aol-style-fill>
                                         </aol-style-text>
                                     </aol-style>
-                                
                                     
                                 </aol-layer-vector>
-                            -->
                             </div>
                         </div>
                     </div>
@@ -174,6 +205,15 @@
                             </div>
                             <div class="w-100">
                                 <small> Route: {{monitor.route?monitor.route.name:''}}</small>
+                            </div>
+                       <!--      <div class="w-100">
+                                <small> Steps: {{monitor.devicehw?monitor.devicehw.steps:'0'}}</small>
+                            </div>-->
+                            <div class="w-100">
+                                <small> Completed: {{monitor.devicehw?.target?monitor.devicehw.target.completed:'0'}}</small>
+                            </div>
+                            <div class="w-100">
+                                <small> Battery: {{monitor.devicehw?monitor.devicehw.battery:'0'}}</small>
                             </div>
                         </div>
                     </div>                    

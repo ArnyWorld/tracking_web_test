@@ -2,6 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { RoutesService } from './routes.service';
+import * as olSphere from 'ol/sphere';
+import JSZip from 'jszip';
 
 enum BOT_STATES {
 	SELECT_PERSONAL,
@@ -39,49 +42,246 @@ export class Botpersonal {
 	apiUrl = environment.apiserver;
 	wsTrack = environment.wsserver;
 	config= {
-		late_margin_min:15,
-		min_duration_ratio : 1200,//600 ok
+		late_margin_min:1,	//15
+		min_duration_ratio : 480//4800,//600 ok
 	}
 	states= {
 		late_margin_next:-1
 	}
 	apiName = 'devices';
 	prefix = '';
-	constructor(private http: HttpClient) {
+	
+	constructor(private http: HttpClient, routesService: RoutesService) {
 		this.setupCooldown();
-		this.devicehw = new this.DeviceHW();
+		this.devicehw = new this.DeviceHW(this);
+		
+		console.log("routesService",routesService);
+		this.devicehw.setService(routesService);
 	}
-	DeviceHW = function () {
+	DeviceHW = function ( app:any) {
+		this.app = app;
 		this.lat = 0;
 		this.lon = 0;
+		this.steps = 0;
 		this.getLat = () => this.lat;
 		this.getLon = () => this.lon;
+		this.state = 0; //0:no target 1:target 2:ended
+		this.route = null;
+		this.target = {lat:0,lon:0,rlat:0,rlon:0,index:0,sc:null,route:null,checkpoints:null,completed:0},
+		this.routeService;
+		this.map = {};
+		this.battery = 100;
+		this.batconsume = 1+Math.random()*0.5;
+		this.tracks = [];
+		this.setService = (routesService:RoutesService)=>{
+			this.routesService = routesService;
+			//console.log(routesService);
+		};
+		this.setTarget = (lat,lon)=>{			
+			this.target.lat = lat;
+			this.target.lon = lon;
+			this.target.index = 0;
+		};
+		this.targetIncreaseT = ()=>{
+			this.target.index++;
+			let rndLat = Math.random()/5000 - 1/10000;
+			let rndLon = Math.random()/5000 - 1/10000;
+			this.target.lat = this.route.points[this.target.index].lat ;
+			this.target.lon = this.route.points[this.target.index].lon ;
+			this.target.rlat = this.route.points[this.target.index].lat + rndLat;
+			this.target.rlon = this.route.points[this.target.index].lon + rndLon;
+		};
+		this.targetIncreaseSingle = ()=>{
+			this.target.index++;
+			let rndLat = Math.random()/5000 - 1/10000;
+			let rndLon = Math.random()/5000 - 1/10000;
+			let dist_min = 99999999;			
+			for (let i = 0; i < this.route.points.length; i++){
+				if (this.route.points[i]['check'] == true) continue;
+				let d = olSphere.getDistance([this.lon,this.lat],[this.route.points[i].lon, this.route.points[i].lat]);
+				if (d < dist_min ){
+					this.target.index = i;
+					dist_min = d;
+				}
+			}
+			this.target.lat = this.route.points[this.target.index].lat ;
+			this.target.lon = this.route.points[this.target.index].lon ;
+			this.target.rlat = this.route.points[this.target.index].lat + rndLat;
+			this.target.rlon = this.route.points[this.target.index].lon + rndLon;
+		};
+		this.targetIncrease = ()=>{	//sections
+			this.target.index++;
+			let rndLat = Math.random()/5000 - 1/10000;
+			let rndLon = Math.random()/5000 - 1/10000;
+			let dist_min = 99999999;
+			let tot = 0;
+			let nocheck = 0;
+			
+			//console.log("this.target",this.target)
+			//if (this.target.checkpoints == null) return;
+			for (let i = 0; i<this.route.sections.length; i++ ){
+				for (let j = 0; j<this.route.sections[i].splitCoords.length; j++ ){
+					tot++;
+					let sc = this.route.sections[i].splitCoords[j];
+					if (sc[2] == true) continue;
+					nocheck++;
+					let d = olSphere.getDistance([this.lon,this.lat],[sc[0], sc[1]]);
+					if (d < dist_min ){
+						this.target.sc = sc;
+						this.target.index_section = i;
+						this.target.index = j;
+						this.target.lat = sc[1] ;
+						this.target.lon = sc[0] ;
+						this.target.rlat = this.target.lat + rndLat;
+						this.target.rlon = this.target.lon + rndLon;
+						//console.log("dist_min",dist_min);
+						dist_min = d;
+					}				
+				}				
+			}
+			this.target.completed = Math.round((tot-nocheck)/tot*100)/1;
+			if(dist_min == 99999999){				
+				this.app.currentState = BOT_STATES.SEND_ENDSESSION;
+			}
+
+		};
+		this.endPoint = ()=>{
+			//this.route.points[this.target.index]['check'] = true;
+			//this.route.sections[this.target.index_section].splitCoords[this.target.index][2] = true;
+			this.target.sc[2] = true;
+		};
 		this.setLatLon = (lat,lon)=>{
 			this.lat = lat;
 			this.lon = lon;
-		}
+		};
 		this.marker = {
 			id: '0',
-			img: 'assets/ic_device/ic_device_l0_e0_c0_b0.svg'
+			img: 'assets/ic_device/ic_device_l0_e0_c0_b0.svg',
+		};
+		this.tick = (delta:number,now_date_stamp,str_date)=>{
+			if (this.state==2) return;
+			//console.log("tick delta:",delta);
+			this.battery -= this.batconsume*(delta/1000)+Math.random()*this.batconsume*(delta/2000);
+
+			let dir_lat = (this.target.rlat - this.lat);
+			let dir_lon = (this.target.rlon - this.lon);			
+			let dist = olSphere.getDistance([this.lon,this.lat],[this.target.rlon, this.target.rlat]);
+			//console.log("dist:",dist);
+			let dir_lat_nor = dir_lat/dist;
+			let dir_lon_nor = dir_lon/dist;
+			//console.log("dir_lat_nor:",dir_lat_nor);
+			//console.log("dir_lon_nor:",dir_lon_nor);
+			let distStep  = olSphere.getDistance([this.lon,this.lat],[this.lon+dir_lon_nor, this.lat+dir_lat_nor])*delta/10;
+			this.steps = distStep;
+			this.lat += dir_lat_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*0.2;
+			this.lon += dir_lon_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*0.2;
+			//console.log("distStep",distStep);
+
+			if (dist<5*3){
+				this.endPoint();
+				this.targetIncrease();
+			}
 		}
 		this.rndLatLonRoute = (route:any,rad=10) =>{
 			console.log("route",route);
-			/*this.lat = route.points[0].lat + Math.random()/10000000;
-			this.lon = route.points[0].lon + Math.random()/10000000;*/
-			this.lat = route.points[0].lat ;
-			this.lon = route.points[0].lon ;
-			console.log("lat",this.lat, " lon:",this.lon);
+			this.route = route;
+			
+			
+			//for(let i = 0; i < 200;i++){								
+				let rndLat = Math.random()/5000 - 1/10000;//let rndLat = Math.random()/5000 - 1/10000;
+				let rndLon = Math.random()/5000 - 1/10000;//let rndLon = Math.random()/5000 - 1/10000;
+				this.lat = this.route.points[0].lat + rndLat;
+				this.lon = this.route.points[0].lon + rndLon;				
+				let dist = olSphere.getDistance([this.lon,this.lat],[route.points[0].lon, route.points[0].lat]);
+				
+			this.target.index = -1;
+			this.targetIncrease();
+				console.log("dist" , dist);
+			//}
+			
+		};
+		this.recTrack = (delta:number,now_date_stamp,str_date)=>{
+			this.tracks.push({
+				t:now_date_stamp,
+				lat:this.lat,
+				lon:this.lon,
+				bat:Math.round(this.battery*100)/100,
+				acc:1
+			});			
 		}
+		this.getTrackb64 = async (callback)=>{
+			
+			const zip = JSZip();
+
+			this.trackstxt = "";
+			for( let i = 0; i < this.tracks.length ; i++)
+				this.trackstxt += `${this.tracks[i].t}\t${this.tracks[i].lat}\t${this.tracks[i].lon}\t${this.tracks[i].bat}\t1\t${this.tracks[i].acc}\n`;
+			
+			zip.file("tracking.txt", this.trackstxt);
+			
+		/*	return zip.loadAsync(b64, { base64: true }).then(function (zipfile) {
+				Object.keys(zipfile.files).forEach(async f => {
+					resolve(zipfile.files[f].async("string"));
+				});
+			}, function (e) {
+				reject("");
+			});
+*/
+			zip.generateAsync({type:"blob"}).then(async function(content) {
+				// see FileSaver.js
+				//saveAs(content, "example.zip");
+				//let filezip = await this.blobToBase64(content);
+				var reader:any = new FileReader();
+				reader.readAsDataURL(content); 
+				reader.onloadend = function() {
+				var base64data = reader.result.replace("data:application/zip;base64,","");                
+				//console.log("b64",base64data.replace("data:application/zip;base64,",""));
+				console.log("b64",base64data);
+				if (callback!=null) callback(base64data);
+				}
+			});
+		}
+		/*function blobToBase64(blob) {
+			return new Promise((resolve, _) => {
+			  const reader = new FileReader();
+			  reader.onloadend = () => resolve(reader.result);
+			  reader.readAsDataURL(blob);
+			});
+		  }*/
+		this.setRoute = (route) => {
+			this.route = route;
+			this.tracks = [];
+			console.log("this.route",this.route);
+			let splitPointsCoordsCheck = [];
+			let tracksPolyline = [];
+			let tracks = [];
+			/*let PolyRouteTrack = this.routesService.createPolyRouteTrack(this.route);
+			this.routesService.calcAdvance(PolyRouteTrack ,tracks,tracksPolyline,"AREA",10);				
+			splitPointsCoordsCheck = PolyRouteTrack.splitPointTracks.map( t => t.filter(s=> s[2]));*/
+			//route.sections.forEach(s=>s.splitCoords.forEach(sc=>sc[2]=false));
+			
+			//this.target.checkpoints = this.route.sections;
+			console.log("this.route",this.route);
+			//console.log("this.target.checkpoints",this.target.checkpoints);
+			//device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
+
+			//this.checkPoints = this.routesService.splitPointsCoord( this.route.points, 4, 10 );
+			//console.log("PolyRouteTrack", PolyRouteTrack);
+			//console.log("splitPointsCoordsCheck", splitPointsCoordsCheck);
+		};
+		this.findTarget = (route) => {
+
+		};
 	}
 	devicehw : any;
 	device :any;
 	setupCooldown(){
 		this.states_cooldown[BOT_STATES.IDDLE] = {
-				time : 120000,
+				time : 60000,
 				last : 0,				
 			};			
 		this.states_cooldown[BOT_STATES.SELECTION_ASSIGNMENT] = {
-				time : 120000,
+				time : 60000,
 				last : 0,
 			};
 		this.states_cooldown[BOT_STATES.ON_SESSION] = {
@@ -103,6 +303,7 @@ export class Botpersonal {
 		this.states_dev_cooldown[BOT_DEV_STATES.TRACKING] = {
 			time : 5000,
 			last : 0,
+			rnd : 2000,
 		};
 	}
 	days = {0:'dom',1:'lun',2:'mar',3:'mie',4:'jue',5:'vie',6:'sab'};
@@ -165,23 +366,33 @@ export class Botpersonal {
 			this.monitor['time']=str_date.toLocaleString()+" "+ this.days[str_date.getDay()] ;
 
 			this.update(elapsed,now_date_stamp,str_date);
-			this.updateDevice(elapsed,now_date_stamp,str_date);
+			this.updateDevice(this.config.min_duration_ratio*elapsed,now_date_stamp,str_date);
 			},this.intervalTime)
 	}
 	
 	updateDevice(delta:number,now_date_stamp,str_date){
-
+//console.log("delta---",delta);
 		this.monitor.stateDevice = this.currentDeviceState;
 		switch(this.currentDeviceState){
 			case BOT_DEV_STATES.TRACKING:
-				if ((now_date_stamp - this.states_cooldown[this.currentState].last) > this.states_cooldown[this.currentState].time) {
-					this.state_selection_assignment(delta,now_date_stamp,str_date);
-					this.states_cooldown[this.currentState].last = now_date_stamp;				
+				this.tracking(delta,now_date_stamp,str_date);
+				if ((now_date_stamp - this.states_dev_cooldown[this.currentDeviceState].last) >= this.states_dev_cooldown[this.currentDeviceState].time) {					
+					this.devicehw.recTrack(delta,now_date_stamp,str_date);
+					this.states_dev_cooldown[this.currentDeviceState].last = now_date_stamp;				
 				}
+				
 				break;
 
 			default:
 		}
+	}
+	tracking(delta:number, now_date_stamp, str_date){		
+		//this.devicehw.tick((delta/1000) * (this.config.min_duration_ratio ,now_date_stamp/10), str_date);
+		//console.log("delta:",delta);
+		//console.log("sl:",(now_date_stamp - this.states_dev_cooldown[this.currentDeviceState].last) /1000);
+		//this.devicehw.tick((this.states_dev_cooldown[this.currentDeviceState].time / (100*((this.config.min_duration_ratio*60)/6)) )*(this.config.min_duration_ratio), now_date_stamp, str_date);
+		//this.devicehw.tick( ((now_date_stamp - this.states_dev_cooldown[this.currentDeviceState].last) /1000 )/(this.config.min_duration_ratio), now_date_stamp, str_date);
+		this.devicehw.tick(this.config.min_duration_ratio /100, now_date_stamp, str_date);
 	}
 	update(delta:number,now_date_stamp,str_date){
 		this.monitor.state = this.currentState;
@@ -224,9 +435,18 @@ export class Botpersonal {
 
 		console.log("state_selection_assignment");
 	}
+	addTime(t,a){		
+		let sum_t = t%100;
+		let sum_r = t-sum_t;
+		let r_add = sum_t + a;
+		if ( r_add <0)	
+			return t - (40-r_add);
+		else		
+			return sum_r+r_add;
+	}
 	stateIddle(delta:number, date_now,str_date){
 		if (this.states.late_margin_next == -1){
-			this.states.late_margin_next = ((this.config.late_margin_min*2) * Math.random() - this.config.late_margin_min)|0;
+			this.states.late_margin_next = Math.trunc((this.config.late_margin_min*2) * Math.random() - this.config.late_margin_min);			
 			console.log("this.states.late_margin_next",this.states.late_margin_next);
 		}
 		//this.is_session_time(time);
@@ -243,8 +463,9 @@ export class Botpersonal {
 		let freq_start = parseInt(frequency.start_time.replace(":",""));
 		let freq_end = parseInt(frequency.end_time.replace(":",""));
 		
-		//console.log(hour_militar,freq_start,freq_end);
-		if (hour_militar > freq_start+this.states.late_margin_next && hour_militar < freq_start+100){
+		//console.log("frequency",frequency);
+		//console.log("hour_militar",hour_militar,  this.addTime(freq_start, this.states.late_margin_next));
+		if ((hour_militar > this.addTime(freq_start, this.states.late_margin_next)) && hour_militar < freq_start+100){
 			
 			if (this.cSession != null ) {console.log("a session is started"); return;}
 			console.log("valid frequency");
@@ -293,15 +514,41 @@ export class Botpersonal {
 		this.cSession['end_lon'] = this.devicehw.getLon();
 		
 		this.http.put(this.apiUrl+"/session/"+this.cSession.id, this.cSession ).subscribe(
-			(result:any)=>{
+			async (result:any)=>{
 				console.log(`endSession: PUT this.apiUrl+"/session" `,result );
+				
+				console.log("tracks",this.devicehw.tracks);
+				//console.log("tracks.b64", await this.devicehw.getTrackb64());
+				let trackPost = {
+					"assignment_id": this.cAssignment.id,
+					"session_id": this.cSession.id,
+					"route_id": this.cRoute.id,
+					"start_date": this.cSession.login_date,
+					"end_date": date_now,
+					"abandoned": this.devicehw.target.completed>95?true:false,
+					"comments": "",
+					"complete": this.devicehw.target.completed,
+					"routeb64": null,
+					"trackb64":''
+				};
+				this.devicehw.getTrackb64((b64)=>{
+					trackPost.trackb64 = b64;
+					console.log("trackPost.tosend",trackPost);
+					this.http.post(this.apiUrl+"/tracks",trackPost).subscribe(
+						result=>{
+							console.log("trackPost.result",result);
+						}
+					);
+				});
 				this.cSession = null;
 				this.cRoute = null;				
 				this.cDevice.used = false;
 				this.cDevice = null;
 				this.monitor.device = null;
 				this.monitor.route = null;
+				this.monitor.devicehw = null;
 				this.currentState = BOT_STATES.IDDLE;
+				this.currentDeviceState = BOT_DEV_STATES.IDDLE;
 			}
 		);
 	}
@@ -319,10 +566,11 @@ export class Botpersonal {
 
 		if (this.cAssignment == null){ console.log("no assignments"); return; }
 		this.cRoute = this.cAssignment.route;
-		this.devicehw.rndLatLonRoute(this.cRoute,10);
+		for (let i = 0;i<this.cRoute.sections.length;i++)
+			for (let j = 0;j<this.cRoute.sections[i].splitCoords.length;j++)
+				this.cRoute.sections[i].splitCoords[j][2]=false;
 		console.log("current route",this.cRoute);
 		this.monitor.route = this.cRoute;
-		//this.monitor.deviceHW = this.deviceHW;
 					
 		this.currentState = BOT_STATES.SEND_SESSION;
 		
@@ -344,9 +592,12 @@ export class Botpersonal {
 			(result:any)=>{
 				console.log(`startSession: this.apiUrl+"/session" `,result );
 				this.cSession = result.content;
+				this.devicehw.setRoute(this.cRoute);
+				this.devicehw.rndLatLonRoute(this.cRoute,10);
 				this.currentState = BOT_STATES.ON_SESSION;
 				this.currentDeviceState = BOT_DEV_STATES.TRACKING;
 				
+				this.devicehw.findTarget();
 			},(err:any)=>{
 
 			}
