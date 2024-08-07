@@ -125,12 +125,12 @@ export class BotcomComponent implements OnInit{
 		deviceHW:null,
 	}
 	loadBots(){
-		for(let i = 0; i < 20; i++){
+		for(let i = 0; i < 3; i++){
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonal(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-06-03 03:58:50", "2024-03-31 07:05:00", 10);
+			bot.setTime("2024-06-03 06:58:50", "2024-03-31 07:05:00", 10);
 			bot.start();
 			this.monitors.push(monitor);
 		}

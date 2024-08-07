@@ -216,11 +216,11 @@ export class Botpersonal {
 			
 			const zip = JSZip();
 
-			this.trackstxt = "";
+			this.trackstxt = [];
 			for( let i = 0; i < this.tracks.length ; i++)
-				this.trackstxt += `${this.tracks[i].t}\t${this.tracks[i].lat}\t${this.tracks[i].lon}\t${this.tracks[i].bat}\t1\t${this.tracks[i].acc}\n`;
+				this.trackstxt.push(`${this.tracks[i].t}\t${this.tracks[i].lat}\t${this.tracks[i].lon}\t${this.tracks[i].bat}\t1\t${this.tracks[i].acc}`);
 			
-			zip.file("tracking.txt", this.trackstxt);
+			zip.file("tracking.txt", this.trackstxt.join('\n'));
 			
 		/*	return zip.loadAsync(b64, { base64: true }).then(function (zipfile) {
 				Object.keys(zipfile.files).forEach(async f => {
@@ -258,7 +258,7 @@ export class Botpersonal {
 			this.battery = 100;
 			this.batteryRound = 100;
 			this.target = {lat:0,lon:0,rlat:0,rlon:0,index:0,sc:null,route:null,checkpoints:null,completed:0,completedRound:0};
-			
+
 			console.log("this.route",this.route);
 			let splitPointsCoordsCheck = [];
 			let tracksPolyline = [];
