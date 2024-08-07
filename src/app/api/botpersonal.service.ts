@@ -254,6 +254,11 @@ export class Botpersonal {
 		this.setRoute = (route) => {
 			this.route = route;
 			this.tracks = [];
+			
+			this.battery = 100;
+			this.batteryRound = 100;
+			this.target = {lat:0,lon:0,rlat:0,rlon:0,index:0,sc:null,route:null,checkpoints:null,completed:0,completedRound:0};
+			
 			console.log("this.route",this.route);
 			let splitPointsCoordsCheck = [];
 			let tracksPolyline = [];
