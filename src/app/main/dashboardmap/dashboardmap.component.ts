@@ -272,7 +272,7 @@ export class DashboardmapComponent implements OnInit {
 		this.cargarPersonal(()=>{
 			this.cargarRoutes(()=>{
 				this.loadSuggestions();
-				this.loadTracks();
+				//this.loadTracks();
 				setInterval(() => {
 					this.updateConnection();
 					
@@ -461,10 +461,6 @@ export class DashboardmapComponent implements OnInit {
 			if (device['routeSelected']!=null){
 				this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
 				device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
-				/*this.routesService.calcAdvance(device['routeSelected'].splitPoints, device['tracks'],device['tracksPolyline'],"AREA",10);				
-				device['splitPointsCoordsCheck'] = this.routesService.toCoord(device['routeSelected'].splitPoints.filter( s => s.check));
-				device['splitPointsCoordsCheck'] = device['routeSelected'].splitPoints.filter( s => s.check);
-				device.routeSelected['completed'] =  Math.round((device['splitPointsCoordsCheck'].length / device['routeSelected'].splitPoints.length) *10000)/100 + "%";*/
 			}
 		});
 		this.socket.on('deviceUpdate', (data: any) => {
@@ -531,6 +527,7 @@ export class DashboardmapComponent implements OnInit {
 		});*/
 	}
 	socketCommClean(){
+		this.socket.emit('message', "enviando");
 		this.socket.on('devices', (data: any) => {			
 			this.devices = data;
 			this.devices.forEach((device: any, index: number) => {				
