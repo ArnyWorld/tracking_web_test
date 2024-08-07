@@ -67,10 +67,11 @@ export class Botpersonal {
 		this.getLon = () => this.lon;
 		this.state = 0; //0:no target 1:target 2:ended
 		this.route = null;
-		this.target = {lat:0,lon:0,rlat:0,rlon:0,index:0,sc:null,route:null,checkpoints:null,completed:0},
+		this.target = {lat:0,lon:0,rlat:0,rlon:0,index:0,sc:null,route:null,checkpoints:null,completed:0,completedRound:0},
 		this.routeService;
 		this.map = {};
 		this.battery = 100;
+		this.batteryRound = 100;
 		this.batconsume = 1+Math.random()*0.5;
 		this.tracks = [];
 		this.setService = (routesService:RoutesService)=>{
@@ -140,6 +141,7 @@ export class Botpersonal {
 				}				
 			}
 			this.target.completed = Math.round((tot-nocheck)/tot*100)/1;
+			this.target.completedRound = Math.round(this.target.completed);
 			if(dist_min == 99999999){				
 				this.app.currentState = BOT_STATES.SEND_ENDSESSION;
 			}
@@ -162,6 +164,7 @@ export class Botpersonal {
 			if (this.state==2) return;
 			//console.log("tick delta:",delta);
 			this.battery -= this.batconsume*(delta/1000)+Math.random()*this.batconsume*(delta/2000);
+			this.batteryRound = Math.round(this.battery);
 
 			let dir_lat = (this.target.rlat - this.lat);
 			let dir_lon = (this.target.rlon - this.lon);			
