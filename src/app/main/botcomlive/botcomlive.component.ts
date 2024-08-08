@@ -16,7 +16,7 @@ import { PointsService } from '../../api/points.service';
 import { RoutesService } from '../../api/routes.service';
 import { ImagesService } from '../../api/images.service';
 import { DevicesService } from '../../api/devices.service';
-import { Botpersonal } from '../../api/botpersonal.service';
+import { Botpersonallive } from '../../api/botpersonallive.service';
 import { HttpClient } from '@angular/common/http';
 import { AssignmentsService } from '../../api/assignments.service';
 
@@ -27,11 +27,11 @@ enum StatesEnum {
 }
 
 @Component({
-  selector: 'app-botcom',
-  templateUrl: './botcom.component.html',
-  styleUrl: './botcom.component.css'
+  selector: 'app-botcom-live',
+  templateUrl: './botcomlive.component.html',
+  styleUrl: './botcomlive.component.css'
 })
-export class BotcomComponent implements OnInit{	
+export class BotcomliveComponent implements OnInit{	
 
 	@ViewChild('map') map: MapComponent;
 	@ViewChild('layerMarkers') layerMarkers: LayerVectorComponent;
@@ -127,16 +127,16 @@ export class BotcomComponent implements OnInit{
 	loadBots(){
 		for(let i = 0; i < 1; i++){
 			let monitor = {... this.monitorDefault};
-			let bot = new Botpersonal(this.http,this.routesService);
+			let bot = new Botpersonallive(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-07-02 07:59:50", "2024-08-08 07:05:00", 10);
+			bot.setTime("2024-08-08 07:59:50", "2024-03-31 07:05:00", 10);
 			bot.start();
 			this.monitors.push(monitor);
 		}
 	}
 	loadPersonal(callback){
-		this.personalService.getAll(1000,1,"id",false).subscribe(
+		this.personalService.getAllMorning().subscribe(
 			(result:any) =>{
 				this.personal = result.content;
 				console.log("personal:",this.personal);

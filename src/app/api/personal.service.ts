@@ -50,7 +50,17 @@ export class PersonalService {
 		  //`/${this.apiName}?[personal_type_id][equal]=14`
 	  );
 	}
-  
+  	
+	getAllMorning(
+	  ) {
+		return this.http.get(
+		  this.apiUrl +
+			this.prefix +
+			`/${this.apiName}?[schedule_id][equal]=1`
+			//`/${this.apiName}?[personal_type_id][equal]=14`
+		);
+	  }
+
 	delete(id: string | number): Observable<any> {
 	  return this.http.delete(
 		this.apiUrl + this.prefix + `/${this.apiName}/${id}`

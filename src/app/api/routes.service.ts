@@ -218,7 +218,7 @@ export class RoutesService {
 		let lastPoint = null;
 		let acumDist:number = 0;
 		let splitPoints = [];
-		console.log("points",points);
+		//console.log("points",points);
 		points.forEach((p:any) => {
 			if (lastPoint==null) {
 				lastPoint = p;

@@ -27,6 +27,7 @@ export class ModalImportPersonalComponent implements OnInit {
 		private districtPointsService: DistrictPointsService){};
 
 	persons:any = [];
+	personal:any = [];
 	routes:any = [];
 	personalTypes:any = [];
 	ngOnInit(): void {
@@ -34,6 +35,12 @@ export class ModalImportPersonalComponent implements OnInit {
 			(res:any)=>{
 				this.persons = res.content;
 				console.log("this.persons",this.persons);
+			}
+		);
+		this.personalService.getAll(1000,1,'id',false).subscribe(
+			(res:any)=>{
+				this.personal = res.content;
+				console.log("this.personal",this.personal);
 			}
 		);
 		this.routesService.getAll(300,1,'id',false,'').subscribe(
@@ -65,6 +72,46 @@ export class ModalImportPersonalComponent implements OnInit {
 		this.registerCount = 0;
 		this.savePerson(this.persons,0);
 	}
+	
+	updateOnDb(){
+		this.registerCount = 0;
+		this.registerComplete = this.persons.length;
+		this.updatePerson(this.persons,0);
+	}
+	updatePerson(persons:any,index:number) {
+		
+		this.registerCount++;
+		this.updateProgress = "Actualizando " + Math.round((this.registerCount/this.registerComplete)*100) + "%";
+
+		let person = persons [index];
+		console.log("person",person);
+		let p = (cadena:any) =>{
+			if (cadena == null) return "";
+			if (cadena == undefined) return "";
+			if (cadena == " ") return "";
+			return cadena;
+		};
+		let id = '';
+
+		let personal = this.personal.find( p =>  p.code == person.code);
+		//console.log("code ", this.personal, person.code.trim());
+		if (personal == undefined){
+			if (index < persons.length) this.updatePerson(persons, index+1);
+			return;
+		}
+		let updatePerson = {
+            "name": (`${p(person.names)} ${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
+			"firstname": (`${p(person.names)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
+			"lastname": (`${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
+		};
+		console.log("personal.id",personal.id);
+		this.personalService.update(updatePerson, personal.id).subscribe((result: any) => {
+			console.log("updated",result);
+			//persons[index]['id'] = result.content.id;
+			if (index < persons.length) this.updatePerson(persons, index+1);
+			else this.updateProgress = "Completado"
+		});
+	}
 	savePerson(persons:any,index:number) {
 		let person = persons [index];
 		console.log("person",person);
@@ -75,7 +122,7 @@ export class ModalImportPersonalComponent implements OnInit {
 			return cadena;
 		};
 		let newPerson = {
-            "name": (`${p(person.names)} ${p(person.last_name_)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("  "," "),
+            "name": (`${p(person.names)} ${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("  "," ").trim(),
             "code":  person.code,
             "image_id": null,
             "personal_type_id": this.personalTypes.find(pt => pt.name.trim() == person.position.trim()).id,
@@ -87,25 +134,11 @@ export class ModalImportPersonalComponent implements OnInit {
 			persons[index]['id'] = result.content.id;
 			this.saveAssignments(persons[index],()=>{ if (index < persons.length) this.savePerson(persons,index+1); });
 		});
-	/*	this.personsService.register(districts[index]).subscribe((result: any) => {
-			console.log("registrado",result);
-			jobroutes[index]['id'] = result.content.id;
-			this.savePoints(jobroutes[index],()=>{ if (index < jobroutes.length) this.saveRoute(jobroutes,index+1); });
-		});*/
-		/*
-		this.districtsService.register(districts[index]).subscribe((result: any) => {
-			console.log("result", result);
-
-			if ( result.content instanceof Array)
-				this.savePoints(result.content[0],()=>{ if (index < districts.length) this.saveDistrict(districts,index+1);	});
-			else
-				this.savePoints(result.content,()=>{ if (index < districts.length) this.saveDistrict(districts,index+1); });
-			
-		});*/
 	}
 	registerCount = 0;
 	registerComplete = 0;
 	createProgress = 'Guardar';
+	updateProgress = 'Actualizar';
 
 	saveAssignments(contentPerson: any,callback) {
 		this.regAssignment(0,contentPerson,callback);
