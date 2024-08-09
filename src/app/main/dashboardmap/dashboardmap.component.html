@@ -142,7 +142,7 @@
 					
 								<aol-source-vector>
 									<aol-style>
-										<aol-style-stroke [color]="'rgba(150, 30, 30)'" [width]="6"></aol-style-stroke>
+										<aol-style-stroke [color]="'rgba(150, 30, 30)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
 									</aol-style>
 									<aol-feature *ngFor="let section of device.routeSelected?.sections">
 										<aol-geometry-linestring >

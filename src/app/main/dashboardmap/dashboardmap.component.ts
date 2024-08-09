@@ -281,8 +281,6 @@ export class DashboardmapComponent implements OnInit {
 				}, 1000);
 			});
 		});
-		
-		
 	}
 	gotoDevice(device){
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
