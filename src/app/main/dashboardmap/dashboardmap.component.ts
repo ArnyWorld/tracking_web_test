@@ -284,6 +284,12 @@ export class DashboardmapComponent implements OnInit {
 		
 		
 	}
+	gotoDevice(device){
+		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
+		this.map.instance.getView().setZoom(16);
+		device.controls.show = true;
+		device.controls.showTrack = true;
+	}
 	createControls(){
 		return {
 			selected:false,
@@ -460,7 +466,7 @@ export class DashboardmapComponent implements OnInit {
 			if (device.states?.ON_ROUTE == "0") return;
 			device.tracksCoord.push([data.last.lon, data.last.lat]);
 			if (device['routeSelected']!=null){
-				this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
+				this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);
 				device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
 			}
 		});

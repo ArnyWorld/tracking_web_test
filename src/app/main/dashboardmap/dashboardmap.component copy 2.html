@@ -31,7 +31,7 @@
 									<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'"></aol-coordinate>
 								</aol-geometry-point>
 								<aol-style>
-									<aol-style-text [offsetY]="20" [text]="device.personal?.name + ' ' + i" [font]="'10px sans-serif'"></aol-style-text>
+									<aol-style-text [text]="device.config.INFO_MODEL + ' ' + i" [font]="'10px sans-serif'"></aol-style-text>
 									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 0.5]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?0.6:0.4" [opacity]="device.controls.show?0.98:0.7" [anchorOrigin]="'top-left'">
 									</aol-style-icon>
 								</aol-style>
@@ -66,13 +66,12 @@
 						</aol-layer-vector>
 					</div>
 				-->	
-					
 					<div *ngIf="devices">
-						<aol-layer-vector *ngFor="let device of devices" [zIndex]="500" [opacity]="0.85">
-							<aol-source-vector *ngIf="device.tracksPolyline && device.controls.show " >
+						<aol-layer-vector *ngFor="let device of devices" >
+							<aol-source-vector *ngIf="device.tracksPolyline && device.controls.show ">
 								<aol-style>
-									<aol-style-stroke [color]="'rgba(20, 125, 30, 55)'" [width]="18"></aol-style-stroke>
-									<aol-style-fill [color]="'#ffffff'"></aol-style-fill>					
+									<aol-style-stroke [color]="'rgba(150, 20, 20)'" [width]="30"></aol-style-stroke>
+									<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
 								</aol-style>
 								<aol-feature #selectedFeatureString *ngFor="let polyline of device.tracksPolyline">
 									<aol-geometry-linestring *ngIf="polyline!=null&&polyline.length>0">
@@ -83,8 +82,7 @@
 							</aol-source-vector>
 						</aol-layer-vector>
 					</div>
-				
-			<!--
+					
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
 							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
@@ -109,10 +107,10 @@
 							</aol-layer-vector>
 						</div>
 					</div>
-				-->			
+					
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
-							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show && false " [zIndex]="750"> <!--  && device.controls.show -->
+							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
 								<aol-source-vector>
 									<div *ngFor="let section of device.splitPointsCoordsCheck">
 										<aol-feature *ngFor="let p of section">
@@ -124,7 +122,7 @@
 								</aol-source-vector>
 							
 								<aol-style>
-									<aol-style-circle [radius]="7">
+									<aol-style-circle [radius]="5">
 										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
 										<aol-style-fill [color]="'#229942'"></aol-style-fill>
 									</aol-style-circle>
@@ -139,23 +137,40 @@
 					<div *ngIf="devices" #forsplitpoints>
 						<aol-layer-vector *ngFor="let device of devices" >
 							<div *ngIf="device.routeSelected && device.controls.show">							
-					
-								<aol-source-vector>
-									<aol-style>
-										<aol-style-stroke [color]="'rgba(150, 30, 30)'" [width]="6"></aol-style-stroke>
-									</aol-style>
-									<aol-feature *ngFor="let section of device.routeSelected?.sections">
-										<aol-geometry-linestring >
-											<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
-											</aol-collection-coordinates>
-										</aol-geometry-linestring>
+						<!--		<aol-source-vector>
+									<aol-feature *ngFor="let p of device.routeSelected.splitPointsCoords">
+									<aol-geometry-point>
+										<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+									</aol-geometry-point>
 									</aol-feature>
 								</aol-source-vector>
+							
+								<aol-style>
+									<aol-style-circle [radius]="7">
+									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+									<aol-style-fill [color]="'#3399CC88'"></aol-style-fill>
+									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
+								</aol-style>-->
+									<aol-source-vector>
+										<aol-style>
+											<aol-style-stroke [color]="device.routeSelected.controls.selected?'rgba(100, 0, 0,255)':'rgba(0, 0, 100,255)'" [width]="10"></aol-style-stroke>
+											<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+										</aol-style>
+										<aol-feature *ngFor="let section of device.routeSelected?.sections">
+											<aol-geometry-linestring >
+												<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+												</aol-collection-coordinates>
+											</aol-geometry-linestring>
+										</aol-feature>
+									</aol-source-vector>
+							
 							
 							</div>
 						</aol-layer-vector>
 					</div>
-					
 					<div *ngIf="devices" #forsplitpoints>
 						<aol-layer-vector *ngFor="let device of devices" >
 							<div *ngIf="device.routeSelected && device.controls.show">
@@ -168,10 +183,13 @@
 								</aol-source-vector>
 							
 								<aol-style>
-									<aol-style-circle [radius]="10">
+									<aol-style-circle [radius]="5">
 									<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
 									<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
 									</aol-style-circle>
+									<aol-style-text [text]="''">
+									<aol-style-fill [color]="'#fff'"></aol-style-fill>
+									</aol-style-text>
 								</aol-style>
 							
 							</div>
@@ -266,7 +284,7 @@
 						</aol-layer-vector>
 					</div>
 				</aol-layer-group>
-				<!-- many green points 
+				
 				<div *ngIf="devices">
 					<aol-layer-vector *ngFor="let device of devices" >
 						<div *ngIf="device.controls!=undefined">
@@ -291,7 +309,7 @@
 					</aol-layer-vector>
 
 				</div>
-			-->
+			
 			</aol-map>
 		</div>
 	</div>
@@ -299,29 +317,20 @@
 
 		<div ngProjectAs="Devices">
 			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
-
-				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true" (click)="gotoDevice(device)">
-					<div class="d-flex w-100 align-items-center justify-content-between" *ngIf="device.controls!=null">					
-						<strong class="mb-1">{{ device.config.INFO_BRAND}} <small>{{ device.config.INFO_MODEL}}</small></strong>
-						<small>bat:{{ device.last.bat}}%</small>
-					</div>
-				</a>
+				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true">
+				<div class="d-flex w-100 align-items-center justify-content-between" *ngIf="device.controls!=null">
+					<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-{{device.id}}" [(ngModel)]="device?.controls.show">
+					<strong class="mb-1">{{ device.config.INFO_BRAND}} <small>{{ device.config.INFO_MODEL}}</small></strong>
+					<small>bat:{{ device.last.bat}}%</small>
+				</div>
 				<div>
-					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
-						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-{{device.id}}" [(ngModel)]="device?.controls.show">
-						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Ruta </label>
-					</div>					
 					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showTrack">
 						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Trayecto </label>
 					</div>					
 				</div>
-					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
-					 Personal: {{device?.personal?.name}}<br>
-					 Route: {{device?.routeSelected?.name}}<br> 
-					 completado: {{device?.routeSelected?.completed}}<br>
-					 latencia: {{device.ms}}ms</div>
-
+				<div class="col-10 mb-1 small" *ngIf="device && device?.last ">Lat: {{device.last.lat}}, Lon: {{device.last.lon}} ,Personal: {{device?.personal?.name}}, Route: {{device?.routeSelected?.name}}, completado: {{device?.routeSelected?.completed}}, latencia: {{device.ms}}ms</div>
+				</a>
 			</div>
 		</div>
 
