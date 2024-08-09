@@ -152,8 +152,7 @@ export class DashboardmapComponent implements OnInit {
 		if (!this.selectedRoutes.includes(route))
 			this.selectedRoutes.push(route);
 		this.selectedRoute = route;
-		
-		
+				
 		console.log("this.selectedRoute",this.selectedRoute);
 		const extent = this.selectedRoute.extend;		
 		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
@@ -295,8 +294,8 @@ export class DashboardmapComponent implements OnInit {
 	createRouteControls(){
 		return {
 			selected:false,
-			show:true,
-			showSplit:true,
+			show:false,
+			showSplit:false,
 			showTrack:false,
 		};
 	}

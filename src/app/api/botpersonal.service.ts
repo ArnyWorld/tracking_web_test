@@ -355,28 +355,26 @@ export class Botpersonal {
 		this.monitor = monitor;
 	}
 	
+	thread:any;
+
 	start(){
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000");
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000+00:00");
 		let now_date_stamp = Date.parse(this.fromDateLive);
 		console.log("now_date_stamp", now_date_stamp);
 		let lasttime = Date.now();
-		console.log("states_cooldown",this.states_cooldown);
-		this.handled = setInterval(()=>{			
+		
+		this.thread = ()=>{			
 			let time = Date.now();
 			let elapsed = (time-lasttime);
 			lasttime = time;
-			//console.log(time);
-			//console.log(new Date(time).toISOString());
 			now_date_stamp += elapsed*this.config.min_duration_ratio;
-			//console.log(fromDate);
 			let str_date:any=new Date(now_date_stamp);
-		//	console.log(strDate.toISOString(),"day:"+strDate.getDay());
 			this.monitor['time']=str_date.toLocaleString()+" "+ this.days[str_date.getDay()] ;
 
 			this.update(elapsed,now_date_stamp,str_date);
 			this.updateDevice(this.config.min_duration_ratio*elapsed,now_date_stamp,str_date);
-			},this.intervalTime)
+			};
 	}
 	
 	updateDevice(delta:number,now_date_stamp,str_date){

@@ -285,10 +285,7 @@ export class Botpersonallive {
 			};
 			this.tracks.push(new_track);		
 			let data = `{"device":"${this.cDevice.id}","t":${new_track.t},"lat":${new_track.lat},"lon":${new_track.lon},"b":${Math.round(this.battery)},"acc":${new_track.acc}}`
-			this.http.get(environment.wsserver + `/data?msg=${data}`  // ${this.configFile.cDevice.id}/update/state`,this.configFile.states 
-			).subscribe(
-				
-			);	
+			//this.http.get(environment.wsserver + `/data?msg=${data}` ).subscribe();	
 		}
 		this.getTrackb64 = async (callback)=>{
 			
@@ -632,10 +629,7 @@ export class Botpersonallive {
 				this.devicehw.getTrackb64((b64)=>{
 					trackPost.trackb64 = b64;
 					// 	console.log("trackPost.tosend",trackPost);
-					this.http.post(this.apiUrl+"/tracks",trackPost).subscribe(
-						result=>{
-							console.log("trackPost.result",result);
-						}
+					this.http.post(this.apiUrl+"/tracks",trackPost).subscribe( result=>{ console.log("trackPost.result",result);			}
 					);
 				});
 				this.cSession = null;
