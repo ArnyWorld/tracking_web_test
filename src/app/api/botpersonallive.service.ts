@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { RoutesService } from './routes.service';
 import * as olSphere from 'ol/sphere';
 import JSZip from 'jszip';
+import { transform, fromLonLat } from 'ol/proj';
 
 enum BOT_STATES {
 	SELECT_PERSONAL,
@@ -43,13 +44,14 @@ export class Botpersonallive {
 	wsserver = environment.wsserver;
 	config= {
 		late_margin_min:1,	//15
-		min_duration_ratio : 6//4800,//600 ok
+		min_duration_ratio : 250//4800,//600 ok
 	}
 	states= {
 		late_margin_next:-1
 	}
 	apiName = 'devices';
 	prefix = '';
+	view = null;
 	
 	constructor(private http: HttpClient, routesService: RoutesService) {
 		this.setupCooldown();
@@ -431,6 +433,9 @@ export class Botpersonallive {
 		this.monitor = monitor;
 	}
 	
+	addView (view:any){
+		this.view = view;
+	};
 	start(){
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000");
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000+00:00");
@@ -439,12 +444,16 @@ export class Botpersonallive {
 		let lasttime = Date.now();
 		console.log("states_cooldown",this.states_cooldown);
 		this.handled = setInterval(()=>{			
-			let time = Date.now();
-			let elapsed = (time-lasttime);
+			let time = Date.now();			
+			let elapsed = (time-lasttime);			
 			lasttime = time;
+
 			//console.log(time);
 			//console.log(new Date(time).toISOString());
 			now_date_stamp += elapsed*this.config.min_duration_ratio;
+
+			if (time < now_date_stamp )	this.config.min_duration_ratio = 1;
+
 			//console.log(fromDate);
 			let str_date:any=new Date(now_date_stamp);
 		//	console.log(strDate.toISOString(),"day:"+strDate.getDay());
@@ -463,7 +472,9 @@ export class Botpersonallive {
 				this.tracking(delta,now_date_stamp,str_date);
 				if ((now_date_stamp - this.states_dev_cooldown[this.currentDeviceState].last) >= this.states_dev_cooldown[this.currentDeviceState].time) {					
 					this.devicehw.recTrack(delta,now_date_stamp,str_date);
-					this.states_dev_cooldown[this.currentDeviceState].last = now_date_stamp;				
+					this.states_dev_cooldown[this.currentDeviceState].last = now_date_stamp;									
+					//if (this.view != null) this.view.setCenter([this.devicehw.lon, this.devicehw.lat]);
+					if (this.view != null) this.view.setCenter(transform([this.devicehw.lon, this.devicehw.lat], 'EPSG:4326', 'EPSG:3857'));					
 				}
 				
 				break;

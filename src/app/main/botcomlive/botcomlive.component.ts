@@ -116,6 +116,7 @@ export class BotcomliveComponent implements OnInit{
 	}
 
 	monitors=[];
+	observer=null;
 	monitorDefault:any = {
 		time:'',
 		state:'',
@@ -125,12 +126,13 @@ export class BotcomliveComponent implements OnInit{
 		deviceHW:null,
 	}
 	loadBots(){
-		for(let i = 0; i < 1; i++){
+		for(let i = 0; i < 5; i++){
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonallive(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-08-08 07:59:50", "2024-03-31 07:05:00", 10);
+			bot.setTime("2024-08-09 07:59:50", "2024-03-31 07:05:00", 10);
+			//if (i == 0)	bot.addView(this.map.instance.getView());
 			bot.start();
 			this.monitors.push(monitor);
 		}
