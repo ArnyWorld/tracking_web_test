@@ -344,7 +344,8 @@ export class DashboardmapComponent implements OnInit {
 						device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
 						this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
 						device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
-						//device.routeSelected['completed']= device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1 )) / device['splitPointsCoordsCheck'].length;
+						//device.routeSelected['completed'] = device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1 )) / device['splitPointsCoordsCheck'].length;
+						device.routeSelected['completed'] = Math.round(device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1,0 ) ,0) / device['splitPointsCoordsCheck'].length);
 						//device['splitPointsCoordsCheck'] = this.routesService.toCoord(device['routeSelected'].splitPoints.filter( s => s.check));						
 						//device.routeSelected['completed'] =  Math.round((device['splitPointsCoordsCheck'].length / device['routeSelected'].splitPoints.length) *10000)/100 + "%";
 					}
