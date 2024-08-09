@@ -285,7 +285,7 @@ export class Botpersonallive {
 			};
 			this.tracks.push(new_track);		
 			let data = `{"device":"${this.cDevice.id}","t":${new_track.t},"lat":${new_track.lat},"lon":${new_track.lon},"b":${Math.round(this.battery)},"acc":${new_track.acc}}`
-			//this.http.get(environment.wsserver + `/data?msg=${data}` ).subscribe();	
+			this.http.get(environment.wsserver + `/data?msg=${data}` ).subscribe();	
 		}
 		this.getTrackb64 = async (callback)=>{
 			
@@ -433,6 +433,7 @@ export class Botpersonallive {
 	addView (view:any){
 		this.view = view;
 	};
+	thread:any;
 	start(){
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000");
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000+00:00");
@@ -440,7 +441,9 @@ export class Botpersonallive {
 		console.log("now_date_stamp", now_date_stamp);
 		let lasttime = Date.now();
 		console.log("states_cooldown",this.states_cooldown);
-		this.handled = setInterval(()=>{			
+		
+		this.thread = ()=>{			
+		//this.handled = setInterval(()=>{			
 			let time = Date.now();			
 			let elapsed = (time-lasttime);			
 			lasttime = time;
@@ -458,7 +461,8 @@ export class Botpersonallive {
 
 			this.update(elapsed,now_date_stamp,str_date);
 			this.updateDevice(this.config.min_duration_ratio*elapsed,now_date_stamp,str_date);
-			},this.intervalTime)
+		};
+		//	},this.intervalTime)
 	}
 	
 	updateDevice(delta:number,now_date_stamp,str_date){

@@ -82,12 +82,12 @@
 							</aol-source-vector>
 						</aol-layer-vector>
 					</div>
-					
+				<!--
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
 							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
 								<aol-source-vector>
-									<aol-feature *ngFor="let p of device.routeSelected?.string.geometry.coordinates">
+									<aol-feature *ngFor="let p of device.routeSelected?.string.geometry?.coordinates">
 									<aol-geometry-point>
 										<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
 									</aol-geometry-point>
@@ -107,7 +107,7 @@
 							</aol-layer-vector>
 						</div>
 					</div>
-					
+					-->	
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
 							<aol-layer-vector *ngIf="device.routeSelected && device.controls.show">
@@ -269,7 +269,7 @@
 						<aol-layer-vector *ngFor="let device of devices" >
 							<aol-source-vector *ngIf="device.tracksCoord && device.controls.show && device.controls.showTrack">
 								<aol-style>
-									<aol-style-stroke [color]="'rgba(0, 0, 100)'" [width]=1 [lineDash]="[5.5, 5]"></aol-style-stroke>
+									<aol-style-stroke [color]="'rgba(0, 0, 100)'" [width]=2 [lineDash]="[5.5, 5]"></aol-style-stroke>
 									<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
 							<!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
 								</aol-style>
@@ -284,31 +284,6 @@
 						</aol-layer-vector>
 					</div>
 				</aol-layer-group>
-				
-				<div *ngIf="devices">
-					<aol-layer-vector *ngFor="let device of devices" >
-						<div *ngIf="device.controls!=undefined">
-							<aol-source-vector *ngIf="device.controls.show && device.controls.showTrack">
-								<aol-feature *ngFor="let p of device.tracksCoord ">
-								<aol-geometry-point>
-									<aol-coordinate [x]="p[0]" [y]="p[1]" [srid]="'EPSG:4326'"></aol-coordinate>
-								</aol-geometry-point>
-								</aol-feature>
-							</aol-source-vector>
-						
-							<aol-style>
-								<aol-style-circle [radius]="5">
-								<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
-								<aol-style-fill [color]="'#33CC99'"></aol-style-fill>
-								</aol-style-circle>
-								<aol-style-text [text]="''">
-								<aol-style-fill [color]="'#fff'"></aol-style-fill>
-								</aol-style-text>
-							</aol-style>
-						</div>
-					</aol-layer-vector>
-
-				</div>
 			
 			</aol-map>
 		</div>

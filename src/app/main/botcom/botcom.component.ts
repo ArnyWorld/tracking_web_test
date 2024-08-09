@@ -126,7 +126,7 @@ export class BotcomComponent implements OnInit{
 	}
 	works:any = [];
 	loadBots(){
-		for(let i = 0; i < 50; i++){
+		for(let i = 0; i < this.personal.length; i++){			
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonal(this.http,this.routesService);
 			bot.setMonitor(monitor);
