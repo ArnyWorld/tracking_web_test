@@ -43,7 +43,7 @@ export class Botpersonal {
 	wsTrack = environment.wsserver;
 	config= {
 		late_margin_min:1,	//15
-		min_duration_ratio : 480//4800,//600 ok
+		min_duration_ratio : 60//4800,//600 ok
 	}
 	states= {
 		late_margin_next:-1
@@ -283,7 +283,7 @@ export class Botpersonal {
 	}
 	devicehw : any;
 	device :any;
-	factorRate = 2
+	factorRate = 3
 	setupCooldown(){
 		this.states_cooldown[BOT_STATES.IDDLE] = {
 				time : 60000*this.factorRate,

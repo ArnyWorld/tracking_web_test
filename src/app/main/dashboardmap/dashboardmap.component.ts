@@ -211,7 +211,7 @@ export class DashboardmapComponent implements OnInit {
 		var milliseconds = new Date().getTime();
 		//console.log(milliseconds);
 		//console.log("this.devices", this.devices);
-		if (milliseconds-this.updateTimes[0].last > this.updateTimes[0].interval ) this.updateTimes[0].task();
+		//if (milliseconds-this.updateTimes[0].last > this.updateTimes[0].interval ) this.updateTimes[0].task();
 		this.devices.forEach((device: any, index: number) => {
 			if (device==undefined) return;
 			//console.log(device);
@@ -255,7 +255,7 @@ export class DashboardmapComponent implements OnInit {
 	}
 	
 	cargarPersonal(callback){
-		this.personalService.getAll(100, 1, 'id',false,'').subscribe((result: any) => {
+		this.personalService.getSync().subscribe((result: any) => {
 			this.personal = result.content;
 			console.log("personal",this.personal);
 			if (callback!=null) callback();
@@ -270,7 +270,7 @@ export class DashboardmapComponent implements OnInit {
 	ngOnInit() {
 		this.cargarPersonal(()=>{
 			this.cargarRoutes(()=>{
-				this.loadSuggestions();
+				//this.loadSuggestions();
 				//this.loadTracks();
 				setInterval(() => {
 					this.updateConnection();

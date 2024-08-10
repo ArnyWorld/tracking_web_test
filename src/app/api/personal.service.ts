@@ -50,6 +50,16 @@ export class PersonalService {
 		  //`/${this.apiName}?[personal_type_id][equal]=14`
 	  );
 	}
+  
+	getSync(
+	) {
+	  return this.http.get(
+		this.apiUrl +
+		  this.prefix +
+		  `/${this.apiName}/sync`
+		  //`/${this.apiName}?[personal_type_id][equal]=14`
+	  );
+	}
   	
 	getAllMorning(
 	  ) {

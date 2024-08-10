@@ -44,7 +44,7 @@ export class Botpersonallive {
 	wsserver = environment.wsserver;
 	config= {
 		late_margin_min:1,	//15
-		min_duration_ratio : 250//4800,//600 ok
+		min_duration_ratio : 1//4800,//600 ok
 	}
 	states= {
 		late_margin_next:-1
@@ -385,7 +385,7 @@ export class Botpersonallive {
 			last : 0,
 		};
 		this.states_dev_cooldown[BOT_DEV_STATES.TRACKING] = {
-			time : 5000,
+			time : 1000,
 			last : 0,
 			rnd : 2000,
 		};

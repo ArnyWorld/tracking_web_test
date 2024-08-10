@@ -128,12 +128,12 @@ export class BotcomliveComponent implements OnInit{
 	
 	works:any = [];
 	loadBots(){
-		for(let i = 0; i < this.personal.length; i++){
+		for(let i = 0; i < 20; i++){
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonallive(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-08-09 06:59:50", "2024-03-31 07:05:00", 10);
+			bot.setTime("2024-08-09 07:59:50", "2024-03-31 07:05:00", 10);
 			//if (i == 0)	bot.addView(this.map.instance.getView());
 			bot.start();
 			this.works.push(bot.thread);
