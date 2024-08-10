@@ -62,10 +62,12 @@ export class Botpersonallive {
 	}
 	setRatio(ratio:number){
 		this.config.min_duration_ratio = ratio;
-	}
-	
+	}	
 	setSpeed(speed:number){
 		this.devicehw.setSpeed (speed);
+	}
+	setTrackLatency(latency:number){
+		this.states_dev_cooldown[BOT_DEV_STATES.TRACKING].time = latency;
 	}
 	DeviceHW = function ( app:any, http:HttpClient) {
 		this.speed = 1;
@@ -399,7 +401,7 @@ export class Botpersonallive {
 			last : 0,
 		};
 		this.states_dev_cooldown[BOT_DEV_STATES.TRACKING] = {
-			time : 1000,
+			time : 5000,
 			last : 0,
 			rnd : 2000,
 		};

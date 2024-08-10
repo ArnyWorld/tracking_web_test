@@ -72,6 +72,7 @@ export class BotcomliveComponent implements OnInit{
 	personal : any;		
 	ratio = 1 ;
 	speed= 1;
+	tracklatency= 5000;
 	constructor(
 		private http: HttpClient,
 		private routesService: RoutesService,
@@ -133,6 +134,8 @@ export class BotcomliveComponent implements OnInit{
 		this.bots.forEach(bot=>{
 			bot.setRatio(this.ratio);
 			bot.setSpeed(this.speed);
+			bot.setTrackLatency(this.tracklatency);
+			
 		});
 		console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 	}
