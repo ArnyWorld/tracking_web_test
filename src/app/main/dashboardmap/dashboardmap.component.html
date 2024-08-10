@@ -68,20 +68,30 @@
 				-->	
 					
 					<div *ngIf="devices">
-						<aol-layer-vector *ngFor="let device of devices" [zIndex]="500" [opacity]="0.85">
-							<aol-source-vector *ngIf="device.tracksPolyline && device.controls.show " >
-								<aol-style>
-									<aol-style-stroke [color]="'rgba(20, 125, 30, 55)'" [width]="18"></aol-style-stroke>
-									<aol-style-fill [color]="'#ffffff'"></aol-style-fill>					
-								</aol-style>
-								<aol-feature #selectedFeatureString *ngFor="let polyline of device.tracksPolyline">
-									<aol-geometry-linestring *ngIf="polyline!=null&&polyline.length>0">
-										<aol-collection-coordinates [coordinates]="polyline" [srid]="'EPSG:4326'">
-										</aol-collection-coordinates>
-									</aol-geometry-linestring>
-								</aol-feature>
-							</aol-source-vector>
-						</aol-layer-vector>
+						<div *ngFor="let device of devices">
+                            <div *ngFor="let section of device.routeSelected.sections">
+								<aol-layer-vector  [zIndex]="750" >                         
+									<aol-source-vector>
+										<aol-feature *ngFor="let pc of section.splitCoords">
+										<aol-geometry-point *ngIf="pc[2]">
+											<aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+										</aol-geometry-point>
+										</aol-feature>
+									</aol-source-vector>
+								
+									<aol-style>
+										<aol-style-circle [radius]="7">
+										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+										<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+										</aol-style-circle>
+										<aol-style-text [text]="''">
+										<aol-style-fill [color]="'#fff'"></aol-style-fill>
+										</aol-style-text>
+									</aol-style>
+									
+								</aol-layer-vector>
+							</div>
+						</div>
 					</div>
 				
 			<!--

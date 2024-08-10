@@ -328,13 +328,16 @@ export class DashboardmapComponent implements OnInit {
 				device['msl'] = new Date().getTime();
 			
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
-				device['tracksCoord'] = [];
+				
 				device['controls'] = this.createControls();
 				device.ms = (new Date().getTime() - device.msl);
 				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
+				
+
 				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
 					device['tracks'] = res.tracks;
 					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+
 					/*console.log("this.wsapiService",res);
 					let tracksCoord = [];
 					device['tracks'] = res.tracks;
@@ -356,22 +359,24 @@ export class DashboardmapComponent implements OnInit {
 			});
 			this.updateDevices();
 		});
-		this.socket.on('device', (data)=>{
+		this.socket.on('device', (data)=>{	//nuevo dispositivo
 			console.log('device',data);
-			let device = data;
+			let device = this.devices.find((d: any) => d.id == data.id);
+			if (device == null)
+				device = data;
 			this.devices.push(device);
 			
 			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 			device['msl'] = new Date().getTime();
 			//if (device.states['ID_ROUTE'] != data.states['ID_ROUTE'])
-				device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
-			device['tracksCoord'] = [];
+			device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
+			//device['tracksCoord'] = [];
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
-				console.log("this.wsapiService",res);
-				let tracksCoord = [];
+				//console.log("this.wsapiService",res);
+				//let tracksCoord = [];
 				device['tracks'] = res.tracks;
 				/*res.tracks.forEach(track => {						
 					tracksCoord.push([track.lon, track.lat]);
@@ -380,10 +385,8 @@ export class DashboardmapComponent implements OnInit {
 				//console.log("this.calculating");	
 				//device['tracksPolyline'] = [];
 				//device['PolyRouteTrack'] = [];
-				if (device['routeSelected'] !=null){					
-					//device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
-					//device.routeSelected['completed'] = this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'], device['tracksPolyline'],"AREA",10);
-					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+								
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
 					//device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
 					//device.routeSelected['completed'] = device['PolyRouteTrack'].splitPointTracks.length / device['splitPointsCoordsCheck'].length;
 					
@@ -392,7 +395,7 @@ export class DashboardmapComponent implements OnInit {
 					device['splitPointsCoordsCheck'] = this.routesService.toCoord(device['routeSelected'].splitPoints.filter( s => s.check));
 					device.routeSelected['completed'] =  Math.round((device['splitPointsCoordsCheck'].length / device['routeSelected'].splitPoints.length) *10000)/100 + "%";
 					*/
-				}
+			//	}
 			},(err:any)=>console.log("err",err));
 				
 		});

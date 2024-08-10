@@ -56,8 +56,7 @@ export class RoutesService {
 					}
 				}		
 			}				
-		}	
-		//return (total-noCheckCount)  + " / " + total;
+		}
 		return Math.round(((total-noCheckCount) / total)*10000)/100;
 	}
 	checkPointLast(route, point, maxDistance) {
