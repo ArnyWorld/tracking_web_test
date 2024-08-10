@@ -70,7 +70,8 @@ export class BotcomliveComponent implements OnInit{
 	};
 	devices : any;
 	personal : any;		
-
+	ratio = 1 ;
+	speed= 1;
 	constructor(
 		private http: HttpClient,
 		private routesService: RoutesService,
@@ -127,15 +128,24 @@ export class BotcomliveComponent implements OnInit{
 	}
 	
 	works:any = [];
+	bots = [];
+	updateTimes(){
+		this.bots.forEach(bot=>{
+			bot.setRatio(this.ratio);
+			bot.setSpeed(this.speed);
+		});
+		console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
+	}
 	loadBots(){
 		for(let i = 0; i < 20; i++){
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonallive(this.http,this.routesService);
 			bot.setMonitor(monitor);
 			bot.setData(this.personal[i], this.devices, this.routes);
-			bot.setTime("2024-08-09 07:59:50", "2024-03-31 07:05:00", 10);
+			bot.setTime("2024-08-09 08:00:10", "2024-08-09 08:10:10", 10);
 			//if (i == 0)	bot.addView(this.map.instance.getView());
 			bot.start();
+			this.bots.push(bot);
 			this.works.push(bot.thread);
 			this.monitors.push(monitor);
 		}

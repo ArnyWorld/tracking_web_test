@@ -43,8 +43,8 @@ export class Botpersonallive {
 	apiUrl = environment.apiserver;
 	wsserver = environment.wsserver;
 	config= {
-		late_margin_min:1,	//15
-		min_duration_ratio : 1//4800,//600 ok
+		late_margin_min:5,	//15
+		min_duration_ratio : 60//4800,//600 ok
 	}
 	states= {
 		late_margin_next:-1
@@ -60,7 +60,16 @@ export class Botpersonallive {
 		console.log("routesService",routesService);
 		this.devicehw.setService(routesService);
 	}
+	setRatio(ratio:number){
+		this.config.min_duration_ratio = ratio;
+	}
+	
+	setSpeed(speed:number){
+		this.devicehw.setSpeed (speed);
+	}
 	DeviceHW = function ( app:any, http:HttpClient) {
+		this.speed = 1;
+		this.desv = 0.1;
 		this.http = http;
 		this.cDevice = null;
 		this.app = app;
@@ -79,6 +88,9 @@ export class Botpersonallive {
 		this.batconsume = 1+Math.random()*0.5;
 		this.tracks = [];
 		this.configFile = {};		
+		this.setSpeed = (speed:number)=>{
+			this.speed = speed;
+		}
 		this.setService = (routesService:RoutesService)=>{
 			this.routesService = routesService;
 			//console.log(routesService);
@@ -139,6 +151,7 @@ export class Botpersonallive {
 						this.target.lon = sc[0] ;
 						this.target.rlat = this.target.lat + rndLat;
 						this.target.rlon = this.target.lon + rndLon;
+						//console.log("dist_min",dist_min);
 						dist_min = d;
 					}				
 				}				
@@ -245,10 +258,12 @@ export class Botpersonallive {
 			let dir_lon_nor = dir_lon/dist;
 			//console.log("dir_lat_nor:",dir_lat_nor);
 			//console.log("dir_lon_nor:",dir_lon_nor);
-			let distStep  = olSphere.getDistance([this.lon,this.lat],[this.lon+dir_lon_nor, this.lat+dir_lat_nor])*delta/10;
+			let distStep  = olSphere.getDistance([this.lon,this.lat],[this.lon+dir_lon_nor, this.lat+dir_lat_nor])*delta/10 ;
 			this.steps = distStep;
-			this.lat += dir_lat_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*0.2;
-			this.lon += dir_lon_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*0.2;
+			//this.lat += dir_lat_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*this.desv;
+			//this.lon += dir_lon_nor*(delta/10) + Math.random()*dir_lat_nor*(delta/10)*this.sesv;
+			this.lat += dir_lat_nor*(delta/10)* this.speed + Math.random()*dir_lat_nor*(delta/10)*this.desv;
+			this.lon += dir_lon_nor*(delta/10)* this.speed + Math.random()*dir_lat_nor*(delta/10)*this.desv;
 			//console.log("distStep",distStep);
 
 			if (dist<5*3){
@@ -433,10 +448,12 @@ export class Botpersonallive {
 		this.view = view;
 	};
 	thread:any;
+	onGoalTime=false;
 	start(){
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000");
 		//let fromDate = Date.parse("2024-03-07 07:05:03.000+00:00");
 		let now_date_stamp = Date.parse(this.fromDateLive);
+		let to_date_stamp = Date.parse(this.toDateLive);
 		console.log("now_date_stamp", now_date_stamp);
 		let lasttime = Date.now();
 		console.log("states_cooldown",this.states_cooldown);
@@ -451,7 +468,10 @@ export class Botpersonallive {
 			//console.log(new Date(time).toISOString());
 			now_date_stamp += elapsed*this.config.min_duration_ratio;
 
-			if (time < now_date_stamp )	this.config.min_duration_ratio = 1;
+			if(!this.onGoalTime){
+				if (time < now_date_stamp )	{ this.config.min_duration_ratio = 1; this.onGoalTime=true } ;
+				if (now_date_stamp >= to_date_stamp )	{ this.config.min_duration_ratio = 1; this.onGoalTime=true}
+			}
 
 			//console.log(fromDate);
 			let str_date:any=new Date(now_date_stamp);

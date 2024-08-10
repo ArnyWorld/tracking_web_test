@@ -1,7 +1,10 @@
 <div class="divMain">
     <!-- <app-panel-float-nav></app-panel-float-nav> -->
     <div class="divMid">
-
+        <div class="card">
+            <input type="range" value="1" min="1" max="30" [(ngModel)]="this.ratio" (input)="updateTimes()" >
+            <input type="range" value="1" min="1" max="120" [(ngModel)]="this.speed" (input)="updateTimes()">
+        </div>
         <div style="height: 100%">
             <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">
                 <aol-interaction-default> </aol-interaction-default>
