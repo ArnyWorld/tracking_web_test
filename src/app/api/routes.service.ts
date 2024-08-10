@@ -33,9 +33,62 @@ export class RoutesService {
 		})
 		return polyRouteTrack;
 	}
+	checkPoints(route, tracks, maxDistance) {
+		
+		if (route == null) return 0;
+		if (route.length == 0) return 0;				
+		let d:number = 0;		
+		let total = 0.0;
+		let noCheckCount = 0.0;
+		let i:number,j:number,k:number;
+		let sc:any;
+		
+		for ( i = 0; i<route.sections.length; i++ ){
+			for ( j = 0; j<route.sections[i].splitCoords.length; j++ ){
+				total++;
+				sc = route.sections[i].splitCoords[j];				
+				if (sc[2] == true) continue;				
+				noCheckCount++;
+				for ( k= 0; k < tracks.length; k++){
+					d = olSphere.getDistance([tracks[k].lon,tracks[k].lat],[sc[0], sc[1]]);
+					if (d < maxDistance) {							
+						sc[2] = true;
+					}
+				}		
+			}				
+		}	
+		//return (total-noCheckCount)  + " / " + total;
+		return Math.round(((total-noCheckCount) / total)*10000)/100;
+	}
+	checkPointLast(route, point, maxDistance) {
+			
+		if (route == null) return 0;
+		if (route.length == 0) return 0;				
+		let d:number = 0;		
+		let total = 0.0;
+		let noCheckCount = 0.0;
+		let i:number,j:number,k:number;
+		let sc:any;
+		let findIt = false;
+		
+		for ( i = 0; i<route.sections.length; i++ ){
+			for ( j = 0; j<route.sections[i].splitCoords.length; j++ ){
+				total++;
+				sc = route.sections[i].splitCoords[j];				
+				if (sc[2] == true) continue;				
+				noCheckCount++;
+				d = olSphere.getDistance([point.lon,point.lat],[sc[0], sc[1]]);
+				if (d < maxDistance) {							
+					sc[2] = true;
+				}
+			}				
+		}	
+		//return (total-noCheckCount)  + " / " + total;
+		return Math.round(((total-noCheckCount) / total)*10000)/100;
+	}
 	calcAdvance(PolyRouteTrack:any,tracks:any[],polyAdvanced:any[],calcType:string, maxPointDistance){
-		if (calcType == "VECTORIAL") this.calcAdvanceOne(PolyRouteTrack,tracks,polyAdvanced,maxPointDistance);
- 		if (calcType == "AREA") this.calcAdvanceOmni(PolyRouteTrack,tracks,polyAdvanced,maxPointDistance);
+		if (calcType == "VECTORIAL") return this.calcAdvanceOne(PolyRouteTrack,tracks,polyAdvanced,maxPointDistance);
+		if (calcType == "AREA") return this.calcAdvanceOmni(PolyRouteTrack,tracks,polyAdvanced,maxPointDistance);		
 	}
 	groupBy(list, keyGetter) {
 		if (list==null) return new Map(); 
@@ -136,19 +189,23 @@ export class RoutesService {
 
 	calcAdvanceOmni(PolyRouteTrack:any,tracks:any[],polyAdvanced:any[],maxPointDistance){
 		
-		if (PolyRouteTrack == null) return;
-		if (PolyRouteTrack.length == 0) return;		
+		if (PolyRouteTrack == null) return 0;
+		if (PolyRouteTrack.length == 0) return 0;		
 		let currentPointIndex = 0;
 		let dist:number = 0;
 		let pointPairA = null;
 		let pointPairB = null;
+		let total = 0.0;
+		let checkCount = 0.0;
 		PolyRouteTrack.splitPointTracks.forEach((splitPoints:any)=>{
 			splitPoints.forEach(s => {
 				tracks.forEach((track:any)=>{
+					total ++;
 					dist = olSphere.getDistance( [track.lon, track.lat], [s[0], s[1]] ); //spt.sphericalDistance(t.getLatLong());	
 					if ( !s[2] ) {
 						if (dist < maxPointDistance) {							
 							s[2] = true;
+							checkCount++;
 						}
 					}
 				})
@@ -179,6 +236,35 @@ export class RoutesService {
 				polyAdvanced.push(currentPoly);
 			}
 		});
+		return (checkCount / total)*100;
+	}
+	calcAdvanceOmniSimple(PolyRouteTrack:any,tracks:any[],polyAdvanced:any[],maxPointDistance){
+		
+		if (PolyRouteTrack == null) return 0;
+		if (PolyRouteTrack.length == 0) return 0;		
+		let currentPointIndex = 0;
+		let dist:number = 0;
+		let pointPairA = null;
+		let pointPairB = null;
+		let total = 0.0;
+		let checkCount = 0.0;
+		let i,j,k;
+		
+		for (i = 0; i < PolyRouteTrack.splitPointTracks.length; i++){
+			console.log("PolyRouteTrack.splitPointTracks[i]",PolyRouteTrack.splitPointTracks[i]);
+			for ( k= 0; k < tracks.length; k++){
+				total ++;
+				dist = olSphere.getDistance( [tracks[k].lon, tracks[k].lat], [PolyRouteTrack.splitPointTracks[i][0], PolyRouteTrack.splitPointTracks[i][1]] ); //spt.sphericalDistance(t.getLatLong());	
+				if ( !PolyRouteTrack.splitPointTracks[i][2] ) {
+					if (dist < maxPointDistance) {							
+						PolyRouteTrack.splitPointTracks[i][2] = true;
+						checkCount++;
+					}
+				}
+			}
+		}
+		
+		return (checkCount / total)*100;
 	}
 	calcAdvanceOne(splitPoints:any,tracks:any[],polyAdvanced:any[],maxPointDistance){
 
@@ -202,7 +288,7 @@ export class RoutesService {
 				for (let i = 1;i < splitCounts ; i++) {
 					let tLatLong  = {lat:lastPoint.lat + relDistLat*i,lon: lastPoint.lon + relDistLon*i, check:false };			
 					splitPoints.push(tLatLong);
-				}				
+				}
 				let tLatLong  = {lat:p.lat ,lon:p.lon, check:false  };
 				splitPoints.push(tLatLong);				
 				lastPoint = p;

@@ -139,7 +139,6 @@ export class Botpersonallive {
 						this.target.lon = sc[0] ;
 						this.target.rlat = this.target.lat + rndLat;
 						this.target.rlon = this.target.lon + rndLon;
-						//console.log("dist_min",dist_min);
 						dist_min = d;
 					}				
 				}				

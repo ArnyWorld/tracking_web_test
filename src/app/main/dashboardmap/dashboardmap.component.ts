@@ -333,7 +333,9 @@ export class DashboardmapComponent implements OnInit {
 				device.ms = (new Date().getTime() - device.msl);
 				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
-					console.log("this.wsapiService",res);
+					device['tracks'] = res.tracks;
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+					/*console.log("this.wsapiService",res);
 					let tracksCoord = [];
 					device['tracks'] = res.tracks;
 					res.tracks.forEach(track => {						
@@ -345,13 +347,10 @@ export class DashboardmapComponent implements OnInit {
 					device['PolyRouteTrack'] = [];
 					if (device['routeSelected'] !=null){						
 						device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
-						this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
+						device.routeSelected['completed'] = this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
 						device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
-						//device.routeSelected['completed'] = device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1 )) / device['splitPointsCoordsCheck'].length;
-						device.routeSelected['completed'] = Math.round(device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1,0 ) ,0) / device['splitPointsCoordsCheck'].length);
-						//device['splitPointsCoordsCheck'] = this.routesService.toCoord(device['routeSelected'].splitPoints.filter( s => s.check));						
-						//device.routeSelected['completed'] =  Math.round((device['splitPointsCoordsCheck'].length / device['routeSelected'].splitPoints.length) *10000)/100 + "%";
-					}
+						//device.routeSelected['completed'] = Math.round(device['routeSelected']['sections'].reduce((ac, sec)=> ac+sec.splitCoords.reduce((addsc, sc)=> addsc+1,0 ) ,0) / device['splitPointsCoordsCheck'].length);
+					}*/
 				},(err:any)=>console.log("err",err));
 				
 			});
@@ -365,7 +364,7 @@ export class DashboardmapComponent implements OnInit {
 			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 			device['msl'] = new Date().getTime();
 			//if (device.states['ID_ROUTE'] != data.states['ID_ROUTE'])
-				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
 			device['tracksCoord'] = [];
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
@@ -374,18 +373,19 @@ export class DashboardmapComponent implements OnInit {
 				console.log("this.wsapiService",res);
 				let tracksCoord = [];
 				device['tracks'] = res.tracks;
-				res.tracks.forEach(track => {						
+				/*res.tracks.forEach(track => {						
 					tracksCoord.push([track.lon, track.lat]);
-				});
-				device['tracksCoord'] = tracksCoord;					
-				console.log("this.calculating");	
-				device['tracksPolyline'] = [];
-				device['PolyRouteTrack'] = [];
+				});*/
+				//device['tracksCoord'] = tracksCoord;					
+				//console.log("this.calculating");	
+				//device['tracksPolyline'] = [];
+				//device['PolyRouteTrack'] = [];
 				if (device['routeSelected'] !=null){					
-					device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
-					this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);				
-					device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
-					device.routeSelected['completed']=device['PolyRouteTrack'].splitPointTracks.length / device['splitPointsCoordsCheck'].length;
+					//device['PolyRouteTrack'] = this.routesService.createPolyRouteTrack(device['routeSelected']);
+					//device.routeSelected['completed'] = this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'], device['tracksPolyline'],"AREA",10);
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+					//device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
+					//device.routeSelected['completed'] = device['PolyRouteTrack'].splitPointTracks.length / device['splitPointsCoordsCheck'].length;
 					
 					/*
 					this.routesService.calcAdvance(device['routeSelected'].splitPoints,device['tracks'],device['tracksPolyline'],"AREA",10);				
@@ -451,7 +451,7 @@ export class DashboardmapComponent implements OnInit {
 			
 		});
 		this.socket.on('device.last', (data: any) => {
-			console.log('device.last',data.id);
+			//console.log('device.last',data.id);
 			let device = this.devices.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
@@ -464,14 +464,14 @@ export class DashboardmapComponent implements OnInit {
 			if (device.states?.ON_ROUTE == "0") return;
 			device.tracksCoord.push([data.last.lon, data.last.lat]);
 			if (device['routeSelected']!=null){
-				this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);
-				device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
+				
+				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'] , data.last,10);
+				//device.routeSelected['completed'] = this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);
+				//device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));
 			}
 		});
 		this.socket.on('deviceUpdate', (data: any) => {
-			//console.log('device:', data.id);			
-			
-			
+			//console.log('device:', data.id);
 			console.log('device:', data);
 			let device = this.devices.find((d: any) => d.id == data.id);
 			
