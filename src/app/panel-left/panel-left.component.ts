@@ -10,4 +10,12 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class PanelLeftComponent {
 
+	hidePanel(ref){
+		console.log(ref.style.display);
+		if (ref.style.display!="none")
+			ref.style.display = "none";
+		else
+			ref.style.display = "block";
+		
+	}
 }

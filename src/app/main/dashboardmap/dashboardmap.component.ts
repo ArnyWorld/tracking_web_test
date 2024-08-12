@@ -17,6 +17,7 @@ import { WSapiService } from '../../api/wsapi.service';
 import { SuggestionsService } from '../../api/suggestions.service';
 import { ImagesService } from '../../api/images.service';
 import { TracksService } from '../../api/tracks.service';
+import { HttpClient } from '@angular/common/http';
 
 
 
@@ -32,6 +33,7 @@ import { TracksService } from '../../api/tracks.service';
 export class DashboardmapComponent implements OnInit {
 	@ViewChild('map') map: MapComponent;
 	constructor(private socket: SocketOne,
+		private http: HttpClient,
 		private personalService: PersonalService,
 		private routesService: RoutesService,
 		private imagesService: ImagesService,
@@ -48,6 +50,9 @@ export class DashboardmapComponent implements OnInit {
 		return layer === this.markersLayer?.instance;
 	}
 
+	ratio = 1 ;
+	speed= 1;
+	tracklatency= 5000;
 	feature = {
 		type: 'Feature',
 		properties: {},
@@ -128,7 +133,22 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoute:any;
 	selectedLineString:any;
 	selectedRoutes = [];
-
+	updateTimesx(){
+			this.http.get(`http://172.20.5.22:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
+				console.log("res",res);
+			});
+			console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
+		}
+	botStart(){		
+		this.http.get(`http://172.20.5.22:7676/start`).subscribe(res=>{
+			console.log("res",res);
+		});
+	}	
+	botReset(){		
+		this.http.get(`http://172.20.5.22:7676/reset`).subscribe(res=>{
+			console.log("res",res);
+		});
+	}
 	routeToString(route:any):any{
 		let coordinates = [];
 		

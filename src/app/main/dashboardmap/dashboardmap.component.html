@@ -2,8 +2,15 @@
 	<app-panel-float-nav></app-panel-float-nav>
 	<div class="divMid">
 		<div  id="overlayMenu" style="z-index:9999">
-			<button>Track</button>
-			<button type="button" class="btn btn-sm btn-secondary">Tracking</button>
+			<!-- <button>Track</button>
+			<button type="button" class="btn btn-sm btn-secondary">Tracking</button> -->
+			<div class="card">
+				RatioTime:{{this.ratio}}<input type="range" value="1" min="1" max="30" [(ngModel)]="this.ratio" (input)="updateTimesx()" >
+				Speed:{{this.speed}}<input type="range" value="1" min="1" max="120" [(ngModel)]="this.speed" (input)="updateTimesx()">
+				TrackLatency:{{this.tracklatency}}<input type="range" value="5001" min="500" max="15000" [(ngModel)]="this.tracklatency" (input)="updateTimesx()">
+				<button class="btn btn-small " (click)="botStart()"> Start</button>
+				<button class="btn btn-small " (click)="botReset()"> Reset</button>
+			</div>
 		</div>
 		<div style="height: 100%">
 			<aol-map #map width="100%" height="100%">

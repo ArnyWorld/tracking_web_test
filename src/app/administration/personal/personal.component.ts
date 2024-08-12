@@ -11,6 +11,7 @@ import { AssignmentsService } from '../../api/assignments.service';
 import { QrCodeModule } from 'ng-qrcode';
 import { ImagesService } from '../../api/images.service';
 import { environment } from '../../../environments/environment';
+import { ScheduleService } from '../../api/schedule.service';
 @Component({
   selector: 'app-personal',
   standalone: true,
@@ -28,6 +29,7 @@ export class PersonalComponent implements OnInit {
 		private routesService: RoutesService, 
 		private modalService: BsModalService,
 		private imagesService: ImagesService,
+		private scheduleService: ScheduleService,
 	) { }
 
 	personal = {
@@ -37,8 +39,9 @@ export class PersonalComponent implements OnInit {
 		image_id: '',
 		image: null,
 		personal_type_id: '',		
+		schedule_id:1,
 	};
-
+	Schedules = [];
 	Assignments = [];
 
 	default = {
@@ -48,6 +51,7 @@ export class PersonalComponent implements OnInit {
 		image_id: '',
 		image: null,
 		personal_type_id: '',
+		schedule_id:1,
 	};
 	defaultImage = {
 		base64 : '',
@@ -61,14 +65,23 @@ export class PersonalComponent implements OnInit {
 		create_date: 0,
 		update_date: 0
 	};
-	
+	keyword="";
 	routes: any[];
 
 	personals: any[];
+	personalFiltred: any[];
+
 	ngOnInit(): void {		
 		this.load();
 		this.loadRoutes();
 
+	}
+	filtrar(){
+		if (this.keyword == "") {this.personalFiltred = this.personals; return;}
+		if (this.keyword.length < 3) return;
+		this.personalFiltred = this.personals.filter( (p:any)=>{
+			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
+		});
 	}
 	openModal(template: TemplateRef<void>, data?:any) {
 		if (data){
@@ -84,8 +97,7 @@ export class PersonalComponent implements OnInit {
 						id:'',
 						personal_id:this.personal.id,
 						route_id:route.id,
-						fecha_desde:'',
-						fecha_hasta:'',
+						schedule_id:1,
 						is_check:false,
 					};
 				}else{
@@ -103,7 +115,7 @@ export class PersonalComponent implements OnInit {
 	}
 	loadRoutes(){
 		console.log("loading routes");
-		this.routesService.getAll(100, 1, 'id',false,'').subscribe((res: any) => {
+		this.routesService.getList().subscribe((res: any) => {
 			this.routes = res.content;			
 			console.log("routes loaded", this.routes);
 		});
@@ -111,7 +123,12 @@ export class PersonalComponent implements OnInit {
 	load(){
 		this.personalApi.getAll(100, 1, 'id',false,'').subscribe((res: any) => {
 			this.personals = res.content;
+			this.personalFiltred = this.personals;
 			console.log("this.personals",this.personals);
+		});
+		this.scheduleService.getAll().subscribe((res:any)=>{
+			this.Schedules = res.content;
+			console.log("this.Schedules",this.Schedules);
 		});
 	}
 	saveAssignments(){

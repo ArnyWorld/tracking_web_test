@@ -130,17 +130,30 @@ export class BotcomliveComponent implements OnInit{
 	
 	works:any = [];
 	bots = [];
+	botStart(){		
+		this.http.get(`http://172.20.5.22:7676/start`).subscribe(res=>{
+			console.log("res",res);
+		});
+	}	
+	botReset(){		
+		this.http.get(`http://172.20.5.22:7676/reset`).subscribe(res=>{
+			console.log("res",res);
+		});
+	}
 	updateTimes(){
-		this.bots.forEach(bot=>{
+	/*	this.bots.forEach(bot=>{
 			bot.setRatio(this.ratio);
 			bot.setSpeed(this.speed);
 			bot.setTrackLatency(this.tracklatency);
 			
+		});*/
+		this.http.get(`http://172.20.5.22:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
+			console.log("res",res);
 		});
 		console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 	}
 	loadBots(){
-		for(let i = 0; i < 20; i++){
+		/*for(let i = 0; i < 20; i++){
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonallive(this.http,this.routesService);
 			bot.setMonitor(monitor);
@@ -156,7 +169,7 @@ export class BotcomliveComponent implements OnInit{
 		setInterval(()=>{
 			for( i = 0;i< this.works.length; i++)
 				this.works[i]();
-		},10);
+		},10);*/
 	}
 	loadPersonal(callback){
 		this.personalService.getAllMorning().subscribe(

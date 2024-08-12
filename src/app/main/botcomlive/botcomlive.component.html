@@ -2,9 +2,11 @@
     <!-- <app-panel-float-nav></app-panel-float-nav> -->
     <div class="divMid">
         <div class="card">
-            RatioTime:<input type="range" value="1" min="1" max="30" [(ngModel)]="this.ratio" (input)="updateTimes()" >
-            Speed:<input type="range" value="1" min="1" max="120" [(ngModel)]="this.speed" (input)="updateTimes()">
-            TrackLatency:<input type="range" value="5001" min="500" max="10000" [(ngModel)]="this.tracklatency" (input)="updateTimes()">
+            RatioTime:{{this.ratio}}<input type="range" value="1" min="1" max="30" [(ngModel)]="this.ratio" (input)="updateTimes()" >
+            Speed:{{this.speed}}<input type="range" value="1" min="1" max="120" [(ngModel)]="this.speed" (input)="updateTimes()">
+            TrackLatency:{{this.tracklatency}}<input type="range" value="5001" min="500" max="15000" [(ngModel)]="this.tracklatency" (input)="updateTimes()">
+            <button class="btn btn-small " (click)="botStart()"> Start</button>
+            <button class="btn btn-small " (click)="botReset()"> Reset</button>
         </div>
         <div style="height: 100%">
             <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">
@@ -160,7 +162,7 @@
         <app-modal-import-devices (onClose)="this.modalRef.hide();"></app-modal-import-devices>
     </ng-template>
 
-    <app-panel-right [selected]="'Dispositivos'">
+    <app-panel-right [selected]="'Dispositivos'" class="d-none">
         <div ngProjectAs="Devices">
             
             <div class="list-group list-group-flush border-bottom scrollarea">

@@ -126,7 +126,7 @@ export class BotcomComponent implements OnInit{
 	}
 	works:any = [];
 	loadBots(){
-		for(let i = 0; i < 20; i++){			
+		/*for(let i = 0; i < 20; i++){			
 			let monitor = {... this.monitorDefault};
 			let bot = new Botpersonal(this.http,this.routesService);
 			bot.setMonitor(monitor);
@@ -140,7 +140,7 @@ export class BotcomComponent implements OnInit{
 		setInterval(()=>{
 			for( i = 0;i< this.works.length; i++)
 				this.works[i]();
-		},10);
+		},10);*/
 	}
 	loadPersonal(callback){
 		this.personalService.getAll(1000,1,"id",false).subscribe(
