@@ -32,7 +32,7 @@
 								</aol-geometry-point>
 								<aol-style>
 									<aol-style-text [offsetY]="20" [text]="device.personal?.name + ' ' + i" [font]="'10px sans-serif'"></aol-style-text>
-									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 0.5]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?0.6:0.4" [opacity]="device.controls.show?0.98:0.7" [anchorOrigin]="'top-left'">
+									<aol-style-icon [src]="device.marker.img" [anchor]="[0.5, 0.5]" [anchorXUnits]="'fraction'" [anchorYUnits]="'fraction'" [scale]="device.controls.show?1:0.9" [opacity]="device.controls.show?0.98:0.7" [anchorOrigin]="'top-left'">
 									</aol-style-icon>
 								</aol-style>
 							</aol-feature>
@@ -68,28 +68,30 @@
 				-->	
 					
 					<div *ngIf="devices">
-						<div *ngFor="let device of devices">
-                            <div *ngFor="let section of device.routeSelected.sections">
-								<aol-layer-vector  [zIndex]="750" >                         
-									<aol-source-vector>
-										<aol-feature *ngFor="let pc of section.splitCoords">
-										<aol-geometry-point *ngIf="pc[2]">
-											<aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
-										</aol-geometry-point>
-										</aol-feature>
-									</aol-source-vector>
-								
-									<aol-style>
-										<aol-style-circle [radius]="7">
-										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
-										<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
-										</aol-style-circle>
-										<aol-style-text [text]="''">
-										<aol-style-fill [color]="'#fff'"></aol-style-fill>
-										</aol-style-text>
-									</aol-style>
+							<div *ngFor="let device of devices">
+								<div *ngIf="device.controls.showChecks">
+								<div *ngFor="let section of device.routeSelected.sections">
+									<aol-layer-vector  [zIndex]="750" >                         
+										<aol-source-vector>
+											<aol-feature *ngFor="let pc of section.splitCoords">
+											<aol-geometry-point *ngIf="pc[2]">
+												<aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+											</aol-geometry-point>
+											</aol-feature>
+										</aol-source-vector>
 									
-								</aol-layer-vector>
+										<aol-style>
+											<aol-style-circle [radius]="7">
+											<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+											<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+											</aol-style-circle>
+											<aol-style-text [text]="''">
+											<aol-style-fill [color]="'#fff'"></aol-style-fill>
+											</aol-style-text>
+										</aol-style>
+										
+									</aol-layer-vector>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -168,7 +170,7 @@
 					
 					<div *ngIf="devices" #forsplitpoints>
 						<aol-layer-vector *ngFor="let device of devices" >
-							<div *ngIf="device.routeSelected && device.controls.show">
+							<div *ngIf="device.routeSelected && device.controls.show && device.controls.showChecks">
 								<aol-source-vector>
 									<aol-feature *ngFor="let p of device.splitPointsCoordsCheck">
 									<aol-geometry-point>
@@ -259,9 +261,9 @@
 
 					<div *ngIf="devices">
 						<aol-layer-vector *ngFor="let device of devices" >
-							<aol-source-vector *ngIf="device.tracksCoord && device.controls.show && device.controls.showTrack">
+							<aol-source-vector *ngIf="device.tracksCoord && device.controls.showTrack">
 								<aol-style>
-									<aol-style-stroke [color]="'rgba(0, 0, 100)'" [width]=1 [lineDash]="[5.5, 5]"></aol-style-stroke>
+									<aol-style-stroke [color]="'rgba(0, 0, 200)'" [width]=3 [lineDash]="[5.5, 11]"></aol-style-stroke>
 									<!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
 							<!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
 								</aol-style>
@@ -325,12 +327,17 @@
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showTrack">
 						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Trayecto </label>
 					</div>					
+					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
+						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showChecks">
+						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Checkpoints </label>
+					</div>					
 				</div>
 					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
 					 Personal: {{device?.personal?.name}}<br>
 					 Route: {{device?.routeSelected?.name}}<br> 
-					 completado: {{device?.routeSelected?.completed}}<br>
-					 latencia: {{device.ms}}ms</div>
+					 Completado: {{device?.routeSelected?.completed}} %<br>
+					 Hora: {{device?.last.t | date:'dd/MM/yyyy HH:mm:ss' }}<br>
+					 Latencia: {{device.ms}}ms</div>
 
 			</div>
 		</div>
