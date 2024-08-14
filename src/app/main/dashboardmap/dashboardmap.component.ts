@@ -133,6 +133,7 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoute:any;
 	selectedLineString:any;
 	selectedRoutes = [];
+	maxdevices = 20;
 	updateTimesx(){
 			this.http.get(`http://172.20.5.22:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
 				console.log("res",res);
@@ -140,12 +141,12 @@ export class DashboardmapComponent implements OnInit {
 			console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 		}
 	botStart(){		
-		this.http.get(`http://172.20.5.22:7676/start`).subscribe(res=>{
+		this.http.get(`http://172.20.5.22:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}	
 	botReset(){		
-		this.http.get(`http://172.20.5.22:7676/reset`).subscribe(res=>{
+		this.http.get(`http://172.20.5.22:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}
@@ -349,8 +350,9 @@ export class DashboardmapComponent implements OnInit {
 				device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 				device['msl'] = new Date().getTime();
 			
+				//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
-				
+				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 				device['controls'] = this.createControls();
 				device.ms = (new Date().getTime() - device.msl);
 				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
@@ -377,7 +379,9 @@ export class DashboardmapComponent implements OnInit {
 			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 			device['msl'] = new Date().getTime();
 			//if (device.states['ID_ROUTE'] != data.states['ID_ROUTE'])
-			device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
+			//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
+			device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+			if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 			device['tracksCoord'] = [];
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
@@ -386,7 +390,8 @@ export class DashboardmapComponent implements OnInit {
 				device['tracks'] = res.tracks;
 				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 								
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+				if (device.routeSelected!=undefined)
+					 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
 			},(err:any)=>console.log("err",err));
 				
 		});
@@ -398,8 +403,14 @@ export class DashboardmapComponent implements OnInit {
 				return;
 			}
 			device.states = data.states;
+			if (device['personal']?.id != device.states['ID_USER'] ){
+				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
+			}
 			if (device['routeSelected']?.id != device.states['ID_ROUTE'] ){
-				device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
+				//device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};				
+				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
+
 				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 				if (device.routeSelected!=null)
 					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
@@ -433,6 +444,9 @@ export class DashboardmapComponent implements OnInit {
 				return;
 			}
 			device.tracks = data.tracks;
+			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+			if (device.routeSelected!=null)
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
 		});
 		this.socket.on('device.pause', (data: any) => {
 			console.log('device.pause',data.id);

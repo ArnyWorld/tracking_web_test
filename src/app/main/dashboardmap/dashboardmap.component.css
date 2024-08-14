@@ -3,7 +3,19 @@ body {
 	width: 100%;
 	height: 100%;
 }
-
+.marker-device{
+	pointer-events: none;
+	display: flex;
+	margin:-16px;
+}
+.marker-device img{
+	display:block;
+	width:32px;
+	height:32px;
+}
+.marker-device label{
+	display:block;
+}
 .scroll {
 	height: 100%;
 }

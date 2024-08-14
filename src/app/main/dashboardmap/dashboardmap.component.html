@@ -5,6 +5,7 @@
 			<!-- <button>Track</button>
 			<button type="button" class="btn btn-sm btn-secondary">Tracking</button> -->
 			<div class="card">
+				Devices:{{this.maxdevices}}<input type="range" value="20" min="1" max="120" [(ngModel)]="this.maxdevices" >
 				RatioTime:{{this.ratio}}<input type="range" value="1" min="1" max="30" [(ngModel)]="this.ratio" (input)="updateTimesx()" >
 				Speed:{{this.speed}}<input type="range" value="1" min="1" max="120" [(ngModel)]="this.speed" (input)="updateTimesx()">
 				TrackLatency:{{this.tracklatency}}<input type="range" value="5001" min="500" max="15000" [(ngModel)]="this.tracklatency" (input)="updateTimesx()">
@@ -30,7 +31,7 @@
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
 				<aol-layer-group>
-
+ 
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
 							<aol-feature>
@@ -43,10 +44,27 @@
 									</aol-style-icon>
 								</aol-style>
 							</aol-feature>
-						</aol-source-vector>					
+						</aol-source-vector>
 					</aol-layer-vector>
+				
 					
-
+<!--
+					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
+							<aol-overlay>
+                                <aol-coordinate
+                                    [x]="device.last.lon"
+                                    [y]="device.last.lat"
+                                    [srid]="'EPSG:4326'"
+                                >
+                                </aol-coordinate>
+                                <aol-content>
+                                    <div class="my-overlay-class">                                        
+										<img width="96px" height="96px" src="./{{device.marker.img}}" />
+                                    </div>
+									<diV> </diV>
+                                </aol-content>
+                            </aol-overlay>				
+					</aol-layer-vector>
 					<aol-overlay [positioning]="'center-center'" [stopEvent]="false">
 						<aol-coordinate [x]="tooltip.lon" [y]="tooltip.lat" [srid]="'EPSG:4326'"> </aol-coordinate>
 						<aol-content>
@@ -55,7 +73,7 @@
 							</div>
 						</aol-content>
 					</aol-overlay>
-
+-->
 				<!--
 					<div *ngIf="devices">
 						<aol-layer-vector *ngFor="let device of devices" >
@@ -321,7 +339,7 @@
 
 				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true" (click)="gotoDevice(device)">
 					<div class="d-flex w-100 align-items-center justify-content-between" *ngIf="device.controls!=null">					
-						<strong class="mb-1">{{ device.config.INFO_BRAND}} <small>{{ device.config.INFO_MODEL}}</small></strong>
+						<strong class="mb-1">{{device?.personal?.name}}</strong>
 						<small>bat:{{ device.last.bat}}%</small>
 					</div>
 				</a>
@@ -340,8 +358,8 @@
 					</div>					
 				</div>
 					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
-					 Personal: {{device?.personal?.name}}<br>
-					 Route: {{device?.routeSelected?.name}}<br> 
+					 Dispositivo:{{ device.config.INFO_MODEL}} <br>
+					 Ruta: {{device?.routeSelected?.name}}<br> 
 					 Completado: {{device?.routeSelected?.completed}} %<br>
 					 Hora: {{device?.last.t | date:'dd/MM/yyyy HH:mm:ss' }}<br>
 					 Latencia: {{device.ms}}ms</div>

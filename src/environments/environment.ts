@@ -7,6 +7,7 @@ export const environment = {
 
   apipersonalserver: 'http://172.20.5.22:9987/tre_personal',
   apiserver: 'https://trackingserver.kernotec.com/trackingdb/',
+  //apiserver: 'http://172.20.5.22:9988/trackingdb/',
   wsserver: 'https://trackingserver.kernotec.com',
   wsapiserver: 'https://trackingserver.kernotec.com',
 

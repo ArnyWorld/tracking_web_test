@@ -49,6 +49,7 @@ export class BotcomliveComponent implements OnInit{
 	distance:number			= 0;
 	createProgress:string	= "Crear"
 	selectedRoute:any;
+	maxdevices = 20;
 	newRoute = {
 		id: '',
 		name: '',
@@ -131,7 +132,7 @@ export class BotcomliveComponent implements OnInit{
 	works:any = [];
 	bots = [];
 	botStart(){		
-		this.http.get(`http://172.20.5.22:7676/start`).subscribe(res=>{
+		this.http.get(`http://172.20.5.22:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}	

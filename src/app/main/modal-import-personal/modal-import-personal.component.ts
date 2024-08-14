@@ -103,6 +103,7 @@ export class ModalImportPersonalComponent implements OnInit {
             "name": (`${p(person.names)} ${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
 			"firstname": (`${p(person.names)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
 			"lastname": (`${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("-","").replaceAll(".","").replaceAll("  "," ").trim(),
+			"gender": person.gender_id,
 		};
 		console.log("personal.id",personal.id);
 		this.personalService.update(updatePerson, personal.id).subscribe((result: any) => {

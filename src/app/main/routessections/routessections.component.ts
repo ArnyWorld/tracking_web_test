@@ -48,16 +48,18 @@ export class RoutessectionsComponent implements OnInit{
 	distance:number		= 0;
 	createProgress:string	= "Crear"
 	selectedRoute:any;
+	
 	newRoute = {
 		id: '',
 		name: '',
 		image_id: 0,
+		frequency: "[1,2,3,4,5,6]",
 		image:null,
 		min_split_mt: '5',
 		max_split_mt: '10',
 		distance: 0,
-		sections:[
-			
+		district_id: 1,
+		sections:[			
 		],
 		currentSection: 0,
 	}
@@ -273,6 +275,7 @@ export class RoutessectionsComponent implements OnInit{
 			this.newRoute.image = image;
 			this.newRoute.image_id = image.id;
 			this.newRoute.distance = this.distance;
+			
 			console.log('route', this.newRoute);
 			this.routesService.register(this.newRoute).subscribe((result: any) => {
 				console.log("result", result);
