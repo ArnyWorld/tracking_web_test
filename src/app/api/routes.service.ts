@@ -33,6 +33,36 @@ export class RoutesService {
     });
     return polyRouteTrack;
   }
+  getStops(tracks){
+	let stops  = [];
+	let isStop = false;
+	let stop = null;
+	for(let i = 0; i < tracks.length; i++ ){	
+		if (!isStop && (parseInt(tracks[i].stp) == 1)){
+			stop = {
+				start_date:tracks[i].t,
+				start_lat:tracks[i].lat,
+				start_lon:tracks[i].lon,
+				end_date:tracks[i].t,
+				end_lat:tracks[i].lat,
+				end_lon:tracks[i].lon,
+				duration:0,
+			};
+			stops.push(stop);
+			isStop=true;
+		}
+		if(parseInt(tracks[i].stp) == 0)
+			isStop=false;
+		if(isStop){
+			stop.end_date = tracks[i].t;
+			stop.end_lat = tracks[i].lat;
+			stop.end_lon = tracks[i].t;
+			stop.duration = stop.end_date-stop.start_date;
+		}
+
+	}
+	return stops;
+  }
   checkPoints(route, tracks, maxDistance) {
     if (route == null) return 0;
     if (route.length == 0) return 0;
