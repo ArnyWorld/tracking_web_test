@@ -9,7 +9,21 @@
     -webkit-filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
     filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
 }
-
+.panel-side{
+	
+	animation-duration: 4s; /* don't forget to set a duration! */
+	transition: 4s;
+}
+.hide-panel{
+	left:-200px;
+	display:flex;
+	position: absolute;
+	background-color: aqua;
+}
+.showPanel {
+	animation-name: show;
+	animation-duration: 1s;
+  }
 .toggled {
 	padding-left: 250px;
   }

@@ -416,6 +416,7 @@ export class DashboardmapComponent implements OnInit {
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 
+				device['stops'] = this.routesService.getStops(device['tracks']);
 				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 				if (device.routeSelected!=null)
 					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
@@ -492,7 +493,8 @@ export class DashboardmapComponent implements OnInit {
 			device.last = data.last;
 			this.updateDeviceMarker(device);
 			if (device.states?.ON_ROUTE == "0") return;			
-			device['tracks'].push(data.last);
+			device['tracks'].push(data.last);			
+			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 			if (device['routeSelected']!=null){
 				
