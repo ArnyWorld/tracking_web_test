@@ -2,23 +2,32 @@
 .search-and-account {
     position: fixed;
     z-index: 1500;
-    top: .9rem;
-    left: 1%
+    top: 3.9rem;
+    left: 205px;
+	transition: width 1s linear 1s;
+	animation-duration: 1s; /* don't forget to set a duration! */
+	transition: 1s;
 }
 .search-and-account a svg {
     -webkit-filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
     filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .3));
 }
+.hide-panel-button{	
+	left:10px;	
+}
 .panel-side{
-	
-	animation-duration: 4s; /* don't forget to set a duration! */
-	transition: 4s;
+	padding:1rem;
+	width:200px;
+	transition: width 1s linear 1s;
+	animation-duration: 1s; /* don't forget to set a duration! */
+	transition: 1s;
 }
 .hide-panel{
-	left:-200px;
-	display:flex;
-	position: absolute;
-	background-color: aqua;
+	margin:0;
+	padding:0;
+	overflow: hidden;
+	width:0px;
+	left:-150px;
 }
 .showPanel {
 	animation-name: show;

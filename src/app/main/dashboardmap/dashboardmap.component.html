@@ -66,8 +66,7 @@
 					<!-- STOP CIRCLES -->
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
-							<aol-layer-vector *ngFor="let stop of device.stops" >
-								
+							<aol-layer-vector *ngFor="let stop of device.stops" [zIndex]="1100">
 									<aol-source-vector *ngIf="device.stops && device.controls.showStops">									
 											<aol-feature >
 													<aol-geometry-point >
@@ -76,7 +75,7 @@
 											</aol-feature>							
 											<aol-feature >
 													<aol-geometry-point >
-														<aol-coordinate [x]="stop.end_lon" [y]="stop.end_lat" [srid]="'EPSG:4326'"></aol-coordinate>
+														<aol-coordinate [x]="stop.end_lon" [y]="stop.end_lat" [srid]="'EPSG:4326'" ></aol-coordinate>
 													</aol-geometry-point>
 											</aol-feature>						
 									</aol-source-vector>
@@ -85,7 +84,7 @@
 											<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
 											<aol-style-fill [color]="'#ff4477'"></aol-style-fill>
 										</aol-style-circle>										
-										<aol-style-text [text]="toSeconds(stop.duration)">
+										<aol-style-text [text]="toSeconds(stop.duration)" [font]="'16px sans-serif'">
 											<aol-style-fill [color]="'#fff'"></aol-style-fill>
 										</aol-style-text>
 									</aol-style>					
@@ -96,7 +95,7 @@
 					<!-- CHECKED GREEN CIRCLES -->
 					<div *ngIf="devices">
 							<div *ngFor="let device of devices">
-								<div *ngIf="device.controls.showChecks">
+								<div *ngIf="device.controls.showChecks && device.routeSelected!=null">
 								<div *ngFor="let section of device.routeSelected.sections">
 									<aol-layer-vector  [zIndex]="750" >                         
 										<aol-source-vector>

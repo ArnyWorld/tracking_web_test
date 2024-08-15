@@ -339,7 +339,12 @@ export class DashboardmapComponent implements OnInit {
 		});
 	}
 	toSeconds(duration){
-		return Math.round(duration/1000) + 's';
+		let s = Math.round(duration/1000);		
+		let m = s>60?(s-s%60)/60:-1;
+		let h = m>60?(m-m%60)/60:-1;
+		if (m==-1) return s + "s";
+		if (h==-1) return m + "m";		
+		return  h + 'h';
 	}
 	socketComm(){
 		this.socket.emit('message', "enviando");
@@ -461,10 +466,11 @@ export class DashboardmapComponent implements OnInit {
 			device.tracks = data.tracks;			
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			if (device.routeSelected!=null)
+			if (device.routeSelected!=null){
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+			}
 		});
 		this.socket.on('device.pause', (data: any) => {
 			console.log('device.pause',data.id);
