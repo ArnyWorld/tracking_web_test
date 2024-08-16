@@ -33,6 +33,10 @@ export class RoutesService {
     });
     return polyRouteTrack;
   }
+  setStops(stops,tracks ){
+	if (stops == undefined ) return;
+
+  }
   getStops(tracks){
 	let stops  = [];
 	let isStop = false;

@@ -43,6 +43,14 @@ export class DevicesService {
 			`/${this.apiName}`
 		);
 	}
+	getList(
+	) {
+		return this.http.get(
+			this.apiUrl +
+			this.prefix +
+			`/devices/getlist`
+		);
+	}
 
 	delete(id: string | number): Observable<any> {
 		return this.http.delete(

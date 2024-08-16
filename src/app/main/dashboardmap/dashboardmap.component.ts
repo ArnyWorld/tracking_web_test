@@ -308,6 +308,7 @@ export class DashboardmapComponent implements OnInit {
 		this.map.instance.getView().setZoom(16);
 		device.controls.show = true;
 		device.controls.showTrack = true;
+		device.controls.showChecks = true;
 		device.controls.showStops = true;
 	}
 	createControls(){
@@ -479,7 +480,6 @@ export class DashboardmapComponent implements OnInit {
 				this.socket.emit("device",data.id);
 				return;
 			}
-			
 			device.last = data.last;
 			device.ms = (new Date().getTime() - device.msl);
 			device.msl = new Date().getTime();
@@ -501,6 +501,7 @@ export class DashboardmapComponent implements OnInit {
 			if (device.states?.ON_ROUTE == "0") return;			
 			device['tracks'].push(data.last);			
 			device['stops'] = this.routesService.getStops(device['tracks']);
+			//this.routesService.setStops(device['stops'],device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 			if (device['routeSelected']!=null){
 				

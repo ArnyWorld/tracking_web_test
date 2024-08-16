@@ -67,6 +67,7 @@
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
 							<aol-layer-vector *ngFor="let stop of device.stops" [zIndex]="1100">
+								
 									<aol-source-vector *ngIf="device.stops && device.controls.showStops">									
 											<aol-feature >
 													<aol-geometry-point >
@@ -87,7 +88,7 @@
 										<aol-style-text [text]="toSeconds(stop.duration)" [font]="'16px sans-serif'">
 											<aol-style-fill [color]="'#fff'"></aol-style-fill>
 										</aol-style-text>
-									</aol-style>					
+									</aol-style>			
 							</aol-layer-vector>
 						</div>
 					</div>

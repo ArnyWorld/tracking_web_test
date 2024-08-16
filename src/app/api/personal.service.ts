@@ -78,7 +78,7 @@ export class PersonalService {
 	}
   
 	habilitar(datos: any, id: string | number): Observable<any> {
-	  datos['Listado de Personal'] = 'habilitar';
+	  datos['deleted'] = true;
 	  return this.http.put(
 		this.apiUrl + this.prefix + `/${this.apiName}/${datos.id}`,
 		datos
@@ -86,7 +86,7 @@ export class PersonalService {
 	}
   
 	deshabilitar(datos: any, id: string | number): Observable<any> {
-	  datos['Listado de Personal'] = 'deshabilitar';
+		datos['deleted'] = false;
 	  return this.http.put(
 		this.apiUrl + this.prefix + `/${this.apiName}/${datos.id}`,
 		datos
