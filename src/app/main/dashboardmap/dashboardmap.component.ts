@@ -359,7 +359,7 @@ export class DashboardmapComponent implements OnInit {
 				device['msl'] = new Date().getTime();
 			
 				//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
-				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);				
 				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 				device['controls'] = this.createControls();
 				device.ms = (new Date().getTime() - device.msl);
