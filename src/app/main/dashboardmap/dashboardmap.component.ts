@@ -135,18 +135,18 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoutes = [];
 	maxdevices = 20;
 	updateTimesx(){
-			this.http.get(`http://172.20.5.22:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
+			this.http.get(`http://172.20.5.32:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
 				console.log("res",res);
 			});
 			console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 		}
 	botStart(){		
-		this.http.get(`http://172.20.5.22:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.5.32:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}	
 	botReset(){		
-		this.http.get(`http://172.20.5.22:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.5.32:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}

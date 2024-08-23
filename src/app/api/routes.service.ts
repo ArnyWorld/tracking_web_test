@@ -471,7 +471,7 @@ export class RoutesService {
             };
           });
           route['sections'].forEach((t) => {
-            t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 10);
+            t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
           });
 		  return result;
         })
@@ -501,7 +501,7 @@ export class RoutesService {
 				  };
 				});
 				route['sections'].forEach((t) => {
-				  t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 10);
+				  t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
 				});
 			  });
 			  return result;
@@ -538,8 +538,13 @@ export class RoutesService {
             };
           });
           route['sections'].forEach((t) => {
-            t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 10);
+            t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
           });
+		  route['splitCoordsLine'] = [];
+		  let i,j;
+		  for (i=0;i<route['sections'].length;i++)
+			for (j=0;j<route['sections'][i]['splitCoords'].length;j++)
+				route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]);
         });
         return result;
       })
