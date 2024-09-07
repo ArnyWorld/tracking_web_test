@@ -6,6 +6,8 @@ import { ServicioApi } from './servicio-api';
 
 import { transform, fromLonLat } from 'ol/proj';
 import * as olSphere from 'ol/sphere';
+import Polygon from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
 
 @Injectable({
   providedIn: 'root',
@@ -394,6 +396,51 @@ export class RoutesService {
     });
     return splitPoints;
   }
+  splitPointsCoordCells(route:any,extend:any, points: any, minDist: number, maxDist: number){
+	let cells = [];
+	/*cells.push(
+		[extend[0],extend[1]],
+		[extend[0],extend[3]],
+		[extend[2],extend[1]],
+		[extend[2],extend[3]]		
+	);*/
+	let polygon =  new Polygon([points]);
+	let feature = new Feature({
+		geometry:polygon
+	});
+
+	route['polygon'] = feature;
+	
+		//polygon.getGeometry().intersectsCoordinate();
+
+	let max_x = 100.0;
+	let max_y = 100.0;
+	//let step_x = (extend[2]-extend[0])/max_x;
+	//let step_y = (extend[3]-extend[1])/max_y;
+	
+	let step_x = 0.0001;
+	let step_y = 0.0001;
+
+	max_x = (extend[2]-extend[0])/step_x;
+	max_y = (extend[3]-extend[1])/step_y;
+
+
+	let ini_x = extend[0];
+	let ini_y = extend[1];
+/*
+	console.log("max_x",max_x);
+	console.log("max_y",max_y);
+*/
+	//if ( max_x > 0 && max_y >0 && max_x<100 && max_y<100)
+		for (let i=0;i<max_x;i++){
+			for (let j=0;j<max_y;j++){
+				if (feature.getGeometry().intersectsCoordinate([ini_x+i*step_x,ini_y+j*step_y]))
+					cells.push([ini_x+i*step_x,ini_y+j*step_y]);
+			}
+		}
+
+	return cells;	
+  }
   splitPointsCoord(points: any, minDist: number, maxDist: number) {
     let lastPoint = null;
     let acumDist: number = 0;
@@ -541,6 +588,10 @@ export class RoutesService {
             t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
           });
 		  route['splitCoordsLine'] = [];
+		  route['sections'].forEach((t) => {
+			t['splitCoordsCells'] = this.splitPointsCoordCells(route,route['extend'],t.coords, 4*2, 30*2);
+		  });
+		  
 		  let i,j;
 		  for (i=0;i<route['sections'].length;i++)
 			for (j=0;j<route['sections'][i]['splitCoords'].length;j++)

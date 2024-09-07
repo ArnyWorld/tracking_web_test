@@ -29,7 +29,6 @@
                                 </aol-geometry-point>
                                 </aol-feature>
                             </aol-source-vector>
-                        
                             <aol-style>
                                 <aol-style-circle [radius]="5">
                                 <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
@@ -38,7 +37,7 @@
                             </aol-style>
                         </aol-source-vector>
                     </aol-layer-vector>
-<!--
+
 					<div *ngIf="selectedRoute">
 						<div *ngFor="let section of selectedRoute?.sections">
 							 <aol-layer-vector >
@@ -91,7 +90,7 @@
 								</aol-feature>
 							</aol-source-vector>
 						</aol-layer-vector>
-					</div>-->
+					</div>
 				</aol-layer-group>
             </aol-map>
         </div>
@@ -100,7 +99,10 @@
     <ng-template #modalImport role="document" let-modal class="center-modal">
         <app-modal-import (onClose)="this.modalRef.hide();"></app-modal-import>
     </ng-template>
-
+    <ng-template #modalImportGeo role="document" let-modal class="center-modal">
+        <app-modal-import-geojson (onClose)="this.modalRef.hide();"></app-modal-import-geojson>
+    </ng-template>
+    
     <app-panel-right [selected]="'Routes'">
         <div ngProjectAs="Routes">
             <div *ngIf="mode == StatesEnum.ROUTE_VIEWER">
@@ -108,7 +110,8 @@
                 <div class="list-group list-group-flush border-bottom scrollarea">
 
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
-                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Routes</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar json</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportGeo,null)">Importar geojson</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Route</span>
                     </a>
 

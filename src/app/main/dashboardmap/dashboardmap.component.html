@@ -233,6 +233,42 @@
 										</aol-feature>
 									</aol-source-vector>
 								</aol-layer-vector>
+                                <aol-layer-vector  [zIndex]="750" >    
+                                    <!--<aol-source-cluster [distance]="50">                     -->
+                                        <aol-source-vector>
+                                            <div *ngFor="let section of route?.sections">
+                                                <aol-feature *ngFor="let pc of splitPerZoom(section.splitCoordsCells)">
+                                                <!-- <aol-feature *ngFor="let pc of section.splitCoordsCells">-->
+                                                <aol-geometry-point >
+                                                    <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                                </aol-geometry-point>
+                                                </aol-feature>
+                                            </div>
+                                        </aol-source-vector>
+                                    <!--</aol-source-cluster>-->
+                                    <aol-style>
+                                        <aol-style-circle [radius]="10">
+                                            <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                            <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                        </aol-style-circle>
+                                    </aol-style>
+                                    
+                                </aol-layer-vector>
+                                
+                                    <aol-layer-vector  #vectorSource [opacity]="0.5">
+                                        <aol-style>
+                                            <aol-style-stroke [color]="'#222222'" [width]="8"></aol-style-stroke>
+                                            <aol-style-fill [color]="'#2233aa88'" ></aol-style-fill>
+                                        </aol-style>
+                                        <aol-source-vector >
+                                            <aol-feature *ngFor="let section of route?.sections">
+                                                <aol-geometry-polygon>
+                                                    <aol-collection-coordinates [coordinates]="[section.coords]" [srid]="'EPSG:4326'">
+                                                    </aol-collection-coordinates>
+                                                </aol-geometry-polygon>
+                                            </aol-feature>
+                                        </aol-source-vector>
+                                    </aol-layer-vector>
 								<!-- 
 								<aol-layer-vector [visible]="route.controls.showSplit" *ngFor="let section of route.sections" [opacity]="route.controls.selected?0.9:0.4">
 									<aol-source-vector >
@@ -260,6 +296,7 @@
 					</div>
 					<!-- END ROUTES -->
 <!-- SELECTED ROUTE -->
+ <!-- 
 						<div *ngFor="let route of selectedRoutes" >
 
 							<aol-layer-vector  *ngFor="let section of route.sections" [opacity]="0.9">
@@ -282,7 +319,7 @@
 								</aol-style>
 							</aol-layer-vector>
 						</div>
-
+-->
 <!-- END SELECTED ROUTE -->
 
 

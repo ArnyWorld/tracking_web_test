@@ -20,6 +20,7 @@ import { ModalImportPersonalComponent } from './modal-import-personal/modal-impo
 import { ModalImportRoutesComponent } from './modal-import-routes/modal-import-routes.component';
 import { BotcomComponent } from './botcom/botcom.component';
 import { ModalImportDevicesComponent } from './modal-import-devices/modal-import-devices.component';
+import { ModalImportGeojsonComponent } from './modal-import-geojson/modal-import-geojson.component';
 import { BotcomliveComponent } from './botcomlive/botcomlive.component';
 
 
@@ -43,6 +44,7 @@ export class SocketOne extends Socket {
 	ModalImportPersonalComponent,
 	ModalImportRoutesComponent,
 	ModalImportDevicesComponent,
+	ModalImportGeojsonComponent,
 	BotcomComponent,
 	BotcomliveComponent,
   ],

@@ -135,18 +135,18 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoutes = [];
 	maxdevices = 20;
 	updateTimesx(){
-			this.http.get(`http://172.20.5.32:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
+			this.http.get(`http://172.20.50.67:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
 				console.log("res",res);
 			});
 			console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 		}
 	botStart(){		
-		this.http.get(`http://172.20.5.32:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.50.67:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}	
 	botReset(){		
-		this.http.get(`http://172.20.5.32:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.50.67:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}
@@ -302,6 +302,18 @@ export class DashboardmapComponent implements OnInit {
 				}, 1000);
 			});
 		});
+	}
+	splitPerZoom(array){
+		if (array.length < 100) return array;
+		let zoom = (160-Math.round(this.map.instance.getView().getZoom()*5));
+		console.log("zoom",zoom);
+		let temp_array = [];
+		for(let i = 0; i< array.length; i++){
+			if (i%zoom==0)
+				temp_array.push(array[i]);
+		}
+		return temp_array;
+
 	}
 	gotoDevice(device){
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));

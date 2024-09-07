@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Importar</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="form-group mb-1 row">
+        <div class="col-12">
+            <input class="form-control" type="text" [(ngModel)]="name_prefix"/>
+        </div> 
+        <div class="col-12">
+            <input class="form-control" type="file" (change)="readFile($event,importData)" />
+        </div> 
+        <div class="col-12">
+            <textarea class="form-control" [(ngModel)]="importData.text" rows="10"></textarea>
+        </div>
+        <div class="col-12">
+            <table>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="saveOnDb()"> {{this.createProgress}}</button>
+    <button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>
