@@ -15,7 +15,7 @@ import { PersonalService } from '../../api/personal.service';
 import { PointsService } from '../../api/points.service';
 import { RoutesService } from '../../api/routes.service';
 import { ImagesService } from '../../api/images.service';
-
+import $ from 'jquery';
 enum StatesEnum {
 	ROUTE_VIEWER = 1,
 	ROUTE_EDITOR = 2,
@@ -69,7 +69,7 @@ export class RoutessectionsComponent implements OnInit{
 		over:false,
 		coords:[]
 	};
-
+	mousePosition = null;
 	constructor(
 		private routesService: RoutesService,
 		private pointsService: PointsService,
@@ -79,7 +79,46 @@ export class RoutessectionsComponent implements OnInit{
 
 	ngOnInit(): void {
 		this.loadRoutes();
+		//this.setMapEvents();
 	}	
+	setMapEvents(){
+		
+		setTimeout(()=>{
+			let map = this.map.instance;			
+			let layers = map.getLayers();
+			let mousePosition = null;
+			//console.log("layers",layers);
+			let layer = layers['array_'][0];
+			//console.log("layer",layer);
+			layer.on('postrender', function(event) {
+				//console.log("postcompose");
+				event.crossOrigin = "Anonymous";
+				var ctx = event.context;
+				var pixelRatio = event.frameState.pixelRatio;
+				//console.log("mousePosition",mousePosition);
+				if (mousePosition) {
+				  var x = mousePosition[0] * pixelRatio;
+				  var y = mousePosition[1] * pixelRatio;
+				  var data = ctx.getImageData(x, y, 1, 1).data;
+				  var color = 'rgb(' + data[0] + ',' + data[1] + ','+ data[2] + ')';
+				  console.log("color",color);
+				  console.log("data",data);
+				  
+				  $('#box').css('background-color', color);
+				}
+			  });
+			  layer.set('postcompose', true);
+			$(map.getViewport()).on('mousemove', function(evt) {
+				//console.log("move");
+				mousePosition = map.getEventPixel(evt.originalEvent);
+				//console.log("mousePosition",this.mousePosition);
+				map.render();
+			  }).on('mouseout', function() {
+				mousePosition = null;
+				map.render();
+			  });
+		},3000);
+	}
 	createRouteControls(){
 		return {
 			selected:false,
@@ -104,7 +143,7 @@ export class RoutessectionsComponent implements OnInit{
 						coordinates:route.points.map(p => [p.lon, p.lat] )
 					}
 				}
-				this.routesService.pointsASections(route);
+				//this.routesService.pointsASections(route);
 				/*
 				route['sections'] = Array.from(this.routesService.groupBy(route.points, p => p.section)).map(
 					(p:any,index:number )=>{
@@ -116,9 +155,9 @@ export class RoutessectionsComponent implements OnInit{
 							;return [pp.lon,pp.lat]} ))};
 					}
 				);*/
-				route['sections'].forEach( t => {
+			/*	route['sections'].forEach( t => {
 					t['splitCoords'] = this.routesService.splitPointsCoord(t.coords,4,10);
-				});
+				});*/
 				
 				//route['sections'] = route['sections'].map(v=>v.value);
 				console.log("route",route);
@@ -215,25 +254,227 @@ export class RoutessectionsComponent implements OnInit{
 	/*ROUTES*/
 	lineString2:any;
 	lineString3:any;
+
+	createFromPixel2(route,zoom,ms){
+		let map = this.map.instance;	
+		var w = map.getSize()[0];
+		var h = map.getSize()[1];
+		console.log("map.w",w);
+		console.log("map.h",h);
+		setTimeout(async () => {
+			const response = await olMapScreenshot.getScreenshot(this.map.instance, {
+				showDisplayScale:false,				
+				//resolution: 150,
+				format: 'png',
+			});
+			console.log("createFromPixel2.response",response);
+			var canvas = document.createElement("canvas");
+			canvas.width=w;
+			canvas.height=h;
+
+			let cellPosition = null;
+			let	cellPaths = [];
+			let cells = route.sections[0]['splitCoordsCells'];
+			var data_index  = 0;
+			let currentCell = null;
+			let indexCell = -1;
+
+			route.sections[0]['cellPaths'] = cellPaths;
+			var myImage = new Image();
+			myImage.onload = function(){
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(myImage,0,0);
+				var data = ctx.getImageData(0, 0, w, h).data;
+				//console.log("data",data);
+				for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
+					//console.log("cell_index",cell_index);
+					currentCell = cells[cell_index];
+					cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+
+					//console.log("cellPosition",cellPosition);
+					//cellPosition[0] = ((cellPosition[0] % w) + w) % w;
+					//cellPosition[1] = ((cellPosition[1] % h) + h) % h;
+					//console.log("cellPosition",cellPosition);
+					cellPosition[0] = Math.round(cellPosition[0]);
+					cellPosition[1] = Math.round(cellPosition[1]);
+					var x = cellPosition[0] * 1;
+					var y = cellPosition[1] * 1;
+					data_index =y*w*4 + x*4 ;
+
+					//console.log("data_index",data_index);
+					//data = data[data_index];
+					//var data = ctx.getImageData(x, y, 1, 1).data;
+					var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
+					//console.log(color);
+					//if (data[data_index]==146 && data[data_index+1]==146 && data[data_index+2]==146){
+					//	cellPaths.push(currentCell);
+					//if (data[data_index]>=219 && data[data_index+1]<=216 && data[data_index+2]<=215){
+					if (data[data_index]>=140 && data[data_index]<=253 &&
+						data[data_index+1]>=140 && data[data_index+1]<=253 &&
+						data[data_index+2]>=140 && data[data_index+2]<=253 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
+					) {
+						cellPaths.push(currentCell);
+						//console.log("added");
+					}
+				}
+				console.log("route",route);
+			};
+
+			myImage.src = response.img;
+			
+
+			//cellPosition = map.getPixelFromCoordinate(currentCell);
+			//this.thumbRoute = await this.routesService.resizeImage(response.img);
+			//console.log("createFromPixel2.response",response);
+		});
+	}
+
+	createFromPixel(route,zoom,ms){
+		let me = this; 
+		let map = this.map.instance;	
+		
+		let layers = map.getLayers();
+		let mousePosition = null;
+		let layer = layers['array_'][0];
+		let readyToGetPixel = false;
+		
+		let cellPosition = null;
+		let	cellPaths = [];
+		let cells = route.sections[0]['splitCoordsCells'];
+		let currentCell = null;
+		let indexCell = -1;
+
+		route.sections[0]['cellPaths'] = cellPaths;
+
+		
+		//map.getView().setZoom(zoom);
+		//map.getView().setCenter(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+
+		let addPathCell = (data)=>{
+			if (data[0]>=140 && data[0]<=253 &&
+				data[1]>=140 && data[1]<=253 &&
+				data[2]>=140 && data[2]<=253 
+			) {
+				cellPaths.push(currentCell);
+				console.log("route",route)
+			}
+			if (indexCell+1 >= cells.length) return false;
+			indexCell++;			
+			currentCell = cells[indexCell];
+			cellPosition = map.getPixelFromCoordinate(currentCell);
+			var w = map.getSize()[0];
+			var h = map.getSize()[1];
+
+			cellPosition[0] = ((cellPosition[0] % w) + w) % w;
+			cellPosition[1] = ((cellPosition[1] % h) + h) % h;
+
+			return true;
+//			console.log("cellPosition",cellPosition);
+//			console.log("center",[currentCell[0],currentCell[1]]);//'EPSG:4326'
+			//map.getView().setCenter(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+			/*setTimeout( ()=>{
+				readyToGetPixel = true; 
+				console.log("indexCell",indexCell);
+//				map.render();
+			},ms);*/
+		};
+		layer.on('postrender', function(event) {
+			var ctx = event.context;
+			var pixelRatio = event.frameState.pixelRatio;
+			console.log("pixelRatio",pixelRatio);
+		//	console.log("redndered");
+			console.log("postrender");
+			var w = map.getSize()[0];
+			var h = map.getSize()[1];
+			console.log("map.w",w);
+			console.log("map.h",h);
+			if ( !readyToGetPixel ) return;
+
+			var data = ctx.getImageData(0, 0, w, h).data;
+			//var data = [];
+			var data_index  = 0;
+			console.log("cells.length:",cells.length);
+			console.log("w,h",w,h);
+			console.log("data.length",data.length);setTimeout(()=>{
+				for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
+					//console.log("cell_index",cell_index);
+					currentCell = cells[cell_index];
+					cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+					cellPosition[0] = ((cellPosition[0] % w) + w) % w;
+					cellPosition[1] = ((cellPosition[1] % h) + h) % h;
+					var x = cellPosition[0] * pixelRatio;
+					var y = cellPosition[1] * pixelRatio;
+					data_index =y*w*4 + x*4 ;
+					//data = data[data_index];
+					//var data = ctx.getImageData(x, y, 1, 1).data;
+					var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
+					console.log(color);
+					if (data[0]>=219 && data[1]<=216 && data[2]<=215){
+				/*	if (data[0]>=140 && data[0]<=253 &&
+						data[1]>=140 && data[1]<=253 &&
+						data[2]>=140 && data[2]<=253 &&  data[0] == data[1] == data[2]
+					) {*/
+					//	cellPaths.push(currentCell);
+						//console.log("added");
+					}
+					//$('#box').css('background-color', color);
+				}
+				console.log("route",route);
+			},1000);
+			
+			readyToGetPixel=false;
+			
+
+			/*if (readyToGetPixel)
+				if (cellPosition) {
+					var ctx = event.context;
+					var pixelRatio = event.frameState.pixelRatio;
+				//	console.log("redndered");
+					var x = cellPosition[0] * pixelRatio;
+					var y = cellPosition[1] * pixelRatio;
+					var data = ctx.getImageData(x, y, 1, 1).data;
+					var color = 'rgb(' + data[0] + ',' + data[1] + ','+ data[2] + ')';
+				//	console.log("color",color);
+					readyToGetPixel=false;
+					cellPosition=null;
+				//	setTimeout( ()=>{
+						while(addPathCell(data));
+				//	},ms);
+					
+					//$('#box').css('background-color', color);
+				}*/
+			});
+		//layer.set('postcompose', true);
+	
+
+		
+		setTimeout( ()=>{
+			readyToGetPixel = true; 
+			map.render();	
+		},2000);
+	}
+
 	selectRoute (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
+		//this.routesService.cellsToRoutePixel(this.map, route);
+
+
 		this.selectedRoute = route;
-		console.log("this.selectedRoute",this.selectedRoute);
-		
-		/*
 		console.log("this.selectedRoute",this.selectedRoute);
 		const extent = this.selectedRoute.extend;		
 		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
-		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];*/
+		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		
-		this.map.instance.getView().fit( this.selectedRoute.extend_3857, {
+		this.map.instance.getView().fit(extent3857, {
 			padding: [100, 100, 100, 100],
 			maxZoom: 23,
 			duration: 300
 		});	
 		setTimeout(() => {
 			if (route!== undefined) route.controls.show = true;
+			//this.createFromPixel(route,28,200);
+			this.createFromPixel2(route,28,200); 
 		}, 200);
 	}
 

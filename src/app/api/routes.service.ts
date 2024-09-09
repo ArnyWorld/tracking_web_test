@@ -396,22 +396,35 @@ export class RoutesService {
     });
     return splitPoints;
   }
+
+  cellsToRoutePixel(map:any,route:any){
+	let pixels = [];
+	console.log("route.sections.length",route.sections.length);
+	for ( let s_index=0 ;s_index < route.sections.length; s_index ++ ){
+		let section = route.sections[s_index];
+		for ( let c_index=0 ;c_index < section['splitCoordsCells'].length; c_index ++ ){		
+			let cell = section['splitCoordsCells'][c_index];
+			
+			pixels.push({
+				coord : cell,
+				pixel : map.instance.getPixelFromCoordinate([cell[0],cell[1]])
+			});
+		}
+	}
+	route['pixel'] = pixels;
+	console.log("pixels",pixels);
+	let cells = route.splitPointsCoordCells;
+  }
+
   splitPointsCoordCells(route:any,extend:any, points: any, minDist: number, maxDist: number){
 	let cells = [];
-	/*cells.push(
-		[extend[0],extend[1]],
-		[extend[0],extend[3]],
-		[extend[2],extend[1]],
-		[extend[2],extend[3]]		
-	);*/
+	/*cells.push( [extend[0],extend[1]], [extend[0],extend[3]], [extend[2],extend[1]], [extend[2],extend[3]]		);*/
 	let polygon =  new Polygon([points]);
-	let feature = new Feature({
-		geometry:polygon
-	});
+	let feature = new Feature({	geometry:polygon });
 
 	route['polygon'] = feature;
 	
-		//polygon.getGeometry().intersectsCoordinate();
+	//polygon.getGeometry().intersectsCoordinate();
 
 	let max_x = 100.0;
 	let max_y = 100.0;
@@ -424,23 +437,19 @@ export class RoutesService {
 	max_x = (extend[2]-extend[0])/step_x;
 	max_y = (extend[3]-extend[1])/step_y;
 
-
 	let ini_x = extend[0];
 	let ini_y = extend[1];
-/*
-	console.log("max_x",max_x);
-	console.log("max_y",max_y);
-*/
 	//if ( max_x > 0 && max_y >0 && max_x<100 && max_y<100)
-		for (let i=0;i<max_x;i++){
-			for (let j=0;j<max_y;j++){
-				if (feature.getGeometry().intersectsCoordinate([ini_x+i*step_x,ini_y+j*step_y]))
-					cells.push([ini_x+i*step_x,ini_y+j*step_y]);
-			}
+	for (let i=0;i<max_x;i++){
+		for (let j=0;j<max_y;j++){
+			if (feature.getGeometry().intersectsCoordinate([ini_x+i*step_x,ini_y+j*step_y]))
+				cells.push([ini_x+i*step_x,ini_y+j*step_y]);
 		}
+	}
 
 	return cells;	
   }
+  
   splitPointsCoord(points: any, minDist: number, maxDist: number) {
     let lastPoint = null;
     let acumDist: number = 0;

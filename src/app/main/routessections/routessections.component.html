@@ -15,8 +15,8 @@
                 </aol-view>
 
                 <aol-layer-tile>
-                     <aol-source-osm></aol-source-osm> 
-                    <!-- <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz> -->
+                    <!-- <aol-source-osm></aol-source-osm> -->
+                    <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png" crossOrigin="anonymous">	</aol-source-xyz>
                 </aol-layer-tile>
 
 				<aol-layer-group>
@@ -37,8 +37,30 @@
                             </aol-style>
                         </aol-source-vector>
                     </aol-layer-vector>
+                    
 
 					<div *ngIf="selectedRoute">
+                        <aol-layer-vector  [zIndex]="750" >    
+                            <!--<aol-source-cluster [distance]="50">                     -->
+                                <aol-source-vector>
+                                    <div *ngFor="let section of selectedRoute?.sections">
+                                        <aol-feature *ngFor="let pc of section.cellPaths">
+                                        <!-- <aol-feature *ngFor="let pc of section.splitCoordsCells">-->
+                                        <aol-geometry-point >
+                                            <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                        </aol-geometry-point>
+                                        </aol-feature>
+                                    </div>
+                                </aol-source-vector>
+                            <!--</aol-source-cluster>-->
+                            <aol-style>
+                                <aol-style-circle [radius]="10">
+                                    <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                    <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                </aol-style-circle>
+                            </aol-style>
+                            
+                        </aol-layer-vector>
 						<div *ngFor="let section of selectedRoute?.sections">
 							 <aol-layer-vector >
 								<aol-source-vector>
@@ -104,11 +126,11 @@
     </ng-template>
     
     <app-panel-right [selected]="'Routes'">
-        <div ngProjectAs="Routes">
-            <div *ngIf="mode == StatesEnum.ROUTE_VIEWER">
+        <div ngProjectAs="Routes" >
+            <div *ngIf="mode == StatesEnum.ROUTE_VIEWER" >
 
-                <div class="list-group list-group-flush border-bottom scrollarea">
-
+                <div class="list-group list-group-flush border-bottom " >
+<div id="box" style="width:50px;height:50px; background-color:#000"></div>
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar json</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportGeo,null)">Importar geojson</span>
@@ -118,6 +140,7 @@
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let route of routes" (click)="selectRoute(route)">
                         <div class="d-flex w-100 align-items-center justify-content-between">
                             <strong class="mb-1">{{route.name}}</strong>
+                            <small><button class="btn btn-sm btn-outline"> <i class="fas fa-map"></i> </button></small>
                             <small>Recorrido: {{route.distance}} metros</small>
                         </div>
                         <div class="col-10 mb-1 small">
