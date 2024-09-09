@@ -40,8 +40,7 @@
                     
 
 					<div *ngIf="selectedRoute">
-                        <aol-layer-vector  [zIndex]="750" >    
-                            <!--<aol-source-cluster [distance]="50">                     -->
+                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show">    
                                 <aol-source-vector>
                                     <div *ngFor="let section of selectedRoute?.sections">
                                         <aol-feature *ngFor="let pc of section.cellPaths">
@@ -52,11 +51,10 @@
                                         </aol-feature>
                                     </div>
                                 </aol-source-vector>
-                            <!--</aol-source-cluster>-->
                             <aol-style>
                                 <aol-style-circle [radius]="10">
                                     <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
-                                    <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                    <aol-style-fill [color]="'#3377ccff'"></aol-style-fill>
                                 </aol-style-circle>
                             </aol-style>
                             

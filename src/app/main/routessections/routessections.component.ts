@@ -256,77 +256,100 @@ export class RoutessectionsComponent implements OnInit{
 	lineString3:any;
 
 	createFromPixel2(route,zoom,ms){
+		this.selectedRoute.controls.show = false;
+		let me = this;
 		let map = this.map.instance;	
 		var w = map.getSize()[0];
 		var h = map.getSize()[1];
 		console.log("map.w",w);
 		console.log("map.h",h);
+		
+		let cellPosition = null;
+		let	cellPaths = [];
+		let cells = route.sections[1]['splitCoordsCells'];
+		var data_index  = 0;
+		let currentCell = null;
+		let indexCell = -1;
+		
 		setTimeout(async () => {
-			const response = await olMapScreenshot.getScreenshot(this.map.instance, {
-				showDisplayScale:false,				
-				//resolution: 150,
+			const response =  await olMapScreenshot.getScreenshot(this.map.instance, {
+			//	showDisplayScale:false,				
+				
+				//resolution: 600,
 				format: 'png',
 			});
-			console.log("createFromPixel2.response",response);
-			var canvas = document.createElement("canvas");
-			canvas.width=w;
-			canvas.height=h;
-
-			let cellPosition = null;
-			let	cellPaths = [];
-			let cells = route.sections[0]['splitCoordsCells'];
-			var data_index  = 0;
-			let currentCell = null;
-			let indexCell = -1;
-
-			route.sections[0]['cellPaths'] = cellPaths;
-			var myImage = new Image();
-			myImage.onload = function(){
-				var ctx = canvas.getContext("2d");
-				ctx.drawImage(myImage,0,0);
-				var data = ctx.getImageData(0, 0, w, h).data;
-				//console.log("data",data);
-				for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
-					//console.log("cell_index",cell_index);
-					currentCell = cells[cell_index];
-					cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
-
-					//console.log("cellPosition",cellPosition);
-					//cellPosition[0] = ((cellPosition[0] % w) + w) % w;
-					//cellPosition[1] = ((cellPosition[1] % h) + h) % h;
-					//console.log("cellPosition",cellPosition);
-					cellPosition[0] = Math.round(cellPosition[0]);
-					cellPosition[1] = Math.round(cellPosition[1]);
-					var x = cellPosition[0] * 1;
-					var y = cellPosition[1] * 1;
-					data_index =y*w*4 + x*4 ;
-
-					//console.log("data_index",data_index);
-					//data = data[data_index];
-					//var data = ctx.getImageData(x, y, 1, 1).data;
-					var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
-					//console.log(color);
-					//if (data[data_index]==146 && data[data_index+1]==146 && data[data_index+2]==146){
-					//	cellPaths.push(currentCell);
-					//if (data[data_index]>=219 && data[data_index+1]<=216 && data[data_index+2]<=215){
-					if (data[data_index]>=140 && data[data_index]<=253 &&
-						data[data_index+1]>=140 && data[data_index+1]<=253 &&
-						data[data_index+2]>=140 && data[data_index+2]<=253 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
-					) {
-						cellPaths.push(currentCell);
-						//console.log("added");
-					}
-				}
-				console.log("route",route);
-			};
-
-			myImage.src = response.img;
 			
+				//console.log("createFromPixel2.response",response);
+	
+				let cellPosition = null;
+				let	cellPaths = [];
+				let cells = route.sections[1]['splitCoordsCells'];
+				var data_index  = 0;
+				let currentCell = null;
+				let indexCell = -1;
+	
+				route.sections[1]['cellPaths'] = cellPaths;
+				var myImage = new Image();
+				myImage.src = response.img;
+				;
+				myImage.onload = function(){
+					var canvas = document.createElement("canvas");
+					canvas.width=w;
+					canvas.height=h;
+					var ctx = canvas.getContext("2d");
+					ctx.drawImage(myImage,0,0);
+					var data = ctx.getImageData(0, 0, w, h).data;
+					//me.taskGetPixel(cells,0,data,cellPaths,map,w,h,0,2000);
+					console.log("cells.length",cells.length);
+					for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
+						currentCell = cells[cell_index];
+						cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+	
+						cellPosition[0] = Math.round(cellPosition[0]);
+						cellPosition[1] = Math.round(cellPosition[1]);
+						var x = cellPosition[0] * 1;
+						var y = cellPosition[1] * 1;
+						data_index =y*w*4 + x*4 ;
+						var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
+						if (data[data_index]>=140 && data[data_index]<=153 &&
+							data[data_index+1]>=140 && data[data_index+1]<=153 &&
+							data[data_index+2]>=140 && data[data_index+2]<=153 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
+						) {
+							cellPaths.push(currentCell);
+						}
 
-			//cellPosition = map.getPixelFromCoordinate(currentCell);
-			//this.thumbRoute = await this.routesService.resizeImage(response.img);
-			//console.log("createFromPixel2.response",response);
-		});
+					}
+					me.selectedRoute.controls.show = true;
+					console.log("route.cellpaths.length",cellPaths.length);
+					console.log("route",route);
+					myImage.onload = null;
+				};
+	
+		
+		}, 2000);
+	}
+
+	taskGetPixel(cells,cell_index_ini,data,cellPaths,map,w,h, pos,step){
+		if (cells[cell_index_ini+pos*step] == undefined) return;
+		console.log("taskGetPixel pos",pos );
+		for(let cell_index = cell_index_ini; cell_index < cell_index_ini+pos*step; cell_index++ ){
+			let currentCell = cells[cell_index];
+			let cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+
+			cellPosition[0] = Math.round(cellPosition[0]);
+			cellPosition[1] = Math.round(cellPosition[1]);
+			var x = cellPosition[0] * 1;
+			var y = cellPosition[1] * 1;
+			let data_index =y*w*4 + x*4 ;
+			var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
+			if (data[data_index]>=140 && data[data_index]<=153 &&
+				data[data_index+1]>=140 && data[data_index+1]<=153 &&
+				data[data_index+2]>=140 && data[data_index+2]<=153 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
+			) {
+				cellPaths.push(currentCell);
+			}
+		}
+		this.taskGetPixel(cells,cell_index_ini+(pos)*step,data,cellPaths,map,w,h,pos+1,step);
 	}
 
 	createFromPixel(route,zoom,ms){
@@ -396,6 +419,7 @@ export class RoutessectionsComponent implements OnInit{
 			console.log("cells.length:",cells.length);
 			console.log("w,h",w,h);
 			console.log("data.length",data.length);setTimeout(()=>{
+				
 				for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
 					//console.log("cell_index",cell_index);
 					currentCell = cells[cell_index];
@@ -456,6 +480,10 @@ export class RoutessectionsComponent implements OnInit{
 
 	selectRoute (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
+		/*if (this.selectedRoute!== undefined) {this.selectedRoute.controls.show = false;
+			if (!this.selectedRoute.controls.show ) return;
+		}*/
+		
 		//this.routesService.cellsToRoutePixel(this.map, route);
 
 
@@ -466,16 +494,17 @@ export class RoutessectionsComponent implements OnInit{
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		
-		this.map.instance.getView().fit(extent3857, {
+	/*	this.map.instance.getView().fit(extent3857, {
 			padding: [100, 100, 100, 100],
 			maxZoom: 23,
 			duration: 300
-		});	
-		setTimeout(() => {
-			if (route!== undefined) route.controls.show = true;
+		});	*/
+		//this.map.instance.render();
+		//setTimeout(() => {
+		//	if (route!== undefined) route.controls.show = true;
 			//this.createFromPixel(route,28,200);
 			this.createFromPixel2(route,28,200); 
-		}, 200);
+		//}, 200);
 	}
 
 	createThumb(callback){

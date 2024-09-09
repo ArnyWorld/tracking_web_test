@@ -433,6 +433,7 @@ export class RoutesService {
 	
 	let step_x = 0.0001;
 	let step_y = 0.0001;
+	let step_y2 = 0.0001*0.75;
 
 	max_x = (extend[2]-extend[0])/step_x;
 	max_y = (extend[3]-extend[1])/step_y;
@@ -443,7 +444,15 @@ export class RoutesService {
 	for (let i=0;i<max_x;i++){
 		for (let j=0;j<max_y;j++){
 			if (feature.getGeometry().intersectsCoordinate([ini_x+i*step_x,ini_y+j*step_y]))
-				cells.push([ini_x+i*step_x,ini_y+j*step_y]);
+				/*if (j%2==0)
+					cells.push([ini_x+i*step_x,ini_y+j*step_y,true]);
+				else*/
+				/*if(Math.random()>0.5)
+					cells.push([ini_x+i*step_x,ini_y+j*step_y ,true]);
+				else
+					cells.push([ini_x+i*step_x,ini_y+j*step_y+step_y2,true]);*/
+				
+				cells.push([ini_x+i*step_x +step_y2*Math.random(),ini_y+j*step_y+step_y2*Math.random(),true]);
 		}
 	}
 
