@@ -430,10 +430,13 @@ export class RoutesService {
 	let max_y = 100.0;
 	//let step_x = (extend[2]-extend[0])/max_x;
 	//let step_y = (extend[3]-extend[1])/max_y;
-	
+	/*
+	let step_x = 0.00005;
+	let step_y = 0.00005;
+	let step_y2 = 0.00005*0.75;*/
 	let step_x = 0.0001;
 	let step_y = 0.0001;
-	let step_y2 = 0.0001*0.75;
+	let step_y2 = 0.0001*0.45;
 
 	max_x = (extend[2]-extend[0])/step_x;
 	max_y = (extend[3]-extend[1])/step_y;

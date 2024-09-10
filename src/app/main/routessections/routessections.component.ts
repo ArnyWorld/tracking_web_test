@@ -15,7 +15,7 @@ import { PersonalService } from '../../api/personal.service';
 import { PointsService } from '../../api/points.service';
 import { RoutesService } from '../../api/routes.service';
 import { ImagesService } from '../../api/images.service';
-import $ from 'jquery';
+//import $ from 'jquery';
 enum StatesEnum {
 	ROUTE_VIEWER = 1,
 	ROUTE_EDITOR = 2,
@@ -82,7 +82,7 @@ export class RoutessectionsComponent implements OnInit{
 		//this.setMapEvents();
 	}	
 	setMapEvents(){
-		
+		/*
 		setTimeout(()=>{
 			let map = this.map.instance;			
 			let layers = map.getLayers();
@@ -117,7 +117,7 @@ export class RoutessectionsComponent implements OnInit{
 				mousePosition = null;
 				map.render();
 			  });
-		},3000);
+		},3000);*/
 	}
 	createRouteControls(){
 		return {
@@ -266,6 +266,11 @@ export class RoutessectionsComponent implements OnInit{
 		
 		let cellPosition = null;
 		let	cellPaths = [];
+		if (route.sections[1]['cellPaths']==undefined){
+			route.sections[1]['cellPaths'] = cellPaths;
+		}else{
+			cellPaths = route.sections[1]['cellPaths'];
+		}
 		let cells = route.sections[1]['splitCoordsCells'];
 		var data_index  = 0;
 		let currentCell = null;
@@ -281,14 +286,7 @@ export class RoutessectionsComponent implements OnInit{
 			
 				//console.log("createFromPixel2.response",response);
 	
-				let cellPosition = null;
-				let	cellPaths = [];
-				let cells = route.sections[1]['splitCoordsCells'];
-				var data_index  = 0;
-				let currentCell = null;
-				let indexCell = -1;
 	
-				route.sections[1]['cellPaths'] = cellPaths;
 				var myImage = new Image();
 				myImage.src = response.img;
 				;
@@ -301,12 +299,15 @@ export class RoutessectionsComponent implements OnInit{
 					var data = ctx.getImageData(0, 0, w, h).data;
 					//me.taskGetPixel(cells,0,data,cellPaths,map,w,h,0,2000);
 					console.log("cells.length",cells.length);
-					for(let cell_index = 0; cell_index < cells.length; cell_index++ ){
+					for(let cell_index = 0; cell_index < cells.length; cell_index++ ){						 
 						currentCell = cells[cell_index];
+						if (!currentCell[2]) continue;
 						cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
 	
 						cellPosition[0] = Math.round(cellPosition[0]);
 						cellPosition[1] = Math.round(cellPosition[1]);
+						if ( cellPosition[0]> w-1 || cellPosition[1]>h-1) continue;
+						if ( cellPosition[0]< 0 || cellPosition[1]<0) continue;
 						var x = cellPosition[0] * 1;
 						var y = cellPosition[1] * 1;
 						data_index =y*w*4 + x*4 ;
@@ -315,10 +316,15 @@ export class RoutessectionsComponent implements OnInit{
 							data[data_index+1]>=140 && data[data_index+1]<=153 &&
 							data[data_index+2]>=140 && data[data_index+2]<=153 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
 						) {
+							currentCell[2] = false;
 							cellPaths.push(currentCell);
 						}
 
 					}
+					
+					for(let cell_index = 0; cell_index < cells.length; cell_index++ )
+						if (!cells[cell_index][2])
+							cells.splice(cell_index,1);
 					me.selectedRoute.controls.show = true;
 					console.log("route.cellpaths.length",cellPaths.length);
 					console.log("route",route);
