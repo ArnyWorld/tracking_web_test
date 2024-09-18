@@ -2,9 +2,9 @@
     <!-- <app-panel-float-nav></app-panel-float-nav> -->
     <div class="divMid">
 
-        <div style="height: 100%;width:1400px; overflow: hidden;">
-             <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">   
-            <!-- <aol-map #map width="8000px" height="8000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">  -->
+        <div style="height: 100%;width:1600px; overflow: hidden;">
+             <!-- <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">    -->
+             <aol-map #map width="10000px" height="10000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">  
                 <aol-interaction-default> </aol-interaction-default>
                 <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="LineString" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
                 </aol-interaction-draw>

@@ -382,6 +382,12 @@ export class RoutessectionsComponent implements OnInit{
 							cell[1] = currentCell[1]+cell[1]/2;
 							return cell;
 						}
+						let midPoint3 = (currentCell,parentCell,parentCell2)=>{
+							let cell = [currentCell[0]+parentCell[0]+parentCell2[0],currentCell[1]+parentCell[1]+parentCell2[1]];
+							cell[0] = currentCell[0]/3;
+							cell[1] = currentCell[1]/3;
+							return cell;
+						}
 						let getNear = (index_parent,pindex)=>{
 							dist = 99999;
 							near = null;
@@ -465,8 +471,10 @@ export class RoutessectionsComponent implements OnInit{
 							let smooth_linePath = [] ;
 							
 							if (linePath.length > 0) smooth_linePath.push(linePath[0]);
+							//for(let p_index = 1; p_index < linePath.length; p_index++ ){
 							for(let p_index = 1; p_index < linePath.length; p_index++ ){
 								smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
+								//smooth_linePath.push(midPoint3(linePath[p_index-2],linePath[p_index-1],linePath[p_index]));
 							}
 							if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);
 
@@ -699,7 +707,7 @@ export class RoutessectionsComponent implements OnInit{
 		
 		this.map.instance.getView().fit(extent3857, {
 			//padding: [100, 100, 100, 100],
-			maxZoom: 23,
+			maxZoom: 18,
 			duration: 300
 		});	
 		//this.map.instance.render();
@@ -710,7 +718,7 @@ export class RoutessectionsComponent implements OnInit{
 				this.guardarRuta();
 			}); 
 			//this.createFromPixel3(route,18,200,0,0); 
-		}, 16300);
+		}, 32300);
 	}
 
 	guardarRuta(){
@@ -728,23 +736,25 @@ export class RoutessectionsComponent implements OnInit{
 		console.log('route', this.newRoute);
 		this.routesService.register(this.newRoute).subscribe((result: any) => {
 			let points = [];
-			route.sections.forEach( (s,is)=>{	
+			route.sections.forEach( (s,iss)=>{	
 				s.smoothPaths.forEach( (sm,iz)=>{
+					countsection++;
 					sm.forEach( (smm ,ix)=> {								
 						let punto = {
 							route_id: result.content.id,
-							lat: smm[0],
-							lon: smm[1],
-							section: iz,
+							lat: smm[1],
+							lon: smm[0],
+							section: countsection,
 						};
 						points.push(punto);
 					});
 								
-					this.pointsService.register(points).subscribe((result: any) => {
-						console.log("puntos creados result:", result);
-					});
 				});
 				
+			});
+			
+			this.pointsService.register(points).subscribe((result: any) => {
+				console.log("puntos creados result:", result);
 			});
 			console.log("result", result);			
 			

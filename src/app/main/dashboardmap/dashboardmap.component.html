@@ -237,8 +237,8 @@
                                     <!--<aol-source-cluster [distance]="50">                     -->
                                         <aol-source-vector>
                                             <div *ngFor="let section of route?.sections">
-                                                <aol-feature *ngFor="let pc of splitPerZoom(section.splitCoordsCells)">
-                                                <!-- <aol-feature *ngFor="let pc of section.splitCoordsCells">-->
+                                                <!-- <aol-feature *ngFor="let pc of splitPerZoom(section.splitCoordsCells)"> -->
+                                                 <aol-feature *ngFor="let pc of section.splitCoordsCells">
                                                 <aol-geometry-point >
                                                     <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
                                                 </aol-geometry-point>
