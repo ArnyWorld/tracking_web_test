@@ -2,8 +2,9 @@
     <!-- <app-panel-float-nav></app-panel-float-nav> -->
     <div class="divMid">
 
-        <div style="height: 100%">
-            <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">
+        <div style="height: 100%;width:1400px; overflow: hidden;">
+             <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">   
+            <!-- <aol-map #map width="8000px" height="8000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">  -->
                 <aol-interaction-default> </aol-interaction-default>
                 <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="LineString" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
                 </aol-interaction-draw>
@@ -20,7 +21,7 @@
                 </aol-layer-tile>
 
 				<aol-layer-group>
-                    <aol-layer-vector *ngIf="selectedRoute" >
+                    <aol-layer-vector *ngIf="selectedRoute && selectedRoute.controls.show" >
                         <aol-source-vector>
                             <aol-source-vector>
                                 <aol-feature *ngFor="let pc of selectedRoute.splitCoordsLine">
@@ -40,8 +41,8 @@
                     
 
 					<div *ngIf="selectedRoute">
-                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show">    
-                                <aol-source-vector>
+                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show && false">    
+                                <aol-source-vector >
                                     <div *ngFor="let section of selectedRoute?.sections">
                                         <aol-feature *ngFor="let pc of section.cellPaths">
                                         <!-- <aol-feature *ngFor="let pc of section.splitCoordsCells">-->
@@ -52,14 +53,40 @@
                                     </div>
                                 </aol-source-vector>
                             <aol-style>
-                                <aol-style-circle [radius]="10">
+                                <aol-style-circle [radius]="5">
                                     <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                                     <aol-style-fill [color]="'#3377ccff'"></aol-style-fill>
                                 </aol-style-circle>
                             </aol-style>
-                            
                         </aol-layer-vector>
 						<div *ngFor="let section of selectedRoute?.sections">
+                            <aol-layer-vector *ngIf="section.linePaths">
+								<aol-source-vector>
+									<aol-style>
+										<aol-style-stroke [color]="'rgba(160, 77, 49)'" [width]="3"></aol-style-stroke>							
+									</aol-style>
+									<aol-feature *ngFor="let linepath of section.linePaths">
+										<aol-geometry-linestring>
+											<aol-collection-coordinates [coordinates]="linepath" [srid]="'EPSG:4326'">
+											</aol-collection-coordinates>
+										</aol-geometry-linestring>
+									</aol-feature>
+								</aol-source-vector>
+							</aol-layer-vector>
+                            <aol-layer-vector *ngIf="section.smoothPaths">
+								<aol-source-vector>
+									<aol-style>
+										<aol-style-stroke [color]="'rgba(100, 177, 149)'" [width]="6"></aol-style-stroke>							
+									</aol-style>
+									<aol-feature *ngFor="let linepath of section.smoothPaths">
+										<aol-geometry-linestring>
+											<aol-collection-coordinates [coordinates]="linepath" [srid]="'EPSG:4326'">
+											</aol-collection-coordinates>
+										</aol-geometry-linestring>
+									</aol-feature>
+								</aol-source-vector>
+							</aol-layer-vector>
+
 							 <aol-layer-vector >
 								<aol-source-vector>
 									<aol-style>
@@ -132,7 +159,8 @@
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar json</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportGeo,null)">Importar geojson</span>
-                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Route</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Ruta por trayectos</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR_AREA">Crear Rutas por areas</span>
                     </a>
 
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let route of routes" (click)="selectRoute(route)">

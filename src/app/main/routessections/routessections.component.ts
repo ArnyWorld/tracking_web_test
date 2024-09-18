@@ -20,6 +20,7 @@ enum StatesEnum {
 	ROUTE_VIEWER = 1,
 	ROUTE_EDITOR = 2,
 	ROUTE_CREATOR = 3,
+	ROUTE_CREATOR_AREA = 4,
 }
 
 @Component({
@@ -255,84 +256,280 @@ export class RoutessectionsComponent implements OnInit{
 	lineString2:any;
 	lineString3:any;
 
-	createFromPixel2(route,zoom,ms){
+	createFromPixel2(route,zoom,ms,cb){
 		this.selectedRoute.controls.show = false;
 		let me = this;
 		let map = this.map.instance;	
 		var w = map.getSize()[0];
 		var h = map.getSize()[1];
-		console.log("map.w",w);
-		console.log("map.h",h);
+		//console.log("map.w",w);
+		//console.log("map.h",h);
+
 		
-		let cellPosition = null;
-		let	cellPaths = [];
-		if (route.sections[1]['cellPaths']==undefined){
-			route.sections[1]['cellPaths'] = cellPaths;
-		}else{
-			cellPaths = route.sections[1]['cellPaths'];
-		}
-		let cells = route.sections[1]['splitCoordsCells'];
-		var data_index  = 0;
-		let currentCell = null;
-		let indexCell = -1;
-		
+		/*map.getView().setZoom(16);
+		map.getView().setCenter(transform([route.extend[0],route.extend[3]], 'EPSG:4326', 'EPSG:3857'));*/
+
+		//let t = (e)=> transform(e, 'EPSG:4326', 'EPSG:3857');
 		setTimeout(async () => {
 			const response =  await olMapScreenshot.getScreenshot(this.map.instance, {
-			//	showDisplayScale:false,				
-				
+			//	showDisplayScale:false,								
 				//resolution: 600,
 				format: 'png',
 			});
 			
 				//console.log("createFromPixel2.response",response);
 	
-	
 				var myImage = new Image();
-				myImage.src = response.img;
-				;
 				myImage.onload = function(){
-					var canvas = document.createElement("canvas");
-					canvas.width=w;
-					canvas.height=h;
-					var ctx = canvas.getContext("2d");
-					ctx.drawImage(myImage,0,0);
-					var data = ctx.getImageData(0, 0, w, h).data;
-					//me.taskGetPixel(cells,0,data,cellPaths,map,w,h,0,2000);
-					console.log("cells.length",cells.length);
-					for(let cell_index = 0; cell_index < cells.length; cell_index++ ){						 
-						currentCell = cells[cell_index];
-						if (!currentCell[2]) continue;
-						cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
-	
-						cellPosition[0] = Math.round(cellPosition[0]);
-						cellPosition[1] = Math.round(cellPosition[1]);
-						if ( cellPosition[0]> w-1 || cellPosition[1]>h-1) continue;
-						if ( cellPosition[0]< 0 || cellPosition[1]<0) continue;
-						var x = cellPosition[0] * 1;
-						var y = cellPosition[1] * 1;
-						data_index =y*w*4 + x*4 ;
-						var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
-						if (data[data_index]>=140 && data[data_index]<=153 &&
-							data[data_index+1]>=140 && data[data_index+1]<=153 &&
-							data[data_index+2]>=140 && data[data_index+2]<=153 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
-						) {
-							currentCell[2] = false;
-							cellPaths.push(currentCell);
+
+				for(let s_index = 0; s_index < route.sections.length ; s_index++){
+					let section = route.sections[s_index];
+			
+					let cellPosition = null;
+					let	cellPaths = [];
+					let	cellLinePaths = [];
+			
+					if (section['cellPaths']==undefined){
+						section['cellPaths'] = cellPaths;
+						section['linePaths'] = cellLinePaths;			
+					}else{
+						cellPaths = section['cellPaths'];
+						cellLinePaths = section['linePaths'];
+					}
+			
+					let cells = section['splitCoordsCells'];
+					var data_index  = 0;
+					let currentCell = null;
+					let indexCell = -1;
+
+						var canvas = document.createElement("canvas");
+						canvas.width=w;
+						canvas.height=h;
+						var ctx = canvas.getContext("2d");
+						ctx.drawImage(myImage,0,0);
+						var data = ctx.getImageData(0, 0, w, h).data;
+						//me.taskGetPixel(cells,0,data,cellPaths,map,w,h,0,2000);
+						console.log("cells.length",cells.length);
+						for(let cell_index =0; cell_index < cells.length; cell_index++ ){						 
+						//for(let cell_index = w*4; cell_index < cells.length-(w*4); cell_index++ ){						 
+							currentCell = cells[cell_index];
+							if (!currentCell[2]) continue;
+							cellPosition = map.getPixelFromCoordinate(transform([currentCell[0],currentCell[1]], 'EPSG:4326', 'EPSG:3857'));
+		
+							cellPosition[0] = Math.round(cellPosition[0]);
+							cellPosition[1] = Math.round(cellPosition[1]);
+							if ( cellPosition[0]> w-1 || cellPosition[1]>h-1) continue;
+							if ( cellPosition[0]<= 0 || cellPosition[1]<=0) continue;
+							var x = cellPosition[0] * 1;
+							var y = cellPosition[1] * 1;
+							data_index =y*w*4 + x*4 ;
+							var color = 'rgb(' + data[data_index] + ',' + data[data_index+1] + ','+ data[data_index+2] + ')';
+							if (data[data_index]<=1 &&
+								data[data_index+1]<=1 &&
+								data[data_index+2]<=1
+							) {
+							/*if (data[data_index]>=140 && data[data_index]<=153 &&	data[data_index+1]>=140 && data[data_index+1]<=153 && data[data_index+2]>=140 && data[data_index+2]<=153 &&  data[data_index] == data[data_index+1] &&  data[data_index+1] == data[data_index+2]
+							) {*/
+								currentCell[2] = false;
+								cellPaths.push(currentCell);
+							}
+						}
+						
+						for(let cell_index = 0; cell_index < cells.length; cell_index++ )
+							if (!cells[cell_index][2])
+								cells.splice(cell_index,1);
+
+						let near = null;
+						let dist = 99999;
+						let tmp_dist = 99999;
+
+						let isPath = (currentCell,parentCell)=>{						
+							let cellA = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+							cellA[0] = currentCell[0]+cellA[0]*0.3;
+							cellA[1] = currentCell[1]+cellA[1]*0.3;
+							let cellB = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+							cellB[0] = currentCell[0]+cellB[0]*0.6;
+							cellB[1] = currentCell[1]+cellB[1]*0.6;
+
+							let cellPositionA = map.getPixelFromCoordinate(transform([cellA[0],cellA[1]], 'EPSG:4326', 'EPSG:3857'));	
+							let cellPositionB = map.getPixelFromCoordinate(transform([cellB[0],cellB[1]], 'EPSG:4326', 'EPSG:3857'));								
+							let data_indexA = Math.round(cellPositionA[1])*w*4+Math.round(cellPositionA[0])*4;
+							let data_indexB = Math.round(cellPositionB[1])*w*4+Math.round(cellPositionB[0])*4;
+							if ((data[data_indexA]<=1 && data[data_indexA+1]<=1 && data[data_indexA+2]<=1) &&
+								(data[data_indexB]<=1 && data[data_indexB+1]<=1 && data[data_indexB+2]<=1)
+							) return true;
+
+							return false;
+						}
+						/* mid path is black? */
+						let isPathSingle = (currentCell,parentCell)=>{						
+							let cell = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+							cell[0] = currentCell[0]+cell[0]/2;
+							cell[1] = currentCell[1]+cell[1]/2;
+							cellPosition = map.getPixelFromCoordinate(transform([cell[0],cell[1]], 'EPSG:4326', 'EPSG:3857'));	
+							var x = Math.round(cellPosition[0]);
+							var y = Math.round(cellPosition[1]);
+							data_index = y*w*4+x*4;
+							if (data[data_index]<=1 &&
+								data[data_index+1]<=1 &&
+								data[data_index+2]<=1
+							) return true;
+							return false;
+						}
+						let midPoint = (currentCell,parentCell)=>{
+							let cell = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+							cell[0] = currentCell[0]+cell[0]/2;
+							cell[1] = currentCell[1]+cell[1]/2;
+							return cell;
+						}
+						let getNear = (index_parent,pindex)=>{
+							dist = 99999;
+							near = null;
+							for(let cell_index = 0; cell_index < cellPaths.length; cell_index++ ){
+								//if (cellPaths[cell_index][2]==false && cellPaths[cell_index][3]==0 && cell_index!=index_parent ){
+								if ( cellPaths[cell_index][2]==false && cellPaths[cell_index][3]<pindex && cell_index!=index_parent ){
+									tmp_dist = olSphere.getDistance( 
+										[cellPaths[cell_index][0], cellPaths[cell_index][1]],
+										[cellPaths[index_parent][0], cellPaths[index_parent][1]]);
+									//console.log("tmp_dist",tmp_dist);
+									if (tmp_dist < dist && tmp_dist < 30){
+										if (isPath(cellPaths[cell_index],cellPaths[index_parent])){
+											near = cell_index;
+											dist = tmp_dist;
+										}
+									}
+								}
+							}
+							return near;
+						} 
+						let getNearDif = (cell_point,pindex)=>{
+							dist = 99999;
+							near = null;
+							for(let cell_index = 0; cell_index < cellPaths.length; cell_index++ ){
+								//if (cellPaths[cell_index][2]==false && cellPaths[cell_index][3]==0 && cell_index!=index_parent ){
+								if (  cellPaths[cell_index][2]!=false &&cellPaths[cell_index][3]!=pindex  ){
+									tmp_dist = olSphere.getDistance( 
+										[cellPaths[cell_index][0], cellPaths[cell_index][1]],
+										[cell_point[0], cell_point[1]]);
+									//console.log("tmp_dist",tmp_dist);
+									if (tmp_dist < dist && tmp_dist < 80){
+										if (isPath(cellPaths[cell_index],cell_point)){
+											near = cell_index;
+											dist = tmp_dist;
+										}
+									}
+								}
+							}
+							return near;
+						} 
+						let linePath = null;
+						let recFind=(index_current,index_parent,root,pindex)=>{
+								//if (cellPaths[index_current][3]<pindex  ){
+									let cell_index_near = getNear(index_current,pindex);	
+									if (cell_index_near!= null){
+										cellPaths[index_current][2] = true;
+										cellPaths[index_current][3] = pindex;
+										cellPaths[cell_index_near][3] = pindex;
+										root.push(cellPaths[cell_index_near]);
+										recFind(cell_index_near,index_current,root,pindex);									
+									}
+								//}
+							}
+						let pathIndex = 0;
+						for(let cell_index = 0; cell_index < cellPaths.length; cell_index++ )	{
+							if (cellPaths[cell_index][3]>0) continue;						
+							let cell_index_near = getNear(cell_index,1);	
+							if (cell_index_near != null){										
+								linePath = [];
+								pathIndex++;
+								cellPaths[cell_index][2]=true;
+								cellPaths[cell_index][3]=pathIndex;
+								cellPaths[cell_index_near][3]=pathIndex;
+								linePath.push(cellPaths[cell_index]);
+								linePath.push(cellPaths[cell_index_near]);
+								cellLinePaths.push (linePath);							
+								recFind(cell_index_near,cell_index,linePath,pathIndex);							
+								let firstNear = getNearDif(linePath[0],pathIndex);	
+								let lastNear = getNearDif(linePath[linePath.length-1],pathIndex);							
+								if (firstNear!=null) linePath.unshift(cellPaths[firstNear]);
+								if (lastNear!=null) linePath.push(cellPaths[lastNear]);
+								
+
+							}
 						}
 
+						/* SMOOTH  */
+						section['smoothPaths'] = [];
+						for(let c_index = 0; c_index < cellLinePaths.length; c_index++ ){
+							let linePath = cellLinePaths[c_index];
+							let smooth_linePath = [] ;
+							
+							if (linePath.length > 0) smooth_linePath.push(linePath[0]);
+							for(let p_index = 1; p_index < linePath.length; p_index++ ){
+								smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
+							}
+							if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);
+
+							//cellLinePaths[c_index] = smooth_linePath;
+							section['smoothPaths'].push(smooth_linePath);
+						}
+						let joinPaths = [];
+						/*for (let c_index = 0; c_index < section['smoothPaths'].length; c_index++){
+							section['smoothPaths'][c_index]
+						}*/
+						/* SECOND SMOOTH */
+						/*
+						for(let c_index = 0; c_index < section['smoothPaths'].length; c_index++ ){
+							let linePath = section['smoothPaths'][c_index];
+							let smooth_linePath = [] ;
+							
+							if (linePath.length > 0) smooth_linePath.push(linePath[0]);
+							for(let p_index = 1; p_index < linePath.length; p_index++ ){
+								smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
+							}
+							if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);
+
+							section['smoothPaths'][c_index] = smooth_linePath;
+							//section['smoothPaths'].push(smooth_linePath);
+						}*/
+
+						console.log("route.cellpaths.length",cellPaths.length);
+						console.log("route",route);
+	
+						myImage.onload = null;
+						me.selectedRoute.controls.show = true;
 					}
-					
-					for(let cell_index = 0; cell_index < cells.length; cell_index++ )
-						if (!cells[cell_index][2])
-							cells.splice(cell_index,1);
-					me.selectedRoute.controls.show = true;
-					console.log("route.cellpaths.length",cellPaths.length);
-					console.log("route",route);
-					myImage.onload = null;
+
+					if (cb!=null) cb();
 				};
 	
+				myImage.src = response.img;
 		
-		}, 2000);
+		}, 600);
+	}
+
+	
+	createFromPixel3(route,zoom,ms,indx,indy){
+		let map = this.map.instance;	
+
+		if (route.extend[0]+0.005*indx > route.extend[2]){
+			indy++;
+			indx=0;
+			
+			if (route.extend[3]-0.005*indy < route.extend[1]){
+				return;
+			}
+		}
+		//map.getView().setZoom(16);
+		map.getView().setCenter(transform([route.extend[0]+0.005*indx,route.extend[3]-0.005*indy], 'EPSG:4326', 'EPSG:3857'));
+
+		//let t = (e)=> transform(e, 'EPSG:4326', 'EPSG:3857');
+		setTimeout(async () => {
+			this.createFromPixel2(route,zoom,ms,()=>{
+				this.createFromPixel3(route,zoom,ms,indx+1,indy);
+			});			
+
+		}, 1000);
 	}
 
 	taskGetPixel(cells,cell_index_ini,data,cellPaths,map,w,h, pos,step){
@@ -500,19 +697,59 @@ export class RoutessectionsComponent implements OnInit{
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		
-	/*	this.map.instance.getView().fit(extent3857, {
-			padding: [100, 100, 100, 100],
+		this.map.instance.getView().fit(extent3857, {
+			//padding: [100, 100, 100, 100],
 			maxZoom: 23,
 			duration: 300
-		});	*/
+		});	
 		//this.map.instance.render();
-		//setTimeout(() => {
+		setTimeout(() => {
 		//	if (route!== undefined) route.controls.show = true;
 			//this.createFromPixel(route,28,200);
-			this.createFromPixel2(route,28,200); 
-		//}, 200);
+			this.createFromPixel2(route,18,200,()=>{
+				this.guardarRuta();
+			}); 
+			//this.createFromPixel3(route,18,200,0,0); 
+		}, 16300);
 	}
 
+	guardarRuta(){
+		let route = this.selectedRoute;
+		this.newRoute.name = route.name+'.Area';
+		this.newRoute.distance = 0;
+		this.newRoute.image_id= null;
+		this.newRoute.image= null;
+		this.newRoute.sections = [];
+		
+		
+		let countsection = 0;
+		
+		
+		console.log('route', this.newRoute);
+		this.routesService.register(this.newRoute).subscribe((result: any) => {
+			let points = [];
+			route.sections.forEach( (s,is)=>{	
+				s.smoothPaths.forEach( (sm,iz)=>{
+					sm.forEach( (smm ,ix)=> {								
+						let punto = {
+							route_id: result.content.id,
+							lat: smm[0],
+							lon: smm[1],
+							section: iz,
+						};
+						points.push(punto);
+					});
+								
+					this.pointsService.register(points).subscribe((result: any) => {
+						console.log("puntos creados result:", result);
+					});
+				});
+				
+			});
+			console.log("result", result);			
+			
+		});
+	}
 	createThumb(callback){
 		this.thumbRoute = "assets/loading.gif";
 		setTimeout(async () => {
@@ -601,7 +838,7 @@ export class RoutessectionsComponent implements OnInit{
 			section: indexSection,
 		}
 		this.pointsService.register(punto).subscribe((result: any) => {
-			console.log("punto creado result:", result)
+			//console.log("punto creado result:", result)
 			this.regPoint(index+1,contentRoute,section,indexSection,callback);			
 		});
 	}

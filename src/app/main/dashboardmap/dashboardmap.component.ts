@@ -319,6 +319,7 @@ export class DashboardmapComponent implements OnInit {
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
 		this.map.instance.getView().setZoom(16);
 		device.controls.show = true;
+		device.controls.showArea = true;
 		device.controls.showTrack = true;
 		device.controls.showChecks = true;
 		device.controls.showStops = true;
@@ -338,6 +339,7 @@ export class DashboardmapComponent implements OnInit {
 			show:false,
 			showSplit:false,
 			showTrack:false,
+			showArea:false,
 		};
 	}
 	personal_filtrado = [];

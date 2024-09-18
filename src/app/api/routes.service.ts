@@ -434,9 +434,9 @@ export class RoutesService {
 	let step_x = 0.00005;
 	let step_y = 0.00005;
 	let step_y2 = 0.00005*0.75;*/
-	let step_x = 0.0001;
-	let step_y = 0.0001;
-	let step_y2 = 0.0001*0.45;
+	let step_x = 0.0001*1.5;
+	let step_y = 0.0001*1.5;
+	let step_y2 = 0.0001*0.45*1.5;
 
 	max_x = (extend[2]-extend[0])/step_x;
 	max_y = (extend[3]-extend[1])/step_y;
@@ -455,7 +455,7 @@ export class RoutesService {
 				else
 					cells.push([ini_x+i*step_x,ini_y+j*step_y+step_y2,true]);*/
 				
-				cells.push([ini_x+i*step_x +step_y2*Math.random(),ini_y+j*step_y+step_y2*Math.random(),true]);
+				cells.push([ini_x+i*step_x +step_y2*Math.random(),ini_y+j*step_y+step_y2*Math.random(),true,0]);
 		}
 	}
 
@@ -488,11 +488,11 @@ export class RoutesService {
           ];
           splitPoints.push(tLatLong);
         }
-        let tLatLong = [p[0], p[1], false];
+        let tLatLong = [p[0], p[1], false,0];
         splitPoints.push(tLatLong);
         lastPoint = p;
       } else {
-        let tLatLong = [p[0], p[1], false];
+        let tLatLong = [p[0], p[1], false,0];
         splitPoints.push(tLatLong);
         lastPoint = p;
       }

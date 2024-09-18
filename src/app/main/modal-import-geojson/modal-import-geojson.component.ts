@@ -71,15 +71,32 @@ export class ModalImportGeojsonComponent {
 		this.registerCount = 0;
 		this.saveRoute(this.importData.routes,0);
 	}
-	saveRoute(routes:[],index:number) {
-		
+	saveRoute(routes:any,index:number) {
+		if (routes[index] == undefined) {this.createProgress ="completado" ; return;}
+
 		this.routesService.register(routes[index]).subscribe((result: any) => {
 			console.log("result", result);
-
+			routes[index]['id'] = result.content.id;
+			let points = [];
+			routes[index]['points'].forEach(coord=>{
+				let punto = {
+					route_id: routes[index]['id'],
+					lat: coord[1],
+					lon: coord[0],
+					section: coord[2],
+				};
+				points.push(punto);
+			});
+			
+			this.pointsService.register(points).subscribe((result: any) => {
+				console.log("puntos creados result:", result);
+				this.saveRoute(routes,index+1);
+			});
+/*
 			if ( result.content instanceof Array)
 				this.savePoints(result.content[0],()=>{ if (index < routes.length) this.saveRoute(routes,index+1);	});
 			else
-				this.savePoints(result.content,()=>{ if (index < routes.length) this.saveRoute(routes,index+1); });
+				this.savePoints(result.content,()=>{ if (index < routes.length) this.saveRoute(routes,index+1); });*/
 			
 		});
 	}

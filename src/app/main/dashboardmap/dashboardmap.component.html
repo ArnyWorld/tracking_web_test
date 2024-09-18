@@ -26,7 +26,7 @@
 
 				<aol-layer-tile [opacity]="1"> 
 				 	<!-- <aol-source-osm></aol-source-osm>   -->
-					 <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz> 
+					 <aol-source-xyz url="http://172.20.50.67:6060/{z}/{x}/{y}.png">	</aol-source-xyz> 
 				</aol-layer-tile>
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
@@ -181,7 +181,7 @@
 					
 								<aol-source-vector>
 									<aol-style>
-										<aol-style-stroke [color]="'rgba(150, 30, 30)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
+										<aol-style-stroke [color]="'rgba(30, 30, 170)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
 									</aol-style>
 									<aol-feature *ngFor="let section of device.routeSelected?.sections">
 										<aol-geometry-linestring >
@@ -223,7 +223,7 @@
 								<aol-layer-vector  [opacity]="route.controls.selected?0.9:0.8">
 									<aol-source-vector>
 										<aol-style>
-											<aol-style-stroke [color]="route.controls.selected?'rgba(100, 0, 0,255)':route.color" [width]="8"></aol-style-stroke>
+											<aol-style-stroke [color]="route.controls.selected?'rgba(30, 30, 170,255)':route.color" [width]="8"></aol-style-stroke>
 										</aol-style>
 										<aol-feature *ngFor="let section of route?.sections">
 											<aol-geometry-linestring >
@@ -233,7 +233,7 @@
 										</aol-feature>
 									</aol-source-vector>
 								</aol-layer-vector>
-                                <aol-layer-vector  [zIndex]="750" >    
+                                <aol-layer-vector  [zIndex]="750" *ngIf="route.controls.showArea">    
                                     <!--<aol-source-cluster [distance]="50">                     -->
                                         <aol-source-vector>
                                             <div *ngFor="let section of route?.sections">
@@ -253,9 +253,9 @@
                                         </aol-style-circle>
                                     </aol-style>
                                     
-                                </aol-layer-vector>
+                                </aol-layer-vector >
                                 
-                                    <aol-layer-vector  #vectorSource [opacity]="0.5">
+                                    <aol-layer-vector  #vectorSource [opacity]="0.5" *ngIf="route.controls.showArea">
                                         <aol-style>
                                             <aol-style-stroke [color]="'#222222'" [width]="8"></aol-style-stroke>
                                             <aol-style-fill [color]="'#2233aa88'" ></aol-style-fill>
@@ -417,6 +417,8 @@
 						<input id="inp-check-route-{{route.id}}-show" type="checkbox" [(ngModel)]="route.controls.show" />
 						<input id="inp-check-route-{{route.id}}-selected" type="checkbox" [(ngModel)]="route.controls.selected" /> 
 						<input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showSplit" />  
+                        <input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showArea" />  
+                        
 					</div>
 				</div>
 				<div class="col-8"> 
