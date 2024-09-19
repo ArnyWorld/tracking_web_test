@@ -416,7 +416,7 @@ export class RoutesService {
 	let cells = route.splitPointsCoordCells;
   }
 
-  splitPointsCoordCells(route:any,extend:any, points: any, minDist: number, maxDist: number){
+  splitPointsCoordCells(route:any,extend:any, points: any, minDist: number, maxDist: number ,spaces:number=1,randomY:boolean=true){
 	let cells = [];
 	/*cells.push( [extend[0],extend[1]], [extend[0],extend[3]], [extend[2],extend[1]], [extend[2],extend[3]]		);*/
 	let polygon =  new Polygon([points]);
@@ -447,15 +447,10 @@ export class RoutesService {
 	for (let i=0;i<max_x;i++){
 		for (let j=0;j<max_y;j++){
 			if (feature.getGeometry().intersectsCoordinate([ini_x+i*step_x,ini_y+j*step_y]))
-				/*if (j%2==0)
-					cells.push([ini_x+i*step_x,ini_y+j*step_y,true]);
-				else*/
-				/*if(Math.random()>0.5)
-					cells.push([ini_x+i*step_x,ini_y+j*step_y ,true]);
+				if (randomY)
+					cells.push([ini_x+i*step_x +step_y2*Math.random(),ini_y+j*step_y+step_y2*Math.random(),true,0]);
 				else
-					cells.push([ini_x+i*step_x,ini_y+j*step_y+step_y2,true]);*/
-				
-				cells.push([ini_x+i*step_x +step_y2*Math.random(),ini_y+j*step_y+step_y2*Math.random(),true,0]);
+					cells.push([ini_x+i*step_x +step_y2,ini_y+j*step_y+step_y2,true,0]);
 		}
 	}
 
@@ -610,7 +605,7 @@ export class RoutesService {
           });
 		  route['splitCoordsLine'] = [];
 		  route['sections'].forEach((t) => {
-			t['splitCoordsCells'] = [];//this.splitPointsCoordCells(route,route['extend'],t.coords, 4*2, 30*2);
+			t['splitCoordsCells'] = [];
 		  });
 		  
 		  let i,j;
@@ -621,6 +616,92 @@ export class RoutesService {
         return result;
       })
     );
+  }
+
+  generateCell(route:any,cellSpace, randomY){	
+	route['sections'].forEach((t) => {
+		t['splitCoordsCells'] = this.splitPointsCoordCells(route,route['extend'],t.coords, 4*2, 30*2,cellSpace, randomY);
+	  });
+  }
+  
+  smoothSections(route:any){	
+	let sma = (ar,per)=>{
+		let sma_values = [];
+		for (let i_array=0; i_array<per-1; i_array++ ){
+			sma_values.push(ar[i_array]);
+		}
+		for (let i_array=per-1; i_array<ar.length; i_array++ ){
+			let coord = [0,0];
+			for (let i_per=0; i_per<per; i_per++ ){
+				coord[0]+=ar[i_array-i_per][0];
+				coord[1]+=ar[i_array-i_per][1];
+			}
+			coord[0] = coord[0]/per;
+			coord[1] = coord[1]/per;
+			sma_values.push(coord);
+		}
+		return sma_values;
+	}
+	route['sections'].forEach((s:any) => {		
+		s.coords = sma(s.coords,3);
+	});
+  }
+  smoothSectionsSmoothpaths(route:any){	
+	let sma = (ar,per)=>{
+		let sma_values = [];
+		for (let i_array=0; i_array<per-1; i_array++ ){
+			sma_values.push(ar[i_array]);
+		}
+		for (let i_array=per-1; i_array<ar.length-1; i_array++ ){
+			let coord = [0,0];
+			for (let i_per=0; i_per<per; i_per++ ){
+				coord[0]+=ar[i_array-i_per][0];
+				coord[1]+=ar[i_array-i_per][1];
+			}
+			coord[0] = coord[0]/per;
+			coord[1] = coord[1]/per;
+			sma_values.push(coord);
+		}
+		sma_values.push(ar[ar.length-1]);
+		
+		return sma_values;
+	}
+	route['sections'].forEach((s:any) => {		
+		s['smoothPaths'].forEach((sp:any,i) => {		
+			s['smoothPaths'][i] = sma(sp,3);
+		});
+	});
+  }
+  decimate(route:any){	
+	let decim = (ar,perx)=>{
+		let decim_values = [];
+		for (let i_array=0; i_array<1; i_array++ ){
+			decim_values.push(ar[i_array]);
+		}
+		for (let i_array=2; i_array<ar.length; i_array++ ){
+			let coord = [0,0];
+			let x0 = ar[i_array-2][0];
+			let y0 = ar[i_array-2][1];
+			let x1 = ar[i_array-1][0];
+			let y1 = ar[i_array-1][1];
+			let x2 = ar[i_array-0][0];
+			let y2 = ar[i_array-0][1];
+			let d = Math.abs((x2-x1)*(y1-y0)-(x1-x0)*(y2-y1))/Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+			if (d > 0.0001){
+				coord[0]=ar[i_array-1][0];
+				coord[1]=ar[i_array-1][1];
+				decim_values.push(coord);
+			}
+		}
+		decim_values.push(ar[ar.length-1]);
+		
+		return decim_values;
+	}
+	route['sections'].forEach((s:any) => {		
+		s['smoothPaths'].forEach((sp:any,i) => {		
+			s['smoothPaths'][i] = decim(sp,3);
+		});
+	});
   }
 
   delete(id: string | number): Observable<any> {

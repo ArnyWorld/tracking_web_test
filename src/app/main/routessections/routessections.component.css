@@ -91,15 +91,57 @@ body {
 	color: white;
 	border: 1px solid white;
 }
+#overlayMenuLeft{
+    position: absolute;
+	z-index: 1;
+	top: 300px;
+	left: 200px;
+    transition: 0.5s linear;
+}
+#overlayMenuLeft:hover{    
+    background-color:#ffffff88;
+    border:0.25px solid #444;
+    border-radius: 0 25px 25px 0 ;
+    padding:5px;
 
+}
 #overlayMenu {
-	
-	
 	position: absolute;
 	z-index: 1;
-	top: 10px;
-	left: 550px;
+	top: 300px;
+	right: 380px;
+    text-align: end;    
+    transition: 0.5s linear;
 }
+#overlayMenu:hover{    
+    background-color:#ffffff88;
+    border:0.25px solid #444;
+    border-radius: 25px 0 0 25px ;
+    padding:5px;
+
+}
+.btnBlock{
+    transform-style: preserve-3d;
+    transition: 0.5s ease-in-out;
+    font-size: 12px;
+}
+.btnBlock .btn{    
+    transform-style: preserve-3d;
+    transition: 0.3s ease-in-out;
+    background-color: #ffffff99;
+}
+
+.btnBlock:hover{
+    scale: 1.05;
+    padding-right: 10px;
+    font-size: 14px;
+}
+
+.btnBlock:hover .btn{
+    background-color: #421037;
+    color: white;
+}
+
 
 .info{
 }

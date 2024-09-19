@@ -71,6 +71,7 @@ export class RoutessectionsComponent implements OnInit{
 		coords:[]
 	};
 	mousePosition = null;
+	layerMap = 'osm';
 	constructor(
 		private routesService: RoutesService,
 		private pointsService: PointsService,
@@ -125,6 +126,11 @@ export class RoutessectionsComponent implements OnInit{
 			selected:false,
 			show:false,
 			showTrack:false,
+			showCells:false,
+			showArea:false,
+			showPath:false,
+			showLinePaths:false,
+			showSmooth:false,
 		};
 	}
 	loadRoutes(){
@@ -164,6 +170,94 @@ export class RoutessectionsComponent implements OnInit{
 				console.log("route",route);
 			});
 		});
+	}
+	sumPaths(linePaths){
+		if (linePaths == undefined) return 0;
+		let sumPoints = 0;
+		linePaths.forEach( l=> sumPoints+=l.length );
+		return sumPoints;
+	}
+	generateCell(route){		
+		this.routesService.generateCell(route,0.2,true);
+		route.controls.showCells=true;
+	}
+	generatePaths(route){
+		this.layerMap = 'local_bw';
+		route.controls.showArea=false;
+		route.controls.showCells=false;
+		route.controls.showPaths=false;
+		route.controls.showLinePaths=false;
+		route.controls.showSmooth=false;
+
+		let onEnd = ()=>{
+			this.layerMap = 'osm';
+			route.controls.show = true;
+			route.controls.showPaths=true;			
+			route.controls.showLinePaths=true;
+			route.controls.showSmooth=true;
+		}
+
+		this.selectedRoute = route;
+		console.log("this.selectedRoute",this.selectedRoute);
+		const extent = this.selectedRoute.extend;		
+		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
+		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
+		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
+		
+		this.map.instance.getView().fit(extent3857, {
+			maxZoom: 18,
+			duration: 300
+		});	
+		setTimeout(() => {
+			this.createFromPixel2(route,18,200,()=>{
+				//this.guardarRuta();
+				onEnd();
+			}); 
+		}, 3000);
+	}
+	generateSma(route){		
+		this.routesService.smoothSectionsSmoothpaths(route);
+		route.controls.showSmooth=true;
+	}
+	generateAvg(route){
+		
+		route.controls.showSmooth=true;
+		//this.routesService.generateSma(route);		
+		let midPoint = (currentCell,parentCell)=>{
+			let cell = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+			cell[0] = currentCell[0]+cell[0]/2;
+			cell[1] = currentCell[1]+cell[1]/2;
+			return cell;
+		}
+		let midPoint3 = (currentCell,parentCell,parentCell2)=>{
+			let cell = [currentCell[0]+parentCell[0]+parentCell2[0],currentCell[1]+parentCell[1]+parentCell2[1]];
+			cell[0] = currentCell[0]/3;
+			cell[1] = currentCell[1]/3;
+			return cell;
+		}
+		for(let s_index = 0; s_index < route.sections.length; s_index++ ){
+			let section = route.sections[s_index];
+			let smoothPaths = [];
+			for(let c_index = 0; c_index < section['smoothPaths'].length; c_index++ ){
+				
+				let linePath = section['smoothPaths'][c_index];
+				let smooth_linePath = [] ;
+				
+				if (linePath.length > 0) smooth_linePath.push(linePath[0]);
+				//for(let p_index = 1; p_index < linePath.length; p_index++ ){
+				for(let p_index = 1; p_index < linePath.length; p_index++ ){
+					smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
+					//smooth_linePath.push(midPoint3(linePath[p_index-2],linePath[p_index-1],linePath[p_index]));
+				}
+				if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);	
+				smoothPaths.push(smooth_linePath);
+			}
+			section['smoothPaths'] = smoothPaths;
+		}
+	}
+	decimate(route){		
+		this.routesService.decimate(route);
+		route.controls.showSmooth=true;
 	}
 	select($event: SelectEvent) {
 		console.log("select:",$event);
@@ -465,6 +559,9 @@ export class RoutessectionsComponent implements OnInit{
 						}
 
 						/* SMOOTH  */
+
+						section['smoothPaths'] = cellLinePaths;
+						/*
 						section['smoothPaths'] = [];
 						for(let c_index = 0; c_index < cellLinePaths.length; c_index++ ){
 							let linePath = cellLinePaths[c_index];
@@ -482,6 +579,7 @@ export class RoutessectionsComponent implements OnInit{
 							section['smoothPaths'].push(smooth_linePath);
 						}
 						let joinPaths = [];
+						*/
 						/*for (let c_index = 0; c_index < section['smoothPaths'].length; c_index++){
 							section['smoothPaths'][c_index]
 						}*/
@@ -690,6 +788,27 @@ export class RoutessectionsComponent implements OnInit{
 	}
 
 	selectRoute (route:any){
+		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
+
+		this.selectedRoute = route;
+		console.log("this.selectedRoute",this.selectedRoute);
+		const extent = this.selectedRoute.extend;		
+		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
+		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
+		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
+		
+		this.map.instance.getView().fit(extent3857, {
+			padding: [100, 100, 100, 100],
+			maxZoom: 18,
+			duration: 300
+		});	
+		
+		setTimeout(() => {
+			this.selectedRoute.controls.show = true;
+		}, 300);
+	}
+
+	selectRoute2 (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
 		/*if (this.selectedRoute!== undefined) {this.selectedRoute.controls.show = false;
 			if (!this.selectedRoute.controls.show ) return;

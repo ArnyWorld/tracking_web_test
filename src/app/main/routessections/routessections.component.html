@@ -1,10 +1,38 @@
 <div class="divMain">
     <!-- <app-panel-float-nav></app-panel-float-nav> -->
-    <div class="divMid">
+    <div class="divMid">        
+		<div  id="overlayMenuLeft" style="z-index:9999">
+            <div (click)="layerMap='osm'" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>OpenStreeth Map</div>
+            <div (click)="layerMap='local_osm'" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>Local Osm</div>
+            <div (click)="layerMap='local_bw'" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>Local Black/white</div>			
+		</div>
 
-        <div style="height: 100%;width:1600px; overflow: hidden;">
-             <!-- <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">    -->
-             <aol-map #map width="10000px" height="10000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">  
+		<div  id="overlayMenu" style="z-index:9999" *ngIf="selectedRoute">	
+            <div role="button"  class="mt-3 btnBlock" (click)="selectedRoute.controls.showArea=!selectedRoute.controls.showArea">Show Area<span [style]="{'background-color':selectedRoute.controls.showArea?'#222288':'','color':selectedRoute.controls.showArea?'#fff':''}" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="selectedRoute.controls.showCells=!selectedRoute.controls.showCells">Show Cells<span [style]="{'background-color':selectedRoute.controls.showCells?'#222288':'','color':selectedRoute.controls.showCells?'#fff':''}" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="generateCell(selectedRoute)"> Generate Cells<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="generatePaths(selectedRoute)"> Generate Paths<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="generateAvg(selectedRoute)"> Smooth Avg Paths<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="generateSma(selectedRoute)"> Smooth Sma Paths<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="decimate(selectedRoute)"> Decimate Paths <span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+            <div role="button"  class="mt-3 btnBlock" (click)="selectedRoute.controls.showLinePaths=!selectedRoute.controls.showLinePaths">Show LinePaths<span [style]="{'background-color':selectedRoute.controls.showLinePaths?'#222288':'','color':selectedRoute.controls.showLinePaths?'#fff':''}" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>			
+            <div role="button"  class="mt-3 btnBlock" (click)="selectedRoute.controls.showSmooth=!selectedRoute.controls.showSmooth">Show Smooth<span [style]="{'background-color':selectedRoute.controls.showSmooth?'#222288':'','color':selectedRoute.controls.showSmooth?'#fff':''}" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>			
+		</div>
+        
+		<div  id="overlayMenu" style="z-index:9999; top:700px" *ngIf="selectedRoute">	
+            <ng-content *ngFor="let section of selectedRoute.sections;index as i">
+                <div role="button"  class="mt-3 btnBlock">  <strong>{{i}}</strong> </div>
+                <div role="button"  class="mt-3 btnBlock">  CellPoints : <strong>{{section.splitPointsCoordCells?.length}}</strong> </div>
+                <div role="button"  class="mt-3 btnBlock">  CellPoints : <strong>{{section.splitPointsCoordCells?.length}}</strong> </div>
+                <div role="button"  class="mt-3 btnBlock">  CellPoints on path: <strong>{{section.cellPaths?.length}}</strong> </div>
+                <div role="button"  class="mt-3 btnBlock">  Line Paths : <strong>{{section.linePaths?.length}}</strong> </div>
+                <div role="button"  class="mt-3 btnBlock ms-3">   Points Total : <strong>{{sumPaths(section.linePaths)}}</strong> </div>
+            </ng-content>
+        </div>
+        <div style="height: 100%; overflow: hidden;">
+        <!--  <div style="height: 100%;width:1600px; overflow: hidden;"> -->
+              <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">    
+             <!-- <aol-map #map width="10000px" height="10000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">   -->
                 <aol-interaction-default> </aol-interaction-default>
                 <aol-interaction-draw *ngIf="mode == StatesEnum.ROUTE_CREATOR" type="LineString" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
                 </aol-interaction-draw>
@@ -16,8 +44,9 @@
                 </aol-view>
 
                 <aol-layer-tile>
-                    <!-- <aol-source-osm></aol-source-osm> -->
-                    <aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png" crossOrigin="anonymous">	</aol-source-xyz>
+                    <aol-source-osm *ngIf="layerMap=='osm'" ></aol-source-osm> 
+                    <aol-source-xyz *ngIf="layerMap=='local_bw'" url="http://172.20.50.67:6050/{z}/{x}/{y}.png" crossOrigin="anonymous">	</aol-source-xyz>
+                    <aol-source-xyz *ngIf="layerMap=='local_osm'" url="http://172.20.50.67:6060/{z}/{x}/{y}.png" crossOrigin="anonymous">	</aol-source-xyz>
                 </aol-layer-tile>
 
 				<aol-layer-group>
@@ -41,7 +70,39 @@
                     
 
 					<div *ngIf="selectedRoute">
-                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show && false">    
+                        
+                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show && selectedRoute.controls.showCells">    
+                            <aol-source-vector>
+                                <div *ngFor="let section of selectedRoute?.sections">
+                                    <aol-feature *ngFor="let pc of section.splitCoordsCells">
+                                    <aol-geometry-point >
+                                        <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                    </aol-geometry-point>
+                                    </aol-feature>
+                                </div>
+                            </aol-source-vector>
+                        <aol-style>
+                            <aol-style-circle [radius]="2">
+                                <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                            </aol-style-circle>
+                        </aol-style>                            
+                        </aol-layer-vector >                        
+                        <aol-layer-vector  #vectorSource [opacity]="0.5" *ngIf="selectedRoute.controls.show && selectedRoute.controls.showArea">
+                            <aol-style>
+                                <aol-style-stroke [color]="'#222222'" [width]="8"></aol-style-stroke>
+                                <aol-style-fill [color]="'#2233aa88'" ></aol-style-fill>
+                            </aol-style>
+                            <aol-source-vector >
+                                <aol-feature *ngFor="let section of selectedRoute?.sections">
+                                    <aol-geometry-polygon>
+                                        <aol-collection-coordinates [coordinates]="[section.coords]" [srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-polygon>
+                                </aol-feature>
+                            </aol-source-vector>
+                        </aol-layer-vector>
+                        <aol-layer-vector  [zIndex]="750" *ngIf="selectedRoute.controls.show && selectedRoute.controls.showCells">    
                                 <aol-source-vector >
                                     <div *ngFor="let section of selectedRoute?.sections">
                                         <aol-feature *ngFor="let pc of section.cellPaths">
@@ -53,14 +114,14 @@
                                     </div>
                                 </aol-source-vector>
                             <aol-style>
-                                <aol-style-circle [radius]="5">
+                                <aol-style-circle [radius]="10">
                                     <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
-                                    <aol-style-fill [color]="'#3377ccff'"></aol-style-fill>
+                                    <aol-style-fill [color]="'#9977ccff'"></aol-style-fill>
                                 </aol-style-circle>
                             </aol-style>
                         </aol-layer-vector>
 						<div *ngFor="let section of selectedRoute?.sections">
-                            <aol-layer-vector *ngIf="section.linePaths">
+                            <aol-layer-vector *ngIf="section.linePaths && selectedRoute.controls.showLinePaths">
 								<aol-source-vector>
 									<aol-style>
 										<aol-style-stroke [color]="'rgba(160, 77, 49)'" [width]="3"></aol-style-stroke>							
@@ -73,21 +134,21 @@
 									</aol-feature>
 								</aol-source-vector>
 							</aol-layer-vector>
-                            <aol-layer-vector *ngIf="section.smoothPaths">
+                            <aol-layer-vector *ngIf="section.smoothPaths && selectedRoute.controls.showSmooth">
 								<aol-source-vector>
 									<aol-style>
 										<aol-style-stroke [color]="'rgba(100, 177, 149)'" [width]="6"></aol-style-stroke>							
 									</aol-style>
-									<aol-feature *ngFor="let linepath of section.smoothPaths">
+									<aol-feature *ngFor="let smoothPath of section.smoothPaths">
 										<aol-geometry-linestring>
-											<aol-collection-coordinates [coordinates]="linepath" [srid]="'EPSG:4326'">
+											<aol-collection-coordinates [coordinates]="smoothPath" [srid]="'EPSG:4326'">
 											</aol-collection-coordinates>
 										</aol-geometry-linestring>
 									</aol-feature>
 								</aol-source-vector>
 							</aol-layer-vector>
 
-							 <aol-layer-vector >
+							 <aol-layer-vector *ngIf=" selectedRoute.controls.show">
 								<aol-source-vector>
 									<aol-style>
 										<aol-style-stroke [color]="'rgba(100, 0, 0)'" [width]="6"></aol-style-stroke>
@@ -109,16 +170,13 @@
                                         <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
                                     </aol-geometry-point>
                                     </aol-feature>
-                                </aol-source-vector>
-                            
+                                </aol-source-vector>                            
                                 <aol-style>
                                     <aol-style-circle [radius]="5">
                                     <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                                     <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
                                     </aol-style-circle>
                                 </aol-style>
-                            
-                                
                             </aol-layer-vector>
 						</div>
 					</div>
@@ -155,7 +213,7 @@
             <div *ngIf="mode == StatesEnum.ROUTE_VIEWER" >
 
                 <div class="list-group list-group-flush border-bottom " >
-<div id="box" style="width:50px;height:50px; background-color:#000"></div>
+            <div id="box" style="width:50px;height:50px; background-color:#000"></div>
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar json</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportGeo,null)">Importar geojson</span>
@@ -163,7 +221,7 @@
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR_AREA">Crear Rutas por areas</span>
                     </a>
 
-                    <a role="button" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let route of routes" (click)="selectRoute(route)">
+                    <a role="button" [style]="{'background-color':selectedRoute?.id==route.id?'#bbbbff88':'white'}" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let route of routes" (click)="selectRoute(route)">
                         <div class="d-flex w-100 align-items-center justify-content-between">
                             <strong class="mb-1">{{route.name}}</strong>
                             <small><button class="btn btn-sm btn-outline"> <i class="fas fa-map"></i> </button></small>

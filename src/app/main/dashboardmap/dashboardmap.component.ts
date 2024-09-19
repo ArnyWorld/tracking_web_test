@@ -179,12 +179,12 @@ export class DashboardmapComponent implements OnInit {
 		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
-		
+		/*
 		this.map.instance.getView().fit(extent3857, {
 			padding: [100, 100, 100, 100],
 			maxZoom: 23,
 			duration: 300
-		});	
+		});	*/
 		setTimeout(() => {
 			if (route!== undefined) route.controls.show = true;
 		}, 200);
@@ -313,7 +313,9 @@ export class DashboardmapComponent implements OnInit {
 				temp_array.push(array[i]);
 		}
 		return temp_array;
-
+	}
+	smoothSections(route){
+		this.routesService.smoothSections(route);
 	}
 	gotoDevice(device){
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));

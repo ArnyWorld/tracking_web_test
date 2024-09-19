@@ -398,7 +398,7 @@
 					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-stops-{{device.id}}" [(ngModel)]="device?.controls.showStops">
 						<label class="form-check-label small" for="dev-track-show-stops-{{device.id}}"> Ver Paradas </label>
-					</div>					
+					</div>		
 				</div>
 					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
 					 Dispositivo:{{ device.config.INFO_MODEL}} <br>
@@ -418,7 +418,7 @@
 						<input id="inp-check-route-{{route.id}}-selected" type="checkbox" [(ngModel)]="route.controls.selected" /> 
 						<input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showSplit" />  
                         <input id="inp-check-route-{{route.id}}-split" type="checkbox" [(ngModel)]="route.controls.showArea" />  
-                        
+                        <button class="btn btn-sm " (click)="smoothSections(route)">smooth sections</button>
 					</div>
 				</div>
 				<div class="col-8"> 
