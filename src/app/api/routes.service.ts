@@ -646,6 +646,47 @@ export class RoutesService {
 		s.coords = sma(s.coords,3);
 	});
   }
+  average(route:any){
+	//this.routesService.generateSma(route);		
+	let midPoint = (currentCell,parentCell)=>{
+		let cell = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
+		cell[0] = currentCell[0]+cell[0]/2;
+		cell[1] = currentCell[1]+cell[1]/2;
+		cell[2] = currentCell[2];
+		cell[3] = currentCell[3];
+		cell[4] = currentCell[4];
+		return cell;
+	}
+	let midPoint3 = (currentCell,parentCell,parentCell2)=>{
+		let cell = [currentCell[0]+parentCell[0]+parentCell2[0],currentCell[1]+parentCell[1]+parentCell2[1]];
+		cell[0] = currentCell[0]/3;
+		cell[1] = currentCell[1]/3;
+		return cell;
+	}
+	for(let s_index = 0; s_index < route.sections.length; s_index++ ){
+		let section = route.sections[s_index];
+		let smoothPaths = [];
+		for(let c_index = 0; c_index < section['smoothPaths'].length; c_index++ ){
+			
+			let linePath = section['smoothPaths'][c_index];
+			let smooth_linePath = [] ;
+			
+			if (linePath.length > 0) smooth_linePath.push(linePath[0]);
+			//for(let p_index = 1; p_index < linePath.length; p_index++ ){
+			for(let p_index = 1; p_index < linePath.length; p_index++ ){
+				if (linePath[p_index][4]!=undefined&& p_index!=linePath.length-1)
+					smooth_linePath.push(linePath[p_index]);
+				else
+					smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
+				//smooth_linePath.push(midPoint3(linePath[p_index-2],linePath[p_index-1],linePath[p_index]));
+			}
+			if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);	
+
+			smoothPaths.push(smooth_linePath);
+		}
+		section['smoothPaths'] = smoothPaths;
+	}
+  }
   smoothSectionsSmoothpaths(route:any){	
 	let sma = (ar,per)=>{
 		let sma_values = [];
@@ -660,7 +701,13 @@ export class RoutesService {
 			}
 			coord[0] = coord[0]/per;
 			coord[1] = coord[1]/per;
-			sma_values.push(coord);
+			coord[2] = ar[i_array][2];
+			coord[3] = ar[i_array][3];
+			coord[4] = ar[i_array][4];
+			if (ar[i_array][4]==undefined)
+				sma_values.push(coord);
+			else
+				sma_values.push(ar[i_array]);
 		}
 		sma_values.push(ar[ar.length-1]);
 		
@@ -672,7 +719,7 @@ export class RoutesService {
 		});
 	});
   }
-  decimate(route:any){	
+  decimate(route:any,desv:number){	
 	let decim = (ar,perx)=>{
 		let decim_values = [];
 		for (let i_array=0; i_array<1; i_array++ ){
@@ -687,7 +734,9 @@ export class RoutesService {
 			let x2 = ar[i_array-0][0];
 			let y2 = ar[i_array-0][1];
 			let d = Math.abs((x2-x1)*(y1-y0)-(x1-x0)*(y2-y1))/Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-			if (d > 0.0001){
+			//if (isNaN(d))  console.log("d is nan",ar,i_array,ar[i_array-2],ar[i_array-1],ar[i_array]);
+			//console.log("d",d);
+			if (d > desv){
 				coord[0]=ar[i_array-1][0];
 				coord[1]=ar[i_array-1][1];
 				decim_values.push(coord);

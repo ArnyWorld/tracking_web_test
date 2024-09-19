@@ -222,41 +222,10 @@ export class RoutessectionsComponent implements OnInit{
 	generateAvg(route){
 		
 		route.controls.showSmooth=true;
-		//this.routesService.generateSma(route);		
-		let midPoint = (currentCell,parentCell)=>{
-			let cell = [parentCell[0]-currentCell[0],parentCell[1]-currentCell[1]];
-			cell[0] = currentCell[0]+cell[0]/2;
-			cell[1] = currentCell[1]+cell[1]/2;
-			return cell;
-		}
-		let midPoint3 = (currentCell,parentCell,parentCell2)=>{
-			let cell = [currentCell[0]+parentCell[0]+parentCell2[0],currentCell[1]+parentCell[1]+parentCell2[1]];
-			cell[0] = currentCell[0]/3;
-			cell[1] = currentCell[1]/3;
-			return cell;
-		}
-		for(let s_index = 0; s_index < route.sections.length; s_index++ ){
-			let section = route.sections[s_index];
-			let smoothPaths = [];
-			for(let c_index = 0; c_index < section['smoothPaths'].length; c_index++ ){
-				
-				let linePath = section['smoothPaths'][c_index];
-				let smooth_linePath = [] ;
-				
-				if (linePath.length > 0) smooth_linePath.push(linePath[0]);
-				//for(let p_index = 1; p_index < linePath.length; p_index++ ){
-				for(let p_index = 1; p_index < linePath.length; p_index++ ){
-					smooth_linePath.push(midPoint(linePath[p_index-1],linePath[p_index]));
-					//smooth_linePath.push(midPoint3(linePath[p_index-2],linePath[p_index-1],linePath[p_index]));
-				}
-				if (linePath.length > 1) smooth_linePath.push(linePath[linePath.length-1]);	
-				smoothPaths.push(smooth_linePath);
-			}
-			section['smoothPaths'] = smoothPaths;
-		}
+		this.routesService.average(route);
 	}
 	decimate(route){		
-		this.routesService.decimate(route);
+		this.routesService.decimate(route,0.000027);
 		route.controls.showSmooth=true;
 	}
 	select($event: SelectEvent) {
@@ -551,8 +520,8 @@ export class RoutessectionsComponent implements OnInit{
 								recFind(cell_index_near,cell_index,linePath,pathIndex);							
 								let firstNear = getNearDif(linePath[0],pathIndex);	
 								let lastNear = getNearDif(linePath[linePath.length-1],pathIndex);							
-								if (firstNear!=null) linePath.unshift(cellPaths[firstNear]);
-								if (lastNear!=null) linePath.push(cellPaths[lastNear]);
+								if (firstNear!=null) {cellPaths[firstNear][4]=true; linePath.unshift(cellPaths[firstNear]);  }
+								if (lastNear!=null) {cellPaths[lastNear][4]=true; linePath.push(cellPaths[lastNear]); }
 								
 
 							}
