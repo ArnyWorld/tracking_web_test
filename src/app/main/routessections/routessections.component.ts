@@ -72,6 +72,8 @@ export class RoutessectionsComponent implements OnInit{
 	};
 	mousePosition = null;
 	layerMap = 'osm';
+	mapHeight = '100%';
+	mapWidth = '100%';
 	constructor(
 		private routesService: RoutesService,
 		private pointsService: PointsService,
@@ -195,6 +197,9 @@ export class RoutessectionsComponent implements OnInit{
 			route.controls.showPaths=true;			
 			route.controls.showLinePaths=true;
 			route.controls.showSmooth=true;
+			
+			this.mapHeight = '100%';
+			this.mapWidth = '100%';
 		}
 
 		this.selectedRoute = route;
@@ -204,10 +209,18 @@ export class RoutessectionsComponent implements OnInit{
 		const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
 		const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
 		
+		//this.mapHeight = '8000px';
+		//this.mapWidth = '8000px';
+		/*this.map.instsance.on('postrender', function () {
+			debWriteln([['postrendercount',postrendercount++]]);
+			drawcoordinates();
+		});
+*/
 		this.map.instance.getView().fit(extent3857, {
 			maxZoom: 18,
 			duration: 300
 		});	
+		
 		setTimeout(() => {
 			this.createFromPixel2(route,18,200,()=>{
 				//this.guardarRuta();
@@ -225,7 +238,8 @@ export class RoutessectionsComponent implements OnInit{
 		this.routesService.average(route);
 	}
 	decimate(route){		
-		this.routesService.decimate(route,0.000027);
+		//this.routesService.decimate(route,0.000027);
+		this.routesService.decimate(route,0.000013);
 		route.controls.showSmooth=true;
 	}
 	select($event: SelectEvent) {
@@ -321,6 +335,7 @@ export class RoutessectionsComponent implements OnInit{
 
 	createFromPixel2(route,zoom,ms,cb){
 		this.selectedRoute.controls.show = false;
+		
 		let me = this;
 		let map = this.map.instance;	
 		var w = map.getSize()[0];
