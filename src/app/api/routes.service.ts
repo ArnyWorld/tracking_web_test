@@ -8,6 +8,7 @@ import { transform, fromLonLat } from 'ol/proj';
 import * as olSphere from 'ol/sphere';
 import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
+import { PointsService } from './points.service';
 
 @Injectable({
   providedIn: 'root',
@@ -397,6 +398,60 @@ export class RoutesService {
     return splitPoints;
   }
 
+  	saveRoute(route:any){
+	
+	}
+	sectionToPaths(route:any){
+		
+		for (let i_section = 0 ;i_section < route.sections.length ; i_section ++ ){
+			let section = route.sections[i_section];
+			section['smoothPaths'] = []
+			section['linePaths'] = []
+			let linePathSmooth = [];
+			let linePath = [];
+			for(let i_coords = 0 ; i_coords < section.coords.length; i_coords++){
+				linePathSmooth.push([section.coords[i_coords][0],section.coords[i_coords][1]]);
+				linePath.push([section.coords[i_coords][0],section.coords[i_coords][1]]);
+			}
+			section['smoothPaths'].push(linePathSmooth);
+			section['linePaths'].push(linePath);
+		}		
+	}
+	
+  	saveRouteGenerated(route:any, pointService:PointsService){
+	let route_new = {
+		name:route.name+'-S',
+		description:'',
+		max_split_mt:10,
+		min_split_mt:5,
+		distance:0,
+		frecuency:'',
+		color:'#6655ff'
+	};
+	this.register(route_new).subscribe((result: any) => {
+		let route_id = result.content.id;
+		let points = [];
+		let section_count = 0; 
+		route.sections.forEach( (section:any)=>{
+			console.log("route saved",result);
+			section.smoothPaths.forEach( path => {
+				section_count++;
+				path.forEach(c=>{					
+					points.push({
+						route_id:route_id,
+						lat:c[1],
+						lon:c[0],
+						section:section_count,
+					});
+				});
+			})
+		});
+		console.log("points to register",points);
+		pointService.register(points).subscribe((result:any)=>{
+			console.log("points saved");
+		});
+	});
+  }
   cellsToRoutePixel(map:any,route:any){
 	let pixels = [];
 	console.log("route.sections.length",route.sections.length);

@@ -48,12 +48,11 @@ export class ModalImportGeojsonComponent {
 						points.push( [p[0],p[1],index] );
 						this.registerComplete ++;
 					})
-					
 				});
 				var route = {
-					nombre : name+ "-"+feature.properties.Name,
+					name : name+ "-"+feature.properties.Name,
 					color : rxColor,//feature.properties.description.match(rxColor)[0],
-					distancia : rxDistance,//parseFloat(feature.properties.description.match(rxDistance)[0].replaceAll("<td>","").replaceAll("<","").replaceAll(",",".").replaceAll(" ","").replaceAll("\n",""))*1000,
+					distance : rxDistance,//parseFloat(feature.properties.description.match(rxDistance)[0].replaceAll("<td>","").replaceAll("<","").replaceAll(",",".").replaceAll(" ","").replaceAll("\n",""))*1000,
 					points : points,
 					thumb:"",
 					id: '',

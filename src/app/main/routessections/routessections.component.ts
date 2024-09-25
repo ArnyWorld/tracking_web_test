@@ -133,6 +133,8 @@ export class RoutessectionsComponent implements OnInit{
 			showPath:false,
 			showLinePaths:false,
 			showSmooth:false,
+			showRoute:false,
+			showRoutePoints:false,
 		};
 	}
 	loadRoutes(){
@@ -249,6 +251,12 @@ export class RoutessectionsComponent implements OnInit{
 		this.modalRef = this.modalService.show(template, {
 			class: 'modal-dialog-centered modal-lg ',			
 		});
+	}
+	sectionToPaths(route){
+		this.routesService.sectionToPaths(route);		
+	}
+	saveRouteGenerated(route) {
+		this.routesService.saveRouteGenerated(route,this.pointsService);		
 	}
 	closeModal(){
 		this.modalRef.hide();
@@ -741,40 +749,34 @@ export class RoutessectionsComponent implements OnInit{
 			
 			readyToGetPixel=false;
 			
-
-			/*if (readyToGetPixel)
-				if (cellPosition) {
-					var ctx = event.context;
-					var pixelRatio = event.frameState.pixelRatio;
-				//	console.log("redndered");
-					var x = cellPosition[0] * pixelRatio;
-					var y = cellPosition[1] * pixelRatio;
-					var data = ctx.getImageData(x, y, 1, 1).data;
-					var color = 'rgb(' + data[0] + ',' + data[1] + ','+ data[2] + ')';
-				//	console.log("color",color);
-					readyToGetPixel=false;
-					cellPosition=null;
-				//	setTimeout( ()=>{
-						while(addPathCell(data));
-				//	},ms);
-					
-					//$('#box').css('background-color', color);
-				}*/
 			});
-		//layer.set('postcompose', true);
-	
-
 		
 		setTimeout( ()=>{
 			readyToGetPixel = true; 
 			map.render();	
 		},2000);
 	}
-
+	sumAllPoints(route:any){
+		let sumPoints = 0;
+		if (route.sections == undefined) return 0;
+		if (route.sections.length == 0) return 0;
+		route.sections.forEach(s=>sumPoints+=s.coords.length);
+		return sumPoints;
+	}
+	sumAllPointsDecimate(route:any){
+		let sumPoints = 0;
+		if (route.sections == undefined) return 0;
+		if (route.sections.length == 0) return 0;
+		if (route.sections[0].smoothPaths == undefined) return 0;
+		route.sections.forEach(s=>s.smoothPaths.forEach(ss=>sumPoints+=ss.length));
+		return sumPoints;
+	}
 	selectRoute (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
 
 		this.selectedRoute = route;
+		this.selectedRoute.controls.showRoute = true;
+		this.selectedRoute.controls.showRoutePoints = true;
 		console.log("this.selectedRoute",this.selectedRoute);
 		const extent = this.selectedRoute.extend;		
 		const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
@@ -794,12 +796,6 @@ export class RoutessectionsComponent implements OnInit{
 
 	selectRoute2 (route:any){
 		if (this.selectedRoute!== undefined) this.selectedRoute.controls.show = false;
-		/*if (this.selectedRoute!== undefined) {this.selectedRoute.controls.show = false;
-			if (!this.selectedRoute.controls.show ) return;
-		}*/
-		
-		//this.routesService.cellsToRoutePixel(this.map, route);
-
 
 		this.selectedRoute = route;
 		console.log("this.selectedRoute",this.selectedRoute);

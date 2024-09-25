@@ -519,8 +519,7 @@ export class DashboardmapComponent implements OnInit {
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			//this.routesService.setStops(device['stops'],device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			if (device['routeSelected']!=null){
-				
+			if (device['routeSelected']!=null){				
 				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'] , data.last, 10);
 				//device.routeSelected['completed'] = this.routesService.calcAdvance(device['PolyRouteTrack'] ,device['tracks'],device['tracksPolyline'],"AREA",10);
 				//device['splitPointsCoordsCheck'] = device['PolyRouteTrack'].splitPointTracks.map( t => t.filter(s=> s[2]));

@@ -108,7 +108,7 @@ body {
 #overlayMenu {
 	position: absolute;
 	z-index: 1;
-	top: 300px;
+	top: 100px;
 	right: 380px;
     text-align: end;    
     transition: 0.5s linear;
@@ -141,7 +141,6 @@ body {
     background-color: #421037;
     color: white;
 }
-
 
 .info{
 }
