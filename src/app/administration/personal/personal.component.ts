@@ -12,6 +12,7 @@ import { QrCodeModule } from 'ng-qrcode';
 import { ImagesService } from '../../api/images.service';
 import { environment } from '../../../environments/environment';
 import { ScheduleService } from '../../api/schedule.service';
+import { PersonaltypeService } from '../../api/jobroutes.services';
 @Component({
   selector: 'app-personal',
   standalone: true,
@@ -24,6 +25,7 @@ export class PersonalComponent implements OnInit {
 	modalRef?: BsModalRef;
 	constructor(
 		private personalApi: PersonalService,
+		private personaltypeService: PersonaltypeService,
 		private AssignmentsService: AssignmentsService,
 		private AssignmentsPersonalService: AssignmentsService,
 		private routesService: RoutesService, 
@@ -31,7 +33,7 @@ export class PersonalComponent implements OnInit {
 		private imagesService: ImagesService,
 		private scheduleService: ScheduleService,
 	) { }
-
+	serverApi = environment.apiserver;
 	personal = {
 		id: '',
 		name: '',
@@ -59,7 +61,7 @@ export class PersonalComponent implements OnInit {
 		create_date: 0,
 		update_date: 0,
 	};
-	newImage = {
+	newImage:any = {
 		base64 : '',
 		path: '',
 		create_date: 0,
@@ -69,11 +71,13 @@ export class PersonalComponent implements OnInit {
 	routes: any[];
 
 	personals: any[];
+	personalType: any[];
 	personalFiltred: any[];
 
 	ngOnInit(): void {		
 		this.load();
 		this.loadRoutes();
+		
 
 	}
 	filtrar(){
@@ -85,9 +89,13 @@ export class PersonalComponent implements OnInit {
 	}
 	openModal(template: TemplateRef<void>, data?:any) {
 		if (data){
+			if (data.image!=undefined)
+				this.newImage = data.image;
+			console.log("openModal.data", data);
 			this.personal = Object.assign({}, data);
 			//this.personal['Assignments']			
 			this.Assignments = [];
+			
 			
 			this.routes.forEach((route:any,i:number)=>{
 				
@@ -104,8 +112,7 @@ export class PersonalComponent implements OnInit {
 					this.Assignments[i] = asignacion;
 					this.Assignments[i]['is_check'] = true;
 				}
-			})
-			
+			})			
 		}else{			
 			this.personal = Object.assign({}, this.default);
 		}
@@ -120,19 +127,37 @@ export class PersonalComponent implements OnInit {
 			console.log("routes loaded", this.routes);
 		});
 	}
+	taskerImage(persons,index){
+		if (persons.length == index+1) return;
+		let person = persons[index];
+		setTimeout(()=>{
+			this.imagesService.find(person.image_id).subscribe((response:any)=>{
+				console.log("this.imagesService.find.response",response);
+				if (Array.isArray(response.content))
+					person['image'] = response.content[0];
+			
+				this.taskerImage(persons,index+1);
+			});		
+		},100);
+	}
 	load(){
-		this.personalApi.getAll(100, 1, 'id',false,'').subscribe((res: any) => {
+		this.personalApi.getAll2(100, 1, 'id',false,'').subscribe((res: any) => {
 			this.personals = res.content;
 			this.personalFiltred = this.personals;
+			//this.taskerImage(this.personals,0);
+			
 			console.log("this.personals",this.personals);
+		});
+		this.personaltypeService.getAll().subscribe((res:any)=>{
+			this.personalType = res.content;
+			console.log("this.personalType",this.personalType);
 		});
 		this.scheduleService.getAll().subscribe((res:any)=>{
 			this.Schedules = res.content;
 			console.log("this.Schedules",this.Schedules);
 		});
 	}
-	saveAssignments(){
-		
+	saveAssignments(){		
 		let resultCount = 0;
 		let resultComplete = this.Assignments.length;
 		let callback = ()=>{
@@ -192,8 +217,7 @@ export class PersonalComponent implements OnInit {
 			this.load();
 			this.closeModal();
 		});
-	}
-	
+	}	
 	save(form: any): void {
 		//console.log('Form data:', this.user);		
 		if (form.valid ) {
@@ -221,5 +245,4 @@ export class PersonalComponent implements OnInit {
 				callback( res.content );
 		});
 	}
-	
 }

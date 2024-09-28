@@ -37,20 +37,35 @@ export class PersonalService {
 	}
   
 	getAll(
-	  size: number = 100,
-	  page: number = 1,
-	  sortBy: string = 'id',
-	  descending: false,
-	  keyword: any = ''
-	) {
-	  return this.http.get(
-		this.apiUrl +
-		  this.prefix +
-		  `/${this.apiName}`
-		  //`/${this.apiName}?[personal_type_id][equal]=14`
-	  );
-	}
-  
+		size: number = 100,
+		page: number = 1,
+		sortBy: string = 'id',
+		descending: false,
+		keyword: any = ''
+	  ) {
+		return this.http.get(
+		  this.apiUrl +
+			this.prefix +
+			`/${this.apiName}`
+			//`/${this.apiName}?[personal_type_id][equal]=14`
+		);
+	  }
+	
+	  getAll2(
+		size: number = 100,
+		page: number = 1,
+		sortBy: string = 'id',
+		descending: false,
+		keyword: any = ''
+	  ) {
+		return this.http.get(
+		  this.apiUrl +
+			this.prefix +
+			`/${this.apiName}/fortable`
+			//`/${this.apiName}?[personal_type_id][equal]=14`
+		);
+	  }
+	
 	getSync(
 	) {
 	  return this.http.get(

@@ -91,6 +91,7 @@ export class RoutesService {
             [sc[0], sc[1]]
           );
           if (d < maxDistance) {
+			route.sections[i].splitCoordsChecked.push(sc);
             sc[2] = true;
           }
         }
@@ -117,6 +118,7 @@ export class RoutesService {
         d = olSphere.getDistance([point.lon, point.lat], [sc[0], sc[1]]);
         if (d < maxDistance) {
           sc[2] = true;
+		  route.sections[i].splitCoordsChecked.push(sc);
         }
       }
     }
@@ -590,6 +592,7 @@ export class RoutesService {
           });
           route['sections'].forEach((t) => {
             t['splitCoords'] = [];// this.splitPointsCoord(t.coords, 4, 30);
+			t['splitCoordsChecked'] = [];
           });
 		  return result;
         })
@@ -620,6 +623,7 @@ export class RoutesService {
 				});
 				route['sections'].forEach((t) => {
 				  t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
+				  t['splitCoordsChecked'] = [];
 				});
 			  });
 			  return result;
@@ -661,6 +665,7 @@ export class RoutesService {
 		  route['splitCoordsLine'] = [];
 		  route['sections'].forEach((t) => {
 			t['splitCoordsCells'] = [];
+			t['splitCoordsChecked'] = [];
 		  });
 		  
 		  let i,j;
@@ -676,6 +681,7 @@ export class RoutesService {
   generateCell(route:any,cellSpace, randomY){	
 	route['sections'].forEach((t) => {
 		t['splitCoordsCells'] = this.splitPointsCoordCells(route,route['extend'],t.coords, 4*2, 30*2,cellSpace, randomY);
+		t['splitCoordsChecked'] = [];
 	  });
   }
   

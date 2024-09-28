@@ -135,18 +135,18 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoutes = [];
 	maxdevices = 20;
 	updateTimesx(){
-			this.http.get(`http://172.20.50.67:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
+			this.http.get(`http://172.20.50.123:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
 				console.log("res",res);
 			});
 			console.log("updating with", "ratio:"+this.ratio, "speed:"+this.speed);
 		}
 	botStart(){		
-		this.http.get(`http://172.20.50.67:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.50.123:7676/start?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}	
 	botReset(){		
-		this.http.get(`http://172.20.50.67:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
+		this.http.get(`http://172.20.50.123:7676/reset?maxdevices=${this.maxdevices}`).subscribe(res=>{
 			console.log("res",res);
 		});
 	}
@@ -317,13 +317,16 @@ export class DashboardmapComponent implements OnInit {
 	smoothSections(route){
 		this.routesService.smoothSections(route);
 	}
+	realized(coords){
+		return coords.map(s=>s[2]);
+	}
 	gotoDevice(device){
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
 		this.map.instance.getView().setZoom(16);
-		device.controls.show = true;
+		//device.controls.show = false;
 		device.controls.showArea = true;
 		device.controls.showTrack = true;
-		device.controls.showChecks = true;
+		device.controls.showChecks = false;
 		device.controls.showStops = true;
 	}
 	createControls(){

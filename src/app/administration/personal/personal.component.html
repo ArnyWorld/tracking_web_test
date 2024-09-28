@@ -33,7 +33,7 @@
 							<td> {{personal.name}}</td>
 							<td>
 								<div class=" d-flex justify-content-center  text-center align-items-center">
-									<img [src]="personal.image?.base64" class="imgFotoSm" />
+									<img [src]="serverApi + personal.image?.path" class="imgFotoSm" />
 								</div>
 							</td>
 							<td> {{personal['schedule']!=undefined?personal.schedule.name:''}}</td>
@@ -124,17 +124,35 @@
 					
 					<label class="fw-light" for="nombre">Turno</label>
 					<select class="form-select" aria-label="Seleccione un turno" id="turno"  [(ngModel)]="personal.schedule_id" name="turno" >
-						<option *ngFor="let schedule of Schedules"   >Turno {{schedule.id}}</option>
+                        <ng-content *ngFor="let schedule of Schedules">
+						    <option [value]="schedule.id" [label]="schedule.name"></option>
+                        </ng-content>
+					</select>
+					
+					<label class="fw-light" for="nombre">Cargo</label>
+					<select class="form-select" aria-label="Seleccione un cargo" id="turno"  [(ngModel)]="personal.personal_type_id" name="turno" >
+                        <ng-content *ngFor="let personaltype of personalType">
+						    <option [value]="personaltype.id" [label]="personaltype.name"></option>
+                        </ng-content>
 					</select>
 					
 					<label class="fw-light" for="foto">Fotografía</label>
-					<div class=" d-flex justify-content-center  text-center align-items-center">
-						<img [src]="personal.image.base64" class="imgFoto" />
-					</div>
+                    <ng-content *ngIf="personal.image!=null;else newImageTemp" >
+                        <div class=" d-flex justify-content-center  text-center align-items-center" >
+                            <img [src]="serverApi + personal.image.path" class="imgFoto" />
+                        </div>
 
-					<input class="form-control" id="foto" [(ngModel)]="personal.image.base64" name="foto" type="text" hidden>
-					<input class="form-control" id="fotoFile" [(ngModel)]="personal.image.base64" name="fotoFile" type="file" (change)="fileToBase64($event,newImage,'base64')">
+                        <input class="form-control" id="foto" [(ngModel)]="personal.image.base64" name="foto" type="text" hidden>
+                        <input class="form-control" id="fotoFile"  name="fotoFile" type="file" (change)="fileToBase64($event,newImage,'base64')">
+                    </ng-content>
+                    <ng-template #newImageTemp >
+                        <div class=" d-flex justify-content-center  text-center align-items-center" >
+                            <img [src]="newImage.base64" class="imgFoto" />
+                        </div>
 
+                        <input class="form-control" id="foto" [(ngModel)]="newImage.base64" name="foto" type="text" hidden>
+                        <input class="form-control" id="fotoFile" [(ngModel)]="newImage.base64" name="fotoFile" type="file" (change)="fileToBase64($event,newImage,'base64')">
+                    </ng-template>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -167,13 +185,25 @@
 					</div>
 
 					<label class="fw-light" for="foto">Fotografía</label>
-					<div class=" d-flex justify-content-center  text-center align-items-center">
-						<img [src]="personal.image?.base64" class="imgFoto" />
-					</div>
+                    <ng-content *ngIf="personal.image!=null; else newImageTemp" >
+                        <div class=" d-flex justify-content-center  text-center align-items-center" *ngIf="personal.image.path!=''" >
+                            <img [src]="serverApi + personal.image.path" class="imgFoto" />
+                        </div>
+                        <div class=" d-flex justify-content-center  text-center align-items-center" *ngIf="personal.image.path==''" >
+                            <img [src]="personal.image.base64" class="imgFoto" />
+                        </div>
 
-					<input class="form-control" id="foto" [(ngModel)]="personal.image_id" name="foto" type="text" hidden>
-					<input class="form-control" id="fotoFile" [(ngModel)]="personal.image_id" name="fotoFile" type="file" (change)="fileToBase64($event,newImage,'base64')">
+                        <input class="form-control" id="foto" [(ngModel)]="newImage.base64" name="foto" type="text" hidden>
+                        <input class="form-control" id="fotoFile"  name="fotoFile" type="file" (change)="newImage.path = '';fileToBase64($event,newImage,'base64')">
+                    </ng-content>
+                    <ng-template #newImageTemp >
+                        <div class=" d-flex justify-content-center  text-center align-items-center" >
+                            <img [src]="newImage.base64" class="imgFoto" />
+                        </div>
 
+                        <input class="form-control" id="foto" [(ngModel)]="newImage.base64" name="foto" type="text" hidden>
+                        <input class="form-control" id="fotoFile" [(ngModel)]="newImage.base64" name="fotoFile" type="file" (change)="fileToBase64($event,newImage,'base64')">
+                    </ng-template>
 
 				</div>
 			</div>

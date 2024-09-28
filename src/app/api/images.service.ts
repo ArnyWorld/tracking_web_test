@@ -10,7 +10,7 @@ import { ServicioApi } from './servicio-api';
 })
 export class ImagesService {
 	apiUrl = environment.apiserver;
-	apiName = 'Images';
+	apiName = 'images';
 	prefix = '';
 	constructor(private http: HttpClient) {}
   
@@ -20,20 +20,20 @@ export class ImagesService {
   
 	register(datos: any) {
 	  return this.http.post(
-		this.apiUrl + this.prefix + `/${this.apiName}`,
+		this.apiUrl + this.prefix + `${this.apiName}`,
 		datos
 	  );
 	}
   
 	update(datos: any, id: any): Observable<any> {
 	  return this.http.put(
-		this.apiUrl + this.prefix + `/${this.apiName}/${id}`,
+		this.apiUrl + this.prefix + `${this.apiName}/${id}`,
 		datos
 	  );
 	}
   
 	find(id: string = '') {
-	  return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
+	  return this.http.get(this.apiUrl + this.prefix + `${this.apiName}/${id}`);
 	}
   	
 	getAll(
