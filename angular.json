@@ -15,7 +15,7 @@
 			"options": {			
 			  "outputPath": {
 				  "base": "../public",
-				  "browser": "  "
+				  "browser": ""
 				},
 			  "index": "src/index.html",
 			  "browser": "src/main.ts",
