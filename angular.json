@@ -11,10 +11,14 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": "dist/kernotrack_app",
+          "builder": "@angular-devkit/build-angular:application",		  
+          "options": {			
+            "outputPath": {
+                "base": "dist/kernotrack_app",
+                "browser": ""
+              },
             "index": "src/index.html",
+			"baseHref" : "/uiadmin/",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
