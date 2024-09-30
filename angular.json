@@ -12,8 +12,12 @@
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": "dist/kernotrack_app",
+          "options": {            
+			"outputPath": {
+				"base": "../public",
+				"browser": ""
+			  },
+            "baseHref":"/adminpanel/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
