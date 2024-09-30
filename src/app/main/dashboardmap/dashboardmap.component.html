@@ -25,8 +25,8 @@
 				</aol-view>
 
 				<aol-layer-tile [opacity]="1"> 
-				 	 <aol-source-osm></aol-source-osm>    
-					<!-- <aol-source-xyz url="http://172.20.50.59:6060/{z}/{x}/{y}.png">	</aol-source-xyz>  -->
+				 	<!-- <aol-source-osm></aol-source-osm>    -->
+					<aol-source-xyz url="http://172.20.50.59:6060/{z}/{x}/{y}.png">	</aol-source-xyz> 
 				</aol-layer-tile>
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
@@ -228,7 +228,7 @@
 								</aol-style>
 						</aol-layer-vector>
                         -->
-					<!-- ROUTES -->	
+					<!-- ROUTES -->		
 					<div *ngFor="let route of routes" >
 						<div  *ngIf="route.controls.show" >
 							<!-- <div *ngFor="let section of route?.sections" > --> <!-- *ngIf="route.controls.show" -->
@@ -237,7 +237,7 @@
 										<aol-style>
 											<aol-style-stroke [color]="route.controls.selected?'rgba(30, 30, 170,255)':route.color" [width]="8"></aol-style-stroke>
 										</aol-style>
-										<aol-feature *ngFor="let section of route?.sections"> 
+										<aol-feature *ngFor="let section of route?.sections">
 											<aol-geometry-linestring >
 												<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
 												</aol-collection-coordinates>
