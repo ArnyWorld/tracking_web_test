@@ -15,7 +15,6 @@
           "options": {
             "outputPath": "dist/kernotrack_app",
             "index": "src/index.html",
-            "baseHref":"/adminpanel/",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
