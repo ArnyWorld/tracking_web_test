@@ -15,7 +15,7 @@
           "options": {            
 			"outputPath": {
 				"base": "../public",
-				"browser": ""
+				"browser": "adminpanel"
 			  },
             "baseHref":"/adminpanel/",
             "index": "src/index.html",
