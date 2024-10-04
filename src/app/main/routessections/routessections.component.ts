@@ -828,9 +828,7 @@ export class RoutessectionsComponent implements OnInit{
 		this.newRoute.image= null;
 		this.newRoute.sections = [];
 		
-		
 		let countsection = 0;
-		
 		
 		console.log('route', this.newRoute);
 		this.routesService.register(this.newRoute).subscribe((result: any) => {
@@ -913,7 +911,7 @@ export class RoutessectionsComponent implements OnInit{
 		contentRoute.sections.forEach( ((section:any,indexSection:number) =>{
 			this.regPoint(0, contentRoute, section, indexSection, callback);
 		}) );
-		
+
 /*
 
 		this.registerCount = 0;

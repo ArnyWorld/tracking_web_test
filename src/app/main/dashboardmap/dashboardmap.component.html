@@ -25,9 +25,10 @@
 				</aol-view>
 
 				<aol-layer-tile [opacity]="1"> 
-				 	<!-- <aol-source-osm></aol-source-osm>    -->
+				 	 <aol-source-osm></aol-source-osm>    
 					<!-- <aol-source-xyz url="http://172.20.50.59:6060/{z}/{x}/{y}.png">	</aol-source-xyz>  -->
-                    <aol-source-xyz url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png"></aol-source-xyz>
+                    <!-- <aol-source-xyz url="http://172.20.50.123:8080/{z}/{x}/{y}.png"></aol-source-xyz> -->
+                    <!-- <aol-source-xyz url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png"></aol-source-xyz> -->
 				</aol-layer-tile>
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
@@ -46,7 +47,7 @@
 							</aol-feature>
 						</aol-source-vector>
 					</aol-layer-vector>
-<!--
+<!--0
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>
 							<aol-coordinate
@@ -97,7 +98,7 @@
 					<!-- CHECKED GREEN CIRCLES -->
 					<div *ngIf="devices">
                         <aol-layer-vector  [zIndex]="750" >             
-                            <aol-source-vector>                
+                            <aol-source-vector> 
                                     <div *ngFor="let device of devices">
                                         <div *ngIf="device.controls.showChecks && device.routeSelected!=null">
                                             <div *ngFor="let section of device.routeSelected.sections">         
@@ -186,7 +187,7 @@
 					
 								<aol-source-vector>
 									<aol-style>
-										<aol-style-stroke [color]="'rgba(30, 30, 170,0.5)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
+										<aol-style-stroke [color]="'rgba(30, 30, 250,0.5)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
 									</aol-style>
                                     <div *ngIf="devices" #forsplitpoints>
                                         <div *ngFor="let device of devices">
