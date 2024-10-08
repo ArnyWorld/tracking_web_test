@@ -15,9 +15,9 @@
           "options": {            
 			"outputPath": {
 				"base": "../public",
-				"browser": ""
+				"browser": "adminpanel"
 			  },
-            "baseHref":"",
+            "baseHref":"/adminpanel/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
