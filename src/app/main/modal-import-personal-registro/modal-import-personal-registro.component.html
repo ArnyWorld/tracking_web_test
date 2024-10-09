@@ -1,0 +1,84 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Importar Registro de personal</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="form-group mb-1 row">
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Usuario</span>
+                </div>
+                <input type="text" class="form-control" #userInput placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Contraseña</span>
+                </div>
+                <input type="password" class="form-control" #passwordInput placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+            </div>
+            <div>
+                <button [disabled]="regpersonalService.isAuth" class="btn btn-small btn-primary" (click)="setCredential(userInput,passwordInput)">Conectar</button>
+                <button [disabled]="!regpersonalService.isAuth" class="btn btn-small btn-primary" (click)="loadRegs()">Obtener</button>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="" style="overflow: scroll;height:600px">
+                <table class="table table-sm table-striped w-100">
+                    <thead>
+                        <th>id</th>
+                        <th>document_number</th>
+                        <th>names</th>
+                        <th>last_name_1</th>
+                        <th>last_name_2</th>
+                        <th>last_name_3</th>
+                        <th>area</th>
+                        <th>position</th>
+                        <th>route</th>
+                        <th>state</th>
+                        <th>type_job</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let registro of registros" >
+                            <td>{{registro.person.id}}</td>
+                            <td>{{registro.person.document_number}}</td>
+                            <td>{{registro.person.names}}</td>
+                            <td>{{registro.person.last_name_1}}</td>
+                            <td>{{registro.person.last_name_2}}</td>
+                            <td>{{registro.person.last_name_3}}</td>
+                            <td>{{registro.person.area}}</td>
+                            <td>{{registro.person.position}}</td>
+                            <td>{{registro.person.route}}</td>
+                            <td>{{registro.person.state}}</td>
+                            <td>{{registro.person.type_job}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Ruta Para asignar</span>
+                </div>
+                
+                <select [(ngModel)]="routePersonsId" class="form-select">
+                    <option *ngFor="let route of routes " [value]="route.id">{{route.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <table>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="updateOnDb()"> {{this.updateProgress}}</button>
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="saveOnDb()"> {{this.createProgress}}</button>
+    <button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>

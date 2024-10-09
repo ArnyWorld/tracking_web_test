@@ -16,7 +16,7 @@
 
                 <aol-layer-tile>
                     <!-- <aol-source-osm></aol-source-osm> -->
-					<aol-source-xyz url="http://172.20.50.67:6050/{z}/{x}/{y}.png">	</aol-source-xyz>
+					<aol-source-xyz url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png">	</aol-source-xyz>
                 </aol-layer-tile>
 
                 <aol-layer-group>
@@ -82,6 +82,11 @@
         <app-modal-import-personal (onClose)="this.modalRef.hide();"></app-modal-import-personal>
     </ng-template>
 
+
+    <ng-template #modalImportPersonalRegistro role="document" let-modal class="center-modal">
+        <app-modal-import-personal-registro (onClose)="this.modalRef.hide();"></app-modal-import-personal-registro>
+    </ng-template>
+
     <ng-template #modalImportRoutes role="document" let-modal class="center-modal">
         <app-modal-import-routes (onClose)="this.modalRef.hide();"></app-modal-import-routes>
     </ng-template>
@@ -96,6 +101,7 @@
 
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Distritos</span>
 						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonal,null)">Importar Personal</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonalRegistro,null)">Importar Registro de Personal</span>
 						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportRoutes,null)">Importar Rutas</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Distrito</span>
                     </a>
