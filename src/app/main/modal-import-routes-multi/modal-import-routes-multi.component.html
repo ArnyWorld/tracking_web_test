@@ -1,0 +1,40 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Importar Rutas Multi</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="form-group mb-1 row">
+        <div class="col-12">
+            <input class="form-control" accept=".json,.geojson" type="file" (change)="readFile($event,importData)" />
+        </div> 
+        <div class="col-12">
+            <div class="" style="overflow: scroll;height:600px">
+                <table class="table table-sm table-striped w-100">
+                    <thead>
+                        <th>Ruta</th>
+                        <th>Color</th>
+                        <th>Horario <input #inputSchedule value="[1,2,3,4,5,6]" (input)="changeSchedule(inputSchedule)" /></th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let route of importData.routes">
+                            <td>{{route.registry.name}}</td>
+                            <td>{{route.registry.color}}</td>
+                            <td><input [(ngModel)]="route.registry.frequency" /></td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-12">
+            <textarea class="form-control" [(ngModel)]="importData.text" rows="10"></textarea>
+        </div>
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="saveOnDb()"> {{this.createProgress}}</button>
+    <button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>
