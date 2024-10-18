@@ -163,7 +163,7 @@ export class ModalImportRoutesMultiComponent implements OnInit {
 		this.saveRoute(this.importData.routes,0);
 	}
 	saveRoute(routes:any,index:number) {
-		console.log(routes[index]);		
+		//console.log(routes[index]);		
 		if (routes[index]===undefined) { 
 			this.createProgress = 'Completado';
 			return;
@@ -171,8 +171,12 @@ export class ModalImportRoutesMultiComponent implements OnInit {
 		let accomplish = Math.round((index/routes.length)*100);
 		this.createProgress = 'Guardando ' + accomplish +'%';
 		this.routesService.register(routes[index].registry).subscribe((result: any) => {
-			console.log("result", result);
+			console.log("result new route", result);
 			routes[index]['id'] = result.content['id'];
+			if (result.content['id'] == -1){
+				throw "error";
+			}
+
 			let pointsRegistry = [];
 			routes[index].sections.forEach(s=>{
 				s.forEach(p=>{
@@ -185,9 +189,8 @@ export class ModalImportRoutesMultiComponent implements OnInit {
 					pointsRegistry.push(point);
 				});
 			});
-			
 			this.pointsService.register(pointsRegistry).subscribe((resultPoints:any) => {
-				console.log("resultPoints", resultPoints);
+				//console.log("resultPoints", resultPoints);
 				this.saveRoute(this.importData.routes,index+1);		
 			});
 		});

@@ -95,8 +95,8 @@
         <app-modal-import-routes-multi (onClose)="this.modalRef.hide();"></app-modal-import-routes-multi>
     </ng-template>
     
-    <ng-template #modalImportAssignation role="document" let-modal class="center-modal">
-        <app-modal-import-assignations (onClose)="this.modalRef.hide();"></app-modal-import-assignations>
+    <ng-template #modalImportAssignments role="document" let-modal class="center-modal">
+        <app-modal-import-assignments (onClose)="this.modalRef.hide();"></app-modal-import-assignments>
     </ng-template>
 
     <app-panel-right [selected]="'Routes'">
@@ -111,7 +111,7 @@
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonalRegistro,null)">Importar Registro de Personal</span>
 						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportRoutes,null)">Importar Rutas</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportRoutesMulti,null)">Importar Multi Rutas</span>
-                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportAssignation,null)">Importar Asignacioness</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportAssignments,null)">Importar Asignacioness</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Distrito</span>
                     </a>
 
