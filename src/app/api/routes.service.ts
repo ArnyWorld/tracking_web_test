@@ -10,6 +10,8 @@ import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import { PointsService } from './points.service';
 
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -637,45 +639,146 @@ export class RoutesService {
     descending: false,
     keyword: any = ''
   ) {
-    return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/`).pipe(
-      tap((result: any) => {
-        result.content.forEach((route: any) => {
-          route['extend'] = [+180, 90, -180, -90];
-          route['sections'] = Array.from(
-            this.groupBy(route.points, (p) => p.section)
-          ).map((p: any, index: number) => {
-            return {
-              uuid: index,
-              coords: p[1].map((pp: any) => {
-                route['extend'][0] =
-                  pp.lon < route['extend'][0] ? pp.lon : route['extend'][0];
-                route['extend'][1] =
-                  pp.lat < route['extend'][1] ? pp.lat : route['extend'][1];
-                route['extend'][2] =
-                  pp.lon > route['extend'][2] ? pp.lon : route['extend'][2];
-                route['extend'][3] =
-                  pp.lat > route['extend'][3] ? pp.lat : route['extend'][3];
-                return [pp.lon, pp.lat];
-              }),
-            };
-          });
-          route['sections'].forEach((t) => {
-            t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
-          });
-		  route['splitCoordsLine'] = [];
-		  route['sections'].forEach((t) => {
-			t['splitCoordsCells'] = [];
-			t['splitCoordsChecked'] = [];
-		  });
-		  
-		  let i,j;
-		  for (i=0;i<route['sections'].length;i++)
-			for (j=0;j<route['sections'][i]['splitCoords'].length;j++)
-				route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]);
-        });
-        return result;
-      })
-    );
+	if (localStorage.getItem('routes')!=null){
+		return {subscribe:(res_=(a)=>{},err_=(a)=>{})=>{			
+
+		let openRequest =  indexedDB.open('store', 1);
+			
+		openRequest.onupgradeneeded =function(event) {
+			let db = openRequest.result;
+			if (!db.objectStoreNames.contains('routes')) { 
+			db.createObjectStore('routes', {keyPath: 'id'}); 
+			}
+			console.log("(indexedDB) openRequest.onupgradeneeded created");
+		};
+		
+		openRequest.onerror = function() {
+			console.error("Error", openRequest.error);
+		};
+
+		let db = null;
+		openRequest.onsuccess = function() {
+			db = openRequest.result;
+			db.onversionchange = function() {
+				db.close();
+				alert("La base de datos está desactualizada, por favor recargue la página.")
+			};
+			console.log("(indexedDB) openRequest.onsuccess success");	
+			try{	
+				
+				const transaction = db.transaction("routes", "readwrite"); // (1)
+				let routes = transaction.objectStore("routes"); 
+				var allRecords = routes.getAll();
+				console.log("(indexedDB) getting all");	
+				allRecords.onsuccess = function(res) {
+					console.log("(indexedDB) onsuccess",res.target.result);	
+					console.log("(indexedDB) onsuccess  allRecords.result--",allRecords.result);	
+					//console.log("(indexedDB) onsuccess obj",allRecords.result);	
+					res_({content:JSON.parse(JSON.stringify(allRecords.result))});
+				};
+			}catch(e){
+				err_("err");
+			}
+		};
+			
+		}};
+	}else{
+		let openRequest =  indexedDB.open('store', 1);
+			
+		openRequest.onupgradeneeded =function(event) {
+			let db = openRequest.result;
+			if (!db.objectStoreNames.contains('routes')) { 
+			db.createObjectStore('routes', {keyPath: 'id'}); 
+			}
+			console.log("openRequest.onupgradeneeded created");
+		};
+		
+		openRequest.onerror = function() {
+			console.error("Error", openRequest.error);
+		};
+
+		let db = null;
+		openRequest.onsuccess = function() {
+			db = openRequest.result;
+			db.onversionchange = function() {
+				db.close();
+				alert("La base de datos está desactualizada, por favor recargue la página.")
+			};
+			console.log("openRequest.onsuccess success");
+			
+			
+		};
+		let addData = (data)=>{
+			
+			const transaction = db.transaction("routes", "readwrite"); // (1)
+			let routes = transaction.objectStore("routes"); 
+			let route = data;//{id:'asd12',name:'route1'};
+			let request =  routes.add(route); 
+			console.log("openRequest.onupgradeneeded add added");
+			console.log(db);
+			
+			request.onsuccess = ()=> {
+				// request.result contains key of the added object
+				console.log(`New route added, email: ${request.result}`);
+			}
+		
+			request.onerror = (err)=> {
+				console.error(`Error to add new route: ${err}`,err)
+			}
+		};
+
+		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/`).pipe(
+		tap(async (result: any) => {		
+			let transaction = db.transaction(["routes"], "readwrite"); // (1)
+			let routes = transaction.objectStore("routes"); 
+			
+			result.content.forEach(async (route: any) => {
+				
+			
+			route['extend'] = [+180, 90, -180, -90];
+			route['sections'] = Array.from(
+				this.groupBy(route.points, (p) => p.section)
+			).map((p: any, index: number) => {
+				return {
+				uuid: index,
+				coords: p[1].map((pp: any) => {
+					route['extend'][0] =
+					pp.lon < route['extend'][0] ? pp.lon : route['extend'][0];
+					route['extend'][1] =
+					pp.lat < route['extend'][1] ? pp.lat : route['extend'][1];
+					route['extend'][2] =
+					pp.lon > route['extend'][2] ? pp.lon : route['extend'][2];
+					route['extend'][3] =
+					pp.lat > route['extend'][3] ? pp.lat : route['extend'][3];
+					return [pp.lon, pp.lat];
+				}),
+				};
+			});
+			route['sections'].forEach((t) => {
+				t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
+			});
+			route['splitCoordsLine'] = [];
+			route['sections'].forEach((t) => {
+				t['splitCoordsCells'] = [];
+				t['splitCoordsChecked'] = [];
+			});
+			
+			let i,j;
+			for (i=0;i<route['sections'].length;i++)
+				for (j=0;j<route['sections'][i]['splitCoords'].length;j++)
+					route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]);
+			});
+
+
+			result.content.forEach(async (route: any) => {				
+				let request = await routes.add(route); 
+			});
+
+			localStorage.setItem('routes','loaded');
+			return result;
+		})
+		);
+	}
   }
 
   generateCell(route:any,cellSpace, randomY){	
