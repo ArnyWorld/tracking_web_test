@@ -134,6 +134,11 @@ export class DashboardmapComponent implements OnInit {
 	selectedLineString:any;
 	selectedRoutes = [];
 	maxdevices = 20;
+	layerMap = 'osm';
+	opacityMap = 1;
+	updateOpacity(){
+
+	}
 	updateTimesx(){
 			this.http.get(`http://172.20.50.123:7676/adjust?ratio=${this.ratio}&speed=${this.speed}&tracklatency=${this.tracklatency}`).subscribe(res=>{
 				console.log("res",res);
@@ -323,11 +328,11 @@ export class DashboardmapComponent implements OnInit {
 	gotoDevice(device){
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
 		this.map.instance.getView().setZoom(16);
-		//device.controls.show = false;
-		device.controls.showArea = true;
+		device.controls.show = true;
+		//device.controls.showArea = true;
 		device.controls.showTrack = true;
-		device.controls.showChecks = false;
-		device.controls.showStops = true;
+		device.controls.showChecks = true;
+		device.controls.showStops = false;
 	}
 	createControls(){
 		return {

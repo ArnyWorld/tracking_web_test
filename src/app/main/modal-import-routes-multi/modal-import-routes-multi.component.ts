@@ -91,12 +91,13 @@ export class ModalImportRoutesMultiComponent implements OnInit {
 				fullRoute.properties = properties;
 				var points = [];
 				feature.geometry.coordinates.forEach( (p:any, index:number) => {
-					points.push( [p[0],p[1],0] );
-					if ( p[2]>0 ){
-						console.log("p[2]",p[2]);
-						console.log(feature);
+					if (Array.isArray(p[0])){
+						p[0].forEach(pp=>{
+							points.push( [pp[0],pp[1],index] );
+						});						
+					}else{
+						points.push( [p[0],p[1],-1] );
 					}
-
 				});
 				fullRoute.points = points;
 				importData.data.push(fullRoute);
@@ -118,7 +119,9 @@ export class ModalImportRoutesMultiComponent implements OnInit {
 				this.sections = [];
 			};
 			let setPointsIndex = function (points,index){
-				for(let i = 0; i < points.length ; i++) points[i][2] = index;
+				for(let i = 0; i < points.length ; i++) {
+					if (points[i][2] == -1) points[i][2] = index;
+				}
 			};
 			let colors = new Map();
 			let layer = new Map();

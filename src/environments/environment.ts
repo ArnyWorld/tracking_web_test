@@ -11,7 +11,7 @@ export const environment = {
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.5.22:9988/trackingdb/',
-  wsserver: 'http://172.20.1.69:7777',
+  wsserver: 'https://trackingserver.kernotec.com',	
   wsapiserver: 'https://trackingserver.kernotec.com',
 
   /*apiserver: 'http://192.168.100.7:9988/trackingdb/',

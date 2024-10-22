@@ -88,6 +88,20 @@ body {
 	left: 250px;
 }
 
+#overlayMenuLeft{
+    position: absolute;
+	z-index: 1;
+	top: 300px;
+	left: 200px;
+    transition: 0.5s linear;
+}
+#overlayMenuLeft:hover{    
+    background-color:#ffffff88;
+    border:0.25px solid #444;
+    border-radius: 0 25px 25px 0 ;
+    padding:5px;
+
+}
 
 /*button bar*/
 
