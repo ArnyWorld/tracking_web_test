@@ -353,6 +353,7 @@ export class DashboardmapComponent implements OnInit {
 		};
 	}
 	personal_filtrado = [];
+	deviceList = [];
 
 	conectar_persona(){
 		this.personal_filtrado.forEach( p=>{
@@ -371,38 +372,81 @@ export class DashboardmapComponent implements OnInit {
 		if (h==-1) return m + "m";		
 		return  h + 'h';
 	}
+	formatDevice(device){
+		device['marker'] = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
+		device['msl'] = new Date().getTime();
+	
+		//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
+		device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);				
+		if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
+		device['controls'] = this.createControls();
+		device.ms = (new Date().getTime() - device.msl);
+		device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
+		
+		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{					
+			device['tracks'] = res.tracks;
+			device['stops'] = this.routesService.getStops(device['tracks']);
+			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+			if (device.routeSelected!=null)
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+		},(err:any)=>console.log("err",err));
+	}
+	removeDevice(deviceData){
+		let device = this.deviceList.find(d=>d.id==deviceData.id);
+		if (device == null) return;
+		this.deviceList.splice(this.deviceList.indexOf(device),1);
+		this.filterDevices();
+	}
+	addDevice(deviceData){
+		let device = this.deviceList.find(d=>d.id==deviceData.id);
+		console.log("addDevice.device",device);
+		console.log("addDevice.deviceList",this.deviceList);
+		console.log("addDevice.devices",this.devices);
+		if (device==null) { 
+			device = deviceData;
+			this.deviceList.push(deviceData), 
+			this.formatDevice(device);}
+		console.log("--addDevice.device",device);
+		console.log("--addDevice.deviceList",this.deviceList);
+		console.log("--addDevice.devices",this.devices);
+		return device;
+	}
+	filterDevices(){
+		this.devices = this.deviceList;
+		this.updateDevices();		
+	}
+	filterDevice(deviceData){	
+		return true
+	}
 	socketComm(){
 		this.socket.emit('message', "enviando");
 		this.socket.on('message', (msg: any) => {
 			console.log('mensaje:', msg);
 		});
-		this.socket.on('devices', (data: any) => {			
-			console.log('devices:', data);
-			this.devices = data;
-			this.devices.forEach((device: any, index: number) => {
-				device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
-				device['msl'] = new Date().getTime();
-			
-				//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
-				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);				
-				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
-				device['controls'] = this.createControls();
-				device.ms = (new Date().getTime() - device.msl);
-				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-				
-
-				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{					
-					device['tracks'] = res.tracks;
-					device['stops'] = this.routesService.getStops(device['tracks']);
-					device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-					if (device.routeSelected!=null)
-						device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-
-				},(err:any)=>console.log("err",err));
-				
+		this.socket.on('devices', (devicesData: any) => {			
+			console.log('devices:', devicesData);
+			this.deviceList = devicesData;
+			this.deviceList.forEach((device: any, index: number) => {
+				this.formatDevice(device);
 			});
-			this.updateDevices();
+			//this.devicesFilter.push(device.id);
+			//this.socket.emit("device.subscribe",devicesFilter);
+			//this.updateDevices();
+			this.filterDevices();
 		});
+		
+		this.socket.on('device.new', (deviceData: any) => {
+			console.log('device.new',deviceData);
+			let device = this.addDevice(deviceData);
+			if(this.filterDevice(device)) {
+				console.log('filterDevice if',device);				
+				this.socket.emit("device.subscribe",[device.id]);
+			}
+		});	
+		this.socket.on('device.remove', (deviceData: any) => {
+			console.log('device.remove',deviceData);
+			this.removeDevice(deviceData);
+		});	
 		this.socket.on('device', (data)=>{	//nuevo dispositivo
 			console.log('device',data);
 			let device = this.devices.find((d: any) => d.id == data.id);
