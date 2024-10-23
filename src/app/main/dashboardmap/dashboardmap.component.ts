@@ -399,16 +399,10 @@ export class DashboardmapComponent implements OnInit {
 	}
 	addDevice(deviceData){
 		let device = this.deviceList.find(d=>d.id==deviceData.id);
-		console.log("addDevice.device",device);
-		console.log("addDevice.deviceList",this.deviceList);
-		console.log("addDevice.devices",this.devices);
 		if (device==null) { 
 			device = deviceData;
 			this.deviceList.push(deviceData), 
 			this.formatDevice(device);}
-		console.log("--addDevice.device",device);
-		console.log("--addDevice.deviceList",this.deviceList);
-		console.log("--addDevice.devices",this.devices);
 		return device;
 	}
 	filterDevices(){
@@ -429,17 +423,13 @@ export class DashboardmapComponent implements OnInit {
 			this.deviceList.forEach((device: any, index: number) => {
 				this.formatDevice(device);
 			});
-			//this.devicesFilter.push(device.id);
-			//this.socket.emit("device.subscribe",devicesFilter);
-			//this.updateDevices();
 			this.filterDevices();
 		});
 		
 		this.socket.on('device.new', (deviceData: any) => {
 			console.log('device.new',deviceData);
 			let device = this.addDevice(deviceData);
-			if(this.filterDevice(device)) {
-				console.log('filterDevice if',device);				
+			if(this.filterDevice(device)) {		
 				this.socket.emit("device.subscribe",[device.id]);
 			}
 		});	
