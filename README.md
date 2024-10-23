@@ -8,3 +8,6 @@
     Update build basehref
 ##  1.0.9
     Add routes db
+##  1.0.10
+    Suscribe devices
+    

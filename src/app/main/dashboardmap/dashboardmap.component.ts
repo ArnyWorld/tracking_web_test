@@ -407,7 +407,7 @@ export class DashboardmapComponent implements OnInit {
 	}
 	filterDevices(){
 		this.devices = this.deviceList;
-		this.updateDevices();		
+		this.updateDevices();
 	}
 	filterDevice(deviceData){	
 		return true
@@ -433,7 +433,12 @@ export class DashboardmapComponent implements OnInit {
 				this.socket.emit("device.subscribe",[device.id]);
 			}
 		});	
-		this.socket.on('device.remove', (deviceData: any) => {
+		
+		this.socket.on('device.emergency', (deviceData: any) => {
+			
+		});
+			
+		this.socket.on('device.remove', (deviceData: any) => {//disconnected
 			console.log('device.remove',deviceData);
 			this.removeDevice(deviceData);
 		});	
@@ -471,7 +476,15 @@ export class DashboardmapComponent implements OnInit {
 				this.socket.emit("device",data.id);
 				return;
 			}
+
+			let newStates = data.states;
+			Object.keys(newStates).forEach(k=>{
+				if  (device.states[k] != newStates[k] && k == 'IS_EMERGENCY'){
+					//this.audioEmergency.play();
+				}
+			});
 			device.states = data.states;
+
 			if (device['personal']?.id != device.states['ID_USER'] ){
 				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 			}
