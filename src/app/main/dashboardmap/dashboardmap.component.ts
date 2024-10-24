@@ -446,10 +446,15 @@ export class DashboardmapComponent implements OnInit {
 	}
 	filterDevice(device){	
 		let isValid = true;
-		if (device.personal!=null)
+		if (device.personal!=null){
 			if (!this.filterPersonalTypes.includes(device.personal.personal_type_id)) 
 				isValid = false;
+		}else
+			isValid = false;
 		//filtro por bateria
+		if (Object.keys(device.last).length==0)
+			isValid = false;
+
 		if ((device.last['bat']<this.filterBattery))
 			isValid = false;
 		//filtro por estado:emergencia
