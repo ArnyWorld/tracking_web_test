@@ -383,7 +383,10 @@ export class DashboardmapComponent implements OnInit {
 		if (h==-1) return m + "m";		
 		return  h + 'h';
 	}
-	formatDevice(device){
+	isDownloaded = false;
+	
+	countDownloads = 0;
+	formatDevice(device,callback){
 		device['marker'] = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 		device['msl'] = new Date().getTime();
 	
@@ -393,16 +396,16 @@ export class DashboardmapComponent implements OnInit {
 		device['controls'] = this.createControls();
 		device.ms = (new Date().getTime() - device.msl);
 		device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-		device['isReady'] = false;
-		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{					
+		//this.addTask((callback)=>{
+		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
 			device['tracks'] = res.tracks;
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			
-			if (device.routeSelected!=null)
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-			device['isReady'] = true;
+			if (device.routeSelected!=undefined)
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+			if (callback!=null) callback();
 		},(err:any)=>console.log("err",err));
+		//});
 	}
 	removeDevice(deviceData){
 		let device = this.deviceList.find(d=>d.id==deviceData.id);
@@ -415,7 +418,7 @@ export class DashboardmapComponent implements OnInit {
 		if (device==null) { 
 			device = deviceData;
 			this.deviceList.push(deviceData), 
-			this.formatDevice(device);}
+			this.formatDevice(device,null);}
 		return device;
 	}
 	filterPersonalTypes=[];
@@ -462,6 +465,29 @@ export class DashboardmapComponent implements OnInit {
 			isValid = false;
 		return isValid;
 	}
+	tasks=[];
+	taskLength=0;
+	taskCompleted=0;
+	taskState='stopped';
+	
+	addTask(task){
+		this.tasks.push(task);
+		this.nextTask();
+	}
+	nextTask(){
+		
+		if (this.taskState=="stopped"){
+			this.taskState="running";
+			this.tasks[this.taskLength](()=>{
+				this.taskCompleted++;
+				if (this.taskCompleted < this.tasks.length){
+					this.taskState="stopped";
+					this.nextTask();		
+				}
+			});	
+		}
+		
+	}
 	socketComm(){
 		this.socket.emit('message', "enviando");
 		this.socket.on('message', (msg: any) => {
@@ -470,8 +496,15 @@ export class DashboardmapComponent implements OnInit {
 		this.socket.on('devices', (devicesData: any) => {			
 			console.log('devices:', devicesData);
 			this.deviceList = devicesData;
+			this.countDownloads=0;
 			this.deviceList.forEach((device: any, index: number) => {
-				this.formatDevice(device);
+				this.formatDevice(device,()=>{ 
+					this.countDownloads++;
+					if (this.countDownloads==this.deviceList.length){
+						this.isDownloaded=true;
+						console.log("completado");
+					}
+				});
 			});
 			this.filterDevices();
 		});
@@ -510,14 +543,17 @@ export class DashboardmapComponent implements OnInit {
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
-				device['tracks'] = res.tracks;
-				device['stops'] = this.routesService.getStops(device['tracks']);
-				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-								
-				if (device.routeSelected!=undefined)
-					 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-			},(err:any)=>console.log("err",err));
+			this.addTask((callback)=>{
+				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
+					device['tracks'] = res.tracks;
+					device['stops'] = this.routesService.getStops(device['tracks']);
+					device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+									
+					if (device.routeSelected!=undefined)
+						 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+					if (callback!=null) callback();
+				},(err:any)=>console.log("err",err));
+			});
 				
 		});
 		this.socket.on('device.state', (data: any) => {
@@ -528,30 +564,7 @@ export class DashboardmapComponent implements OnInit {
 				return;
 			}
 			this.verifyFilter(device);
-			/*
-			let newStates = data.states;
-			/*Object.keys(newStates).forEach(k=>{
-				if  (device.states[k] != newStates[k] && k == 'IS_EMERGENCY'){
-					//this.audioEmergency.play();
-				}
-			});
-			device.states = data.states;
-			this.filterDevices();
-			if (device['personal']?.id != device.states['ID_USER'] ){
-				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-			}
-			if (device['routeSelected']?.id != device.states['ID_ROUTE'] ){
-				//device['routeSelected'] = {... this.routes.find(r => r.id==device.states['ID_ROUTE'])};				
-				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
-				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
-
-				device['stops'] = this.routesService.getStops(device['tracks']);
-				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-				if (device.routeSelected!=null)
-					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-			}
-			this.updateDeviceMarker(device);
-			*/
+			
 		});
 		this.socket.on('device.config', (data: any) => {
 			console.log('device.config',data);

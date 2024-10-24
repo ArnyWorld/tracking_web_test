@@ -45,6 +45,7 @@
 
 
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
+                 <div *ngIf="isDownloaded">
 				<aol-layer-group>					
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
@@ -370,6 +371,7 @@
 						</aol-layer-vector>
 					</div>
 				</aol-layer-group>
+            </div>
 				<!-- many green points 
 				<div *ngIf="devices">
 					<aol-layer-vector *ngFor="let device of devices" >

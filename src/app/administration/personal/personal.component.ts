@@ -140,6 +140,13 @@ export class PersonalComponent implements OnInit {
 			});		
 		},100);
 	}
+	toQr(code){				
+		let strEncode = `0001|${code} LP|0001|0001`;
+		console.log("QR",strEncode);
+		console.log("QR b64", btoa(strEncode));
+		var encodedString = btoa(strEncode);
+		return encodedString;
+	}
 	load(){
 		this.personalApi.getAll2(100, 1, 'id',false,'').subscribe((res: any) => {
 			this.personals = res.content;
