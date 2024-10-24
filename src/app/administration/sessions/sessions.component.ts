@@ -23,6 +23,7 @@ import { WSapiService } from '../../api/wsapi.service';
   templateUrl: './sessions.component.html',
   styleUrl: './sessions.component.css'
 })
+//TREBOL-15 Para verificación servicio de control de sesiones
 export class SessionsComponent implements OnInit {
 	modalRef?: BsModalRef;
 	constructor(

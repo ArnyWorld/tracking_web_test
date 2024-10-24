@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
 	providedIn: 'root'
 })
+//TREBOL-15 Para verificación servicio de control de sesiones
 export class SessionsService {
 	apiUrl = environment.apiserver;
 	apiName = 'session';
