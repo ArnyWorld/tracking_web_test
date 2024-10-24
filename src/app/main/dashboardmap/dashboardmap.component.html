@@ -402,6 +402,16 @@
 	<app-panel-right [selected]="'Dispositivos'" [tabs]="tabs">
 
 		<div ngProjectAs="Devices">
+<div>
+    <label>PersonalType</label>
+        <select class="form-select" [(ngModel)]="filterPersonalTypes" multiple style="height:300px" >
+            <option *ngFor="let type of personalType" [value]="type.id">{{type.name}}</option>
+        </select>
+        Bateria:{{this.filterBattery}}<input type="range" value="1" min="0" max="100" step="1" [(ngModel)]="filterBattery" >
+        Con Emergencia <input class="form-check-input form-check-sm" type="checkbox" [(ngModel)]="filterEmergency">
+      <button class="btn btn-sm btn-outline-primary" (click)="filterDevices()">Filtrar</button>
+</div>
+
 			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
 
 				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true" (click)="gotoDevice(device)">
@@ -434,6 +444,7 @@
 					 Completado: {{device?.routeSelected?.completed}} %<br>
 					 Hora: {{device?.last.t | date:'dd/MM/yyyy HH:mm:ss' }}<br>
 					 Latencia: {{device.ms}}ms</div>
+                     --Emergency: {{ device.states['IS_EMERGENCY'] }}<br>
 
 			</div>
 		</div>

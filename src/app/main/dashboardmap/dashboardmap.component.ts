@@ -19,6 +19,7 @@ import { ImagesService } from '../../api/images.service';
 import { TracksService } from '../../api/tracks.service';
 import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
+import { PersonaltypeService } from '../../api/jobroutes.services';
 
 
 
@@ -36,6 +37,7 @@ export class DashboardmapComponent implements OnInit {
 	constructor(private socket: SocketOne,
 		private http: HttpClient,
 		private personalService: PersonalService,
+		private personaltypeService: PersonaltypeService ,
 		private routesService: RoutesService,
 		private imagesService: ImagesService,
 		private suggestionsService: SuggestionsService,
@@ -307,6 +309,14 @@ export class DashboardmapComponent implements OnInit {
 					this.socketComm();
 				}, 1000);
 			});
+			this.loadPersonalType();
+		});
+	}
+	personalType = [];
+	loadPersonalType(){		
+		this.personaltypeService.getAll().subscribe((res:any)=>{
+			this.personalType = res.content;
+			console.log("this.personalType",this.personalType);
 		});
 	}
 	splitPerZoom(array){
@@ -408,11 +418,16 @@ export class DashboardmapComponent implements OnInit {
 			this.formatDevice(device);}
 		return device;
 	}
+	filterPersonalTypes=[];
+	filterBattery=50;
+	filterEmergency=false;
 	filterDevices(){
 		//this.devices = this.deviceList;
 		this.socket.emit("device.unsubscribe.all",'');
-		let filterDevices = this.deviceList.filter(f=>{
-			return true;
+		console.log(this.filterPersonalTypes);
+		let filterDevices = this.deviceList.filter(device=>{
+			//filtro por tipo
+			 return this.filterDevice(device);
 		});
 		let idsArray = filterDevices.map(d=>d.id);
 		this.devices = filterDevices;
@@ -420,8 +435,27 @@ export class DashboardmapComponent implements OnInit {
 
 		this.updateDevices();
 	}
-	filterDevice(deviceData){	
-		return true;
+	verifyFilter(device){
+		if (this.filterDevice(device)){
+			let deviceNew = this.devices.filter(d=>d.id == device.id);
+			if( device == null)
+				this.devices.push(deviceNew);
+			return true;
+		}
+		return false;
+	}
+	filterDevice(device){	
+		let isValid = true;
+		if (device.personal!=null)
+			if (!this.filterPersonalTypes.includes(device.personal.personal_type_id)) 
+				isValid = false;
+		//filtro por bateria
+		if ((device.last['bat']<this.filterBattery))
+			isValid = false;
+		//filtro por estado:emergencia
+		if (!(device.states['IS_EMERGENCY']==this.filterEmergency))
+			isValid = false;
+		return isValid;
 	}
 	socketComm(){
 		this.socket.emit('message', "enviando");
@@ -440,8 +474,8 @@ export class DashboardmapComponent implements OnInit {
 		this.socket.on('device.new', (deviceData: any) => {
 			console.log('device.new',deviceData);
 			let device = this.addDevice(deviceData);
-			if(this.filterDevice(device)) {	
-				this.filterDevices(),
+			if(this.verifyFilter(device)) {	
+				//this.filterDevices(),
 				this.socket.emit("device.subscribe",[device.id]);
 			}
 		});	
@@ -483,20 +517,21 @@ export class DashboardmapComponent implements OnInit {
 		});
 		this.socket.on('device.state', (data: any) => {
 			console.log('device.state',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
 			}
-
+			this.verifyFilter(device);
+			/*
 			let newStates = data.states;
-			Object.keys(newStates).forEach(k=>{
+			/*Object.keys(newStates).forEach(k=>{
 				if  (device.states[k] != newStates[k] && k == 'IS_EMERGENCY'){
 					//this.audioEmergency.play();
 				}
 			});
 			device.states = data.states;
-
+			this.filterDevices();
 			if (device['personal']?.id != device.states['ID_USER'] ){
 				device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 			}
@@ -510,8 +545,8 @@ export class DashboardmapComponent implements OnInit {
 				if (device.routeSelected!=null)
 					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
 			}
-			
 			this.updateDeviceMarker(device);
+			*/
 		});
 		this.socket.on('device.config', (data: any) => {
 			console.log('device.config',data);
