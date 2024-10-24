@@ -75,3 +75,16 @@
 .modal-lg {
     max-width: 1200px;
 }
+
+.littleTable{
+    text-wrap: nowrap;
+    font-size: smaller;
+}
+.littleTable th{
+    text-wrap: nowrap;
+    text-align: right;
+}
+.littleTable td{
+    text-wrap: nowrap;
+    text-align: left;
+}

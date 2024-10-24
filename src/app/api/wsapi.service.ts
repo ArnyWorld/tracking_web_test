@@ -19,4 +19,7 @@ export class WSapiService {
 	  return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracks`);
 	}
   
+	getDevices() {
+	  return this.http.get(this.apiUrl + `/devices`);
+	}
   }

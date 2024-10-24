@@ -13,6 +13,8 @@ import { ImagesService } from '../../api/images.service';
 import { environment } from '../../../environments/environment';
 import { ScheduleService } from '../../api/schedule.service';
 import { PersonaltypeService } from '../../api/jobroutes.services';
+import { SessionsService } from '../../api/sessions.service';
+import { WSapiService } from '../../api/wsapi.service';
 @Component({
   selector: 'app-sessions',
   standalone: true,
@@ -25,6 +27,7 @@ export class SessionsComponent implements OnInit {
 	modalRef?: BsModalRef;
 	constructor(
 		private personalApi: PersonalService,
+		private sessionsService: SessionsService,
 		private personaltypeService: PersonaltypeService,
 		private AssignmentsService: AssignmentsService,
 		private AssignmentsPersonalService: AssignmentsService,
@@ -32,6 +35,7 @@ export class SessionsComponent implements OnInit {
 		private modalService: BsModalService,
 		private imagesService: ImagesService,
 		private scheduleService: ScheduleService,
+		private wsapiService: WSapiService,
 	) { }
 	serverApi = environment.apiserver;
 	personal = {
@@ -46,39 +50,16 @@ export class SessionsComponent implements OnInit {
 	Schedules = [];
 	Assignments = [];
 
-	default = {
-		id: '',
-		name: '',
-		code: '',
-		image_id: '',
-		image: null,
-		personal_type_id: '',
-		schedule_id:1,
-	};
-	defaultImage = {
-		base64 : '',
-		path: '',
-		create_date: 0,
-		update_date: 0,
-	};
-	newImage:any = {
-		base64 : '',
-		path: '',
-		create_date: 0,
-		update_date: 0
-	};
 	keyword="";
-	routes: any[];
 
 	personals: any[];
 	personalType: any[];
 	personalFiltred: any[];
+	sessions: any[];
+	sessionsFiltred
 
 	ngOnInit(): void {		
 		this.load();
-		this.loadRoutes();
-		
-
 	}
 	filtrar(){
 		if (this.keyword == "") {this.personalFiltred = this.personals; return;}
@@ -87,12 +68,8 @@ export class SessionsComponent implements OnInit {
 			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
 		});
 	}
-	loadRoutes(){
-		console.log("loading routes");
-		this.routesService.getList().subscribe((res: any) => {
-			this.routes = res.content;			
-			console.log("routes loaded", this.routes);
-		});
+	keys(obj){
+		return Object.keys(obj);
 	}
 	load(){
 		this.personalApi.getAll2(100, 1, 'id',false,'').subscribe((res: any) => {
@@ -109,6 +86,21 @@ export class SessionsComponent implements OnInit {
 		this.scheduleService.getAll().subscribe((res:any)=>{
 			this.Schedules = res.content;
 			console.log("this.Schedules",this.Schedules);
+		});
+		this.sessionsService.getAll().subscribe((res:any)=>{
+			this.sessions = res.content;
+			this.sessionsFiltred = this.sessions;
+			console.log("this.sessions",this.sessions);
+			this.wsapiService.getDevices().subscribe((devicesResult:any)=>{
+				console.log("this.wsapiService",devicesResult);
+				devicesResult.devices.forEach((device:any) => {
+					let session = this.sessions.find(s=>s.id==device.states['ID_SESSION']);
+					if (session!=undefined){
+						session['devicews'] = device;
+					}
+				});
+				
+			});
 		});
 	}
 }

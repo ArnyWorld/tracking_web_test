@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
 	providedIn: 'root'
 })
-export class DevicesService {
+export class SessionsService {
 	apiUrl = environment.apiserver;
 	apiName = 'session';
 	prefix = '';
