@@ -43,7 +43,7 @@
                     <aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz>
                 </aol-layer-tile>
 
-
+            
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
                  <div >
 				<aol-layer-group>					
@@ -62,6 +62,7 @@
 						</aol-source-vector>
 					</aol-layer-vector>
 
+                    <!-- TREBOL-29 uso de overlays para generar marcadores dinámicos -->
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>
 							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>

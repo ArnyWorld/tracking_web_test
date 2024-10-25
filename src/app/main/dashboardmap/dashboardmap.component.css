@@ -141,6 +141,9 @@ body {
     
     overflow: hidden;
     user-select: none;
+    pointer-events: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
     border: 1px solid #000;
     transition: all 0.5s ease;
   }
