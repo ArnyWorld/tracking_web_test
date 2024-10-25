@@ -15,6 +15,7 @@ import { ScheduleService } from '../../api/schedule.service';
 import { PersonaltypeService } from '../../api/jobroutes.services';
 import { SessionsService } from '../../api/sessions.service';
 import { WSapiService } from '../../api/wsapi.service';
+import { DevicesService } from '../../api/devices.service';
 @Component({
   selector: 'app-devices',
   standalone: true,
@@ -24,7 +25,7 @@ import { WSapiService } from '../../api/wsapi.service';
   styleUrl: './devices.component.css'
 })
 //TREBOL-15 Para verificación servicio de control de sesiones
-export class DevicesServiceComponent implements OnInit {
+export class DevicesComponent implements OnInit {
 	modalRef?: BsModalRef;
 	constructor(
 		private personalApi: PersonalService,
@@ -36,6 +37,7 @@ export class DevicesServiceComponent implements OnInit {
 		private modalService: BsModalService,
 		private imagesService: ImagesService,
 		private scheduleService: ScheduleService,
+		private deviceService: DevicesService,
 		private wsapiService: WSapiService,
 	) { }
 	serverApi = environment.apiserver;
@@ -58,6 +60,10 @@ export class DevicesServiceComponent implements OnInit {
 	personalFiltred: any[];
 	sessions: any[];
 	sessionsFiltred
+	dbDevices: any[];
+	noDevices= [];
+	devices: any[];
+	devicesFilter: any[];
 
 	ngOnInit(): void {		
 		this.load();
@@ -69,17 +75,66 @@ export class DevicesServiceComponent implements OnInit {
 			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
 		});
 	}
+	registerAll(){
+		let syncDevices = [];
+		this.devices.forEach((device:any)=>{
+			let syncDevice = {
+				id:device.id,
+				info_brand:device.config['INFO_BRAND'],
+				info_device:device.config['INFO_DEVICE'],
+				info_manufacturer:device.config['INFO_MANUFACTURER'],
+				info_model:device.config['INFO_MODEL'],
+				info_product:device.config['INFO_PRODUCT'],
+				info_serial:device.config['INFO_SERIAL'],
+				config_internettest:device.config['CONFIG_INTERTEST'],
+				config_livecapture:device.config['CONFIG_INTERTEST'],
+				config_paramupdate:device.config['CONFIG_INTERTEST'],
+				config_saveoffline:device.config['CONFIG_INTERTEST'],
+				config_saveonline:device.config['CONFIG_INTERTEST'],
+				config_serverapi:device.config['CONFIG_INTERTEST'],
+				config_servertrack:device.config['CONFIG_INTERTEST'],
+				config_trackcapture:device.config['CONFIG_INTERTEST'],
+				config_updatestatus:device.config['CONFIG_INTERTEST'],
+				registred:true,
+				registred_date:Date.now(),
+				last_connect:Date.now(),
+				first_connect:Date.now(),
+			}
+			syncDevices.push(syncDevice);
+			console.log('registrando.device ', syncDevice)
+			this.deviceService.registerSync(syncDevice).subscribe((res:any)=>{
+				console.log('registerAll.registerSync.res: ', res);
+			})
+		});
+		
+	}
 	keys(obj){
 		return Object.keys(obj);
 	}
 	load(){
-		this.personalApi.getAll2(100, 1, 'id',false,'').subscribe((res: any) => {
-			this.personals = res.content;
-			this.personalFiltred = this.personals;
-			//this.taskerImage(this.personals,0);
-			
-			console.log("this.personals",this.personals);
-		});
+		this.deviceService.getAll().subscribe( (dbDevicesResult:any)=>{
+			this.dbDevices = dbDevicesResult.content;
+			console.log("dbDevices",this.dbDevices);
+				this.personalApi.getAll2().subscribe((res: any) => {
+					this.personals = res.content;
+					this.personalFiltred = this.personals;
+					//this.taskerImage(this.personals,0);
+					
+					console.log("this.personals",this.personals);
+					this.wsapiService.getDevices().subscribe((devicesResult:any)=>{
+						console.log("this.wsapiService",devicesResult);						
+						this.devices = devicesResult.devices;
+						this.devices.forEach((device:any) => {
+							device['personal'] = this.personals.find(p=>p.id==device.states['ID_USER']);
+							let registredDevice = this.dbDevices.find(d=> d.id == device.id);
+							if (registredDevice == undefined )
+								this.noDevices.push(device);
+						});
+						
+					});
+				});
+			});
+		
 		this.personaltypeService.getAll().subscribe((res:any)=>{
 			this.personalType = res.content;
 			console.log("this.personalType",this.personalType);
@@ -88,11 +143,6 @@ export class DevicesServiceComponent implements OnInit {
 			this.Schedules = res.content;
 			console.log("this.Schedules",this.Schedules);
 		});
-		this.wsapiService.getDevices().subscribe((devicesResult:any)=>{
-			console.log("this.wsapiService",devicesResult);
-			devicesResult.devices.forEach((device:any) => {
-			});
-			
-		});
+		
 	}
 }

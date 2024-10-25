@@ -73,7 +73,7 @@ export class SessionsComponent implements OnInit {
 		return Object.keys(obj);
 	}
 	load(){
-		this.personalApi.getAll2(100, 1, 'id',false,'').subscribe((res: any) => {
+		this.personalApi.getAll2().subscribe((res: any) => {
 			this.personals = res.content;
 			this.personalFiltred = this.personals;
 			//this.taskerImage(this.personals,0);

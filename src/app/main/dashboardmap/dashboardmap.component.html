@@ -47,7 +47,7 @@
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
                  <div >
 				<aol-layer-group>					
-					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
+				 	<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
 							<aol-feature>
 								<aol-geometry-point>
@@ -61,21 +61,62 @@
 							</aol-feature>
 						</aol-source-vector>
 					</aol-layer-vector>
-<!--
+
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>
 							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>
 							<aol-content>
 								<div class="my-overlay-class">
-									
+                                    
                                     <svg xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="50" cy="50" r="50" fill="red" />
+                                        <g
+                                            id="layer1"
+                                            transform="translate(-108.98034,-91.800702)"><path
+                                            style="fill:#000000"
+                                            d="m 138.91518,169.55416 c -0.74562,-0.30666 -0.97464,-0.50247 -2.60719,-2.22917 -10.68955,-11.30604 -18.66243,-22.53007 -21.62467,-30.44266 -1.13695,-3.03696 -1.54905,-5.12887 -1.56555,-7.94695 -0.0412,-7.03043 2.80421,-13.90177 7.83583,-18.92286 1.70497,-1.7014 3.63399,-3.1511 5.9353,-4.46052 2.42367,-1.37903 5.93702,-2.56955 9.05153,-3.06716 1.6776,-0.26803 5.00857,-0.37296 6.67055,-0.21013 6.08365,0.59603 11.58709,2.99851 15.86694,6.92657 5.26401,4.83134 8.21982,11.16826 8.67049,18.58859 0.17451,2.87335 -0.16065,5.08392 -1.25513,8.27834 -2.74069,7.9991 -10.35855,18.91921 -21.51074,30.83537 -0.88835,0.94921 -1.81682,1.89455 -2.06327,2.10076 -0.94843,0.79355 -2.28614,1.00962 -3.40409,0.54982 z"
+                                            id="path1" /><circle
+                                            style="fill:#ffffff;stroke-width:0.367001;stroke-linecap:round;stroke-linejoin:bevel"
+                                            id="path2"
+                                            cx="140.15469"
+                                            cy="129.04637"
+                                            r="17.470289" /><rect
+                                            style="fill:#000000;fill-opacity:1;stroke-width:0.367001;stroke-linecap:round;stroke-linejoin:bevel"
+                                            id="rect3"
+                                            width="16.874453"
+                                            height="8.5924988"
+                                            x="108.98035"
+                                            y="91.800705"
+                                            ry="1.5163229" /><rect
+                                            style="fill:#098229;fill-opacity:1;stroke-width:0.367001;stroke-linecap:round;stroke-linejoin:bevel"
+                                            id="rect4"
+                                            width="3.2853625"
+                                            height="6.381187"
+                                            x="110.81792"
+                                            y="92.906357"
+                                            ry="0" /><rect
+                                            style="fill:#ffffff;fill-opacity:1;stroke-width:0.367001;stroke-linecap:round;stroke-linejoin:bevel"
+                                            id="rect4-1"
+                                            width="3.2853625"
+                                            height="6.381187"
+                                            x="115.74129"
+                                            y="92.906357"
+                                            ry="0" /><rect 
+                                            style="fill:#ffffff;fill-opacity:1;stroke-width:0.367001;stroke-linecap:round;stroke-linejoin:bevel"
+                                            id="rect4-1-9"
+                                            width="3.2853625"
+                                            height="6.381187"
+                                            x="120.66465"
+                                            y="92.906357"
+                                            ry="0" />
+                                     <image href="favicon.ico" height="20" width="20" x="120" y="120" />
+                                     </g>
+       
                                     </svg>
 								</div>
 							</aol-content>
 						</aol-overlay>				
 					</aol-layer-vector>
-                -->
+                
 					<!-- STOP CIRCLES -->
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >

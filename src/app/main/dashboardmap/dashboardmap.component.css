@@ -133,5 +133,18 @@ body {
   }
 
   .my-overlay-class{
-    width:50px;
+    
+    width:60px;
+    height:90px;
+    margin-left:-50%;
+    margin-top:-170%;
+    
+    overflow: hidden;
+    user-select: none;
+    border: 1px solid #000;
+    transition: all 0.5s ease;
+  }
+  
+  .my-overlay-class:hover{
+    scale:1.5;
   }

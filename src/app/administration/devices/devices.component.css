@@ -78,7 +78,7 @@
 
 .littleTable{
     text-wrap: nowrap;
-    font-size: smaller;
+    font-size: 10px;
 }
 .littleTable th{
     text-wrap: nowrap;

@@ -34,7 +34,10 @@ export class DevicesService {
 	find(id: string = '') {
 		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
 	}
-
+	registerSync(device){		
+		if (device.id==null) {console.log("invalid id");  return {subscribe:(res)=>{ res={response:'invalid id'} }};}
+		return this.http.post(this.apiUrl+'devices/sync',  device);
+	}
 	getAll(
 	) {
 		return this.http.get(

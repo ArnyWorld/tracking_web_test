@@ -1,6 +1,6 @@
 <div class="container-fluid bg-light">
     <div class="text-center pt-5">
-        <h2>Sesiones</h2>
+        <h2>Dispositivos ({{ devices?.length}}) {{noDevices?noDevices.length>0?'('+noDevices.length + ' sin registrar)':'' :''}} </h2>
         <p>
             <!-- <span href="#" class="btn btn-sm btn-outline-dark rounded-full" (click)="openModal(modalNew)">Crear Personal</span> -->
         </p>
@@ -11,77 +11,43 @@
             <div class="input-group mb-3">
                 <input type="text" class="form-control form-control-sn" [(ngModel)]="keyword" (input)="filtrar()" placeholder="Buscar" aria-label="" aria-describedby="basic-addon1">
             </div>
+            <button class="btn btn-sm btn-outline-primary" (click)="registerAll()">Sync devices</button>
             <form id="bookingForm" action="#" method="" class="   needs-validation" novalidate autocomplete="off" style="height:840px;">
                 <table class="table table-sm table-bordered table-striped ">
                     <thead>
                         <tr>
-                            <td scope="col">Session</td>
-                            <td scope="col">Personal</td>
-                            <td scope="col">Dispositivo</td>
-                            <td scope="col">Configuracion</td>
+                            <td scope="col">id</td>
+                            <td scope="col">Configuración</td>
                             <td scope="col">Estados</td>
+                            <td scope="col">Personal</td>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let session of sessionsFiltred;index as i" class="fw-light">
+                        <tr *ngFor="let device of devices;index as i" class="fw-light">
                             <td>
-                                <table class="table table-sm">
-                                    <tr><th>ID</th><td>{{session.id }}</td></tr>
-                                    <tr><th>Login</th><td>{{session.login_date | date:'dd/MM/yyyy HH:mm:ss' }}</td></tr>
-                                </table>
+                                {{device.id}}
                             </td>
                             <td>
-                                <table class="table table-sm">
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <td>{{session.personal.name}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Horario</th>
-                                        <td>{{session.personal.schedule_id}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Tipo</th>
-                                        <td>{{session.personal.personal_type_id}}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td>
-                                <table class="table table-sm">
-                                    <tr>
-                                        <th>ID</th>
-                                        <td>{{session.device.id}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Fabricante</th>
-                                        <td>{{session.device.info_brand}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Modelo</th>
-                                        <td>{{session.device.info_model}}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                            
-                            <td>
-                                <table class="littleTable" *ngIf="session.devicews">
-                                    <tr *ngFor="let key of keys(session.devicews.config)">                                        
+                                <table class="littleTable" *ngIf="device.config">
+                                    <tr *ngFor="let key of keys(device.config)">
                                         <th>{{key}}</th>
-                                        <td>{{session.devicews.config[key] }}</td>       
-                                        <ng-template>
-                                            
-                                        </ng-template>                                 
+                                        <td>{{device.config[key] }}</td>
                                     </tr>
                                 </table>
                             </td>
                             <td>
-                                <table class="littleTable" *ngIf="session.devicews">
-                                    <tr *ngFor="let key of keys(session.devicews.states)">                                        
+                                <table class="littleTable" *ngIf="device.states">
+                                    <tr *ngFor="let key of keys(device.states)">
                                         <th>{{key}}</th>
-                                        <td>{{session.devicews.states[key] }}</td>       
-                                        <ng-template>
-                                            
-                                        </ng-template>                                 
+                                        <td>{{device.states[key] }}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <table class="littleTable" *ngIf="device.personal">
+                                    <tr *ngFor="let key of keys(device.personal)">
+                                        <th>{{key}}</th>
+                                        <td>{{ device.personal[key] }}</td>
                                     </tr>
                                 </table>
                             </td>

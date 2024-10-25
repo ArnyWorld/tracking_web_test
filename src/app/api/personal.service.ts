@@ -52,11 +52,6 @@ export class PersonalService {
 	  }
 	
 	  getAll2(
-		size: number = 100,
-		page: number = 1,
-		sortBy: string = 'id',
-		descending: false,
-		keyword: any = ''
 	  ) {
 		return this.http.get(
 		  this.apiUrl +
