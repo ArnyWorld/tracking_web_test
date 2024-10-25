@@ -131,3 +131,7 @@ body {
 	background-color: #3e8e41;
 	color: #fff; 
   }
+
+  .my-overlay-class{
+    width:50px;
+  }

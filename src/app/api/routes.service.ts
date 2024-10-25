@@ -80,7 +80,7 @@ export class RoutesService {
     let noCheckCount = 0.0;
     let i: number, j: number, k: number;
     let sc: any;
-
+	console.log("checkPoints");
     for (i = 0; i < route.sections.length; i++) {
       for (j = 0; j < route.sections[i].splitCoords.length; j++) {
         total++;
@@ -110,7 +110,7 @@ export class RoutesService {
     let i: number, j: number, k: number;
     let sc: any;
     let findIt = false;
-
+	console.log("checkPointLast");
     for (i = 0; i < route.sections.length; i++) {
       for (j = 0; j < route.sections[i].splitCoords.length; j++) {
         total++;

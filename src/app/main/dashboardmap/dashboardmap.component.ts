@@ -403,6 +403,7 @@ export class DashboardmapComponent implements OnInit {
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 			if (device.routeSelected!=undefined)
 					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+			device['isReady'] = true;
 			if (callback!=null) callback();
 		},(err:any)=>console.log("err",err));
 		//});
@@ -528,7 +529,7 @@ export class DashboardmapComponent implements OnInit {
 		});	
 		this.socket.on('device', (data)=>{	//nuevo dispositivo
 			console.log('device',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				device = data;
 				this.devices.push(device);
@@ -543,7 +544,7 @@ export class DashboardmapComponent implements OnInit {
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-			this.addTask((callback)=>{
+			//this.addTask((callback)=>{
 				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
 					device['tracks'] = res.tracks;
 					device['stops'] = this.routesService.getStops(device['tracks']);
@@ -551,9 +552,10 @@ export class DashboardmapComponent implements OnInit {
 									
 					if (device.routeSelected!=undefined)
 						 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-					if (callback!=null) callback();
+					device['isReady'] = true;
+			//		if (callback!=null) callback();
 				},(err:any)=>console.log("err",err));
-			});
+			//});
 				
 		});
 		this.socket.on('device.state', (data: any) => {
@@ -565,10 +567,11 @@ export class DashboardmapComponent implements OnInit {
 			}
 			this.verifyFilter(device);
 			
+			device.states = data.states;
 		});
 		this.socket.on('device.config', (data: any) => {
 			console.log('device.config',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
@@ -577,7 +580,7 @@ export class DashboardmapComponent implements OnInit {
 		});
 		this.socket.on('device.setup', (data: any) => {
 			console.log('device.setup',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
@@ -587,15 +590,16 @@ export class DashboardmapComponent implements OnInit {
 		
 		this.socket.on('device.removed', (data: any) => {			
 			console.log('device.removed',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device != null){
+				this.deviceList.splice(this.deviceList.indexOf(device),1);
 				this.devices.splice(this.devices.indexOf(device),1);
 				return;
 			}
 		});
 		this.socket.on('device.tracks', (data: any) => {
 			console.log('device.tracks',data);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
@@ -607,11 +611,12 @@ export class DashboardmapComponent implements OnInit {
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+				device['isReady'] = true;
 			}
 		});
 		this.socket.on('device.pause', (data: any) => {
 			console.log('device.pause',data.id);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
@@ -624,8 +629,9 @@ export class DashboardmapComponent implements OnInit {
 			
 		});
 		this.socket.on('device.last', (data: any) => {
-			//console.log('device.last',data.id);
-			let device = this.devices.find((d: any) => d.id == data.id);
+			console.log("last",data);
+			let device = this.deviceList.find((d: any) => d.id == data.id);
+			console.log("device",device);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
@@ -639,8 +645,11 @@ export class DashboardmapComponent implements OnInit {
 			device['tracks'].push(data.last);			
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			if (device['routeSelected']!=null){				
+			if (device['routeSelected']!=null){			
 				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'] , data.last, 10);
+			}else{
+				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'], 10);
 			}
 		});
 

@@ -61,24 +61,21 @@
 							</aol-feature>
 						</aol-source-vector>
 					</aol-layer-vector>
-<!--0
+<!--
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>
-							<aol-coordinate
-								[x]="device.last.lon"
-								[y]="device.last.lat"
-								[srid]="'EPSG:4326'"
-							>
-							</aol-coordinate>
+							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>
 							<aol-content>
 								<div class="my-overlay-class">
-									<label>{{device.personal.name }}</label>
-									<img width="96px" height="96px" src="./{{device.marker.img}}" />
+									
+                                    <svg xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="50" fill="red" />
+                                    </svg>
 								</div>
 							</aol-content>
 						</aol-overlay>				
 					</aol-layer-vector>
--->
+                -->
 					<!-- STOP CIRCLES -->
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
