@@ -344,6 +344,22 @@ export class DashboardmapComponent implements OnInit {
 		device.controls.showTrack = true;
 		device.controls.showChecks = true;
 		device.controls.showStops = false;
+
+		this.cargarRutas(device);
+	}
+	cargarRutas(device){		
+		if (device['tracks'] !=undefined) return;
+
+		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{			
+			device['tracks'] = res.tracks;
+			device['stops'] = this.routesService.getStops(device['tracks']);
+			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+			if (device.routeSelected!=undefined)
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+			
+			device['isReady'] = true;
+
+		},(err:any)=>console.log("err",err));
 	}
 	createControls(){
 		return {
@@ -397,15 +413,9 @@ export class DashboardmapComponent implements OnInit {
 		device.ms = (new Date().getTime() - device.msl);
 		device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 		//this.addTask((callback)=>{
-		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
-			device['tracks'] = res.tracks;
-			device['stops'] = this.routesService.getStops(device['tracks']);
-			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			if (device.routeSelected!=undefined)
-					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
-			device['isReady'] = true;
-			if (callback!=null) callback();
-		},(err:any)=>console.log("err",err));
+
+
+
 		//});
 	}
 	removeDevice(deviceData){
@@ -433,6 +443,7 @@ export class DashboardmapComponent implements OnInit {
 			//filtro por tipo
 			 return this.filterDevice(device);
 		});
+		
 		let idsArray = filterDevices.map(d=>d.id);
 		this.devices = filterDevices;
 		this.socket.emit("device.subscribe",idsArray);
@@ -497,14 +508,9 @@ export class DashboardmapComponent implements OnInit {
 		this.socket.on('devices', (devicesData: any) => {			
 			console.log('devices:', devicesData);
 			this.deviceList = devicesData;
-			this.countDownloads=0;
 			this.deviceList.forEach((device: any, index: number) => {
 				this.formatDevice(device,()=>{ 
-					this.countDownloads++;
-					if (this.countDownloads==this.deviceList.length){
-						this.isDownloaded=true;
-						console.log("completado");
-					}
+					
 				});
 			});
 			this.filterDevices();
@@ -545,6 +551,7 @@ export class DashboardmapComponent implements OnInit {
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 			//this.addTask((callback)=>{
+			/* TREBOL-39 Descargar rutas y recorrido al hacer clic */
 				this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
 					device['tracks'] = res.tracks;
 					device['stops'] = this.routesService.getStops(device['tracks']);
