@@ -40,7 +40,31 @@ export class RoutesService {
   }
   setStops(stops,tracks ){
 	if (stops == undefined ) return;
-
+  }
+  tracksToGeojson(tracks,name='Rutas de persona'){
+	let collection = {
+		"type": "FeatureCollection",
+		"name": name,
+		"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+		"features": []
+	}
+	
+	let coordinates = [];
+	for(let i = 0; i < tracks.length; i++ ){	
+		coordinates.push([tracks[i].lon,tracks[i].lat]);
+	}
+	let feature = {
+		"type": "Feature",
+		"geometry": {
+			"type":"LineString",
+			"coordinates":coordinates,
+		},
+		"properties": {
+		  "name": name
+		}
+	};
+	collection.features.push(feature);
+	return collection;
   }
   getStops(tracks){
 	let stops  = [];

@@ -344,7 +344,7 @@ export class DashboardmapComponent implements OnInit {
 		device.controls.showTrack = true;
 		device.controls.showChecks = true;
 		device.controls.showStops = false;
-
+		this.selectedDevice = device;
 		this.cargarRutas(device);
 	}
 	cargarRutas(device){		
@@ -402,6 +402,23 @@ export class DashboardmapComponent implements OnInit {
 	isDownloaded = false;
 	
 	countDownloads = 0;
+	selectedDevice = null;
+	exportGeojson(device){
+		if (device.personal==null) throw ("no existe una persona asignada");
+		if (device.tracks==null) throw ("trayecto no definidio");
+		if (device.tracks.length==0) throw ("no existe una trayectos");
+		let geojson = this.routesService.tracksToGeojson(device.tracks,'Ruta de '+device.personal.name);
+		let geojsonStr = JSON.stringify(geojson)
+		
+		const blob = new Blob([geojsonStr], { type: 'application/json'});
+		const url= window.URL.createObjectURL(blob);
+		var a = document.createElement("a");
+         a.href = url;
+         a.download = "tracks.geojson";
+         a.click();
+         URL.revokeObjectURL(url);
+	}
+
 	formatDevice(device,callback){
 		device['marker'] = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 		device['msl'] = new Date().getTime();
