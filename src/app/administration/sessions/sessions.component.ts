@@ -52,6 +52,7 @@ export class SessionsComponent implements OnInit {
 	Assignments = [];
 
 	keyword="";
+	countDevices = 0;
 
 	personals: any[];
 	personalType: any[];
@@ -98,6 +99,7 @@ export class SessionsComponent implements OnInit {
 					let session = this.sessions.find(s=>s.id==device.states['ID_SESSION']);
 					if (session!=undefined){
 						session['devicews'] = device;
+						this.countDevices++;
 					}
 				});
 				

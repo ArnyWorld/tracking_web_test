@@ -152,6 +152,7 @@ body {
     
     width:60px;
     height:90px;
+    scale:0.6;
     margin-left:-50%;
     margin-top:-170%;
     
@@ -160,10 +161,10 @@ body {
     /*pointer-events: none;*/
     -webkit-user-select: none; /* Safari */
     -ms-user-select: none; /* IE 10 and IE 11 */
-    border: 1px solid #000;
+    /* border: 1px solid #000; */
     transition: all 0.5s ease;
   }
   
   .my-overlay-class:hover{
-    scale:1.25;
+    scale:0.8;
   }
