@@ -209,16 +209,7 @@
                         <aol-source-vector> 
                             <div *ngIf="device.controls.showChecks && device.routeSelected!=null">
                                 <div *ngFor="let section of device.routeSelected.sections">         
-                                            
-                                        <aol-feature >                    
-                                        <aol-geometry-multipoint>
-                                            <aol-collection-coordinates
-                                            [coordinates]="section.splitCoordsChecked"
-                                            [srid]="'EPSG:4326'"
-                                            >
-                                            </aol-collection-coordinates>
-                                        </aol-geometry-multipoint>              
-                                    </aol-feature>                                                                 
+                                                                  
                                     <aol-feature  *ngIf="section['splitPointTracks']">
                                         <aol-geometry-multilinestring >
                                             <aol-collection-coordinates [coordinates]="section['splitPointTracks']" [srid]="'EPSG:4326'">
@@ -229,7 +220,7 @@
                             </div>
                         </aol-source-vector>
                         <aol-style>
-                            <aol-style-stroke [color]="'rgba(30, 250, 30,0.5)'" [width]="15"  ></aol-style-stroke>
+                            <aol-style-stroke [color]="'rgba(30, 50, 30,0.8)'" [width]="15"  ></aol-style-stroke>
                             <aol-style-circle [radius]="3">
                                 <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                                 <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
