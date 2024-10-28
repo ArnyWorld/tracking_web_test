@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AngularOpenlayersModule, FeatureComponent,MapComponent } from 'ng-openlayers';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 import { SocketOne } from '../main.module';
 import { Layer as OlLayer } from 'ol/layer';
@@ -42,7 +43,8 @@ export class DashboardmapComponent implements OnInit {
 		private imagesService: ImagesService,
 		private suggestionsService: SuggestionsService,
 		private tracksService: TracksService,
-		private wsapiService: WSapiService
+		private wsapiService: WSapiService,
+		private modalService: BsModalService
 	) { }
 	tabs:any = ['Dispositivos','Routes','Sugerencias'];
 	//@ViewChild('markersLayer', { static: true }) markersLayer: LayerVectorComponent;
@@ -403,13 +405,23 @@ export class DashboardmapComponent implements OnInit {
 	
 	countDownloads = 0;
 	selectedDevice = null;
+	modalRef?: BsModalRef;
+	showReport(device,template){			
+		this.modalRef = this.modalService.show(template, {
+			class: 'modal-dialog-centered modal-lg ',			
+		});
+	}	
+	closeModal(){
+		this.modalRef.hide();
+	}
 	exportGeojson(device){
 		if (device.personal==null) throw ("no existe una persona asignada");
 		if (device.tracks==null) throw ("trayecto no definidio");
 		if (device.tracks.length==0) throw ("no existe una trayectos");
+
 		let geojson = this.routesService.tracksToGeojson(device.tracks,'Ruta de '+device.personal.name);
-		let geojsonStr = JSON.stringify(geojson)
-		
+		let geojsonStr = JSON.stringify(geojson)		
+
 		const blob = new Blob([geojsonStr], { type: 'application/json'});
 		const url= window.URL.createObjectURL(blob);
 		var a = document.createElement("a");

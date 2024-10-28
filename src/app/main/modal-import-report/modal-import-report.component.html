@@ -1,0 +1,92 @@
+<div class="modal-header">
+	<h4 class="modal-title pull-left">Reporte</h4>
+	<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+		<span aria-hidden="true" class="visually-hidden">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<div class="form-group mb-1 row">
+		<div class="col-6">
+			<div class="" style="height:400px">
+				<aol-map #mapRoute width="100%" height="100%">
+					<aol-interaction-default></aol-interaction-default>
+					<aol-control-defaults></aol-control-defaults>
+
+					<aol-view [zoom]="zoom">
+						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+					</aol-view>
+
+					<aol-layer-tile [opacity]="0.5">
+						<aol-source-osm></aol-source-osm>
+						<!-- 	<aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz>
+						<aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz>-->
+					</aol-layer-tile>
+					<aol-layer-group>
+						<aol-layer-vector>
+							<aol-source-vector>
+								<aol-style>
+									<aol-style-stroke [color]="'rgba(30, 30, 250, 0.5)'" [width]="6" [lineDash]="[8.5, 8]"></aol-style-stroke>
+								</aol-style>
+								<div *ngIf="device">
+
+									<div *ngIf="device.routeSelected" >
+										<div *ngFor="let section of device.routeSelected?.sections">
+											<aol-feature>
+												<aol-geometry-linestring>
+													<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+													</aol-collection-coordinates>
+												</aol-geometry-linestring>
+											</aol-feature>
+										</div>
+
+									</div>
+								</div>
+							</aol-source-vector>
+
+						</aol-layer-vector>
+					</aol-layer-group>
+				</aol-map>
+			</div>
+		</div>
+		<div class="col-6">
+			<div class="" style="height:400px">
+				<aol-map #mapCheck width="100%" height="100%">
+					<aol-interaction-default></aol-interaction-default>
+					<aol-control-defaults></aol-control-defaults>
+
+					<aol-view [zoom]="zoom">
+						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+					</aol-view>
+
+					<aol-layer-tile [opacity]="0.3">
+						<aol-source-osm ></aol-source-osm>  
+					<!--	<aol-source-xyz url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" crossOrigin="anonymous"> </aol-source-xyz>
+						<aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz>-->
+					</aol-layer-tile>
+				</aol-map>
+			</div>
+		</div>
+		<div class="col-6">
+			<div class="" style="height:400px">
+				<aol-map #mapTrack width="100%" height="100%">
+					<aol-interaction-default></aol-interaction-default>
+					<aol-control-defaults></aol-control-defaults>
+
+					<aol-view [zoom]="zoom">
+						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+					</aol-view>
+
+					<aol-layer-tile [opacity]="0.1">
+							<aol-source-osm ></aol-source-osm> 
+					 	<!-- <aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz>-->
+						<!-- <aol-source-xyz url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" crossOrigin="anonymous"> </aol-source-xyz> -->
+					</aol-layer-tile>
+				</aol-map>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="printPdf()"> Imprimir </button>
+	<button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>

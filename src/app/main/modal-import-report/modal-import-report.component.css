@@ -1,0 +1,5 @@
+
+::ng-deep .modal-dialog{
+    max-width: 1200px !important;
+    width: 1200px;
+  }

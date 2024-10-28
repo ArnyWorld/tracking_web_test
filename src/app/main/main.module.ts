@@ -25,6 +25,7 @@ import { ModalImportGeojsonComponent } from './modal-import-geojson/modal-import
 import { ModalImportRoutesMultiComponent } from './modal-import-routes-multi/modal-import-routes-multi.component';
 import { BotcomliveComponent } from './botcomlive/botcomlive.component';
 import { ModalImportAssignmentsComponent } from './modal-import-assignations/modal-import-assignments.component';
+import { ModalImportReportComponent } from './modal-import-report/modal-import-report.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -50,6 +51,7 @@ export class SocketOne extends Socket {
 	ModalImportDevicesComponent,
 	ModalImportGeojsonComponent,
 	ModalImportAssignmentsComponent,
+	ModalImportReportComponent,
 	BotcomComponent,
 	BotcomliveComponent,
   ],
