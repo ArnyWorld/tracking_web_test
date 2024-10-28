@@ -54,6 +54,7 @@ export class DevicesComponent implements OnInit {
 	Assignments = [];
 
 	keyword="";
+	countSession=0;
 
 	personals: any[];
 	personalType: any[];
@@ -129,6 +130,8 @@ export class DevicesComponent implements OnInit {
 							let registredDevice = this.dbDevices.find(d=> d.id == device.id);
 							if (registredDevice == undefined )
 								this.noDevices.push(device);
+							else
+								this.countSession++;
 						});
 						
 					});

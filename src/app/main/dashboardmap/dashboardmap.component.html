@@ -59,7 +59,7 @@
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
                  <div >
 				<aol-layer-group>					
-				 	<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
+				 	<!-- <aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
 							<aol-feature>
 								<aol-geometry-point>
@@ -73,7 +73,7 @@
 							</aol-feature>
 						</aol-source-vector>
 					</aol-layer-vector>
-
+                -->
                     <!-- TREBOL-29 uso de overlays para generar marcadores dinámicos -->
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>

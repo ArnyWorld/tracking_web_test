@@ -43,7 +43,7 @@ export class DevicesService {
 		return this.http.get(
 			this.apiUrl +
 			this.prefix +
-			`/${this.apiName}`
+			`/${this.apiName}/listdevices`
 		);
 	}
 	getList(
@@ -51,7 +51,7 @@ export class DevicesService {
 		return this.http.get(
 			this.apiUrl +
 			this.prefix +
-			`/devices/getlist`
+			`/devices/getlist/listdevices`
 		);
 	}
 
