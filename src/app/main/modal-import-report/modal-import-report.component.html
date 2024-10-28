@@ -12,127 +12,6 @@
             <img class="col-6" [src]="img2"  />
             <img class="col-6" [src]="img3"  />
         </div>
-		<!-- <div class="col-6">
-			<div class="" style="height:400px">
-				<aol-map #mapRoute width="100%" height="100%"  >
-					<aol-interaction-default></aol-interaction-default>
-					<aol-control-defaults></aol-control-defaults>
-
-					<aol-view [zoom]="zoom" >
-						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
-					</aol-view>
-
-					<aol-layer-tile [opacity]="1">
-						<aol-source-osm></aol-source-osm>
-					</aol-layer-tile>
-					<aol-layer-group>
-						<aol-layer-vector>
-							<aol-source-vector>
-								<aol-style>
-									<aol-style-stroke [color]="'rgba(30, 30, 250, 0.5)'" [width]="6" [lineDash]="[8.5, 8]"></aol-style-stroke>
-								</aol-style>
-								<div *ngIf="device">
-
-									<div *ngIf="device.routeSelected" >
-										<div *ngFor="let section of device.routeSelected?.sections">
-											<aol-feature>
-												<aol-geometry-linestring>
-													<aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
-													</aol-collection-coordinates>
-												</aol-geometry-linestring>
-											</aol-feature>
-										</div>
-
-									</div>
-								</div>
-							</aol-source-vector>
-
-						</aol-layer-vector>
-					</aol-layer-group>
-				</aol-map>
-			</div>
-		</div>
-		<div class="col-6">
-			<div class="" style="height:400px">
-				<aol-map #mapCheck width="100%" height="100%" >
-					<aol-interaction-default></aol-interaction-default>
-					<aol-control-defaults></aol-control-defaults>
-
-					<aol-view [zoom]="zoom">
-						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
-					</aol-view>
-
-					<aol-layer-tile [opacity]="1">
-						<aol-source-osm ></aol-source-osm>  
-					</aol-layer-tile>
-                    <aol-layer-vector  [zIndex]="750" >             
-                        <aol-source-vector> 
-                            <div *ngIf="device.controls.showChecks && device.routeSelected!=null">
-                                <div *ngFor="let section of device.routeSelected.sections">         
-                                            
-                                        <aol-feature >                    
-                                        <aol-geometry-multipoint>
-                                            <aol-collection-coordinates
-                                            [coordinates]="section.splitCoordsChecked"
-                                            [srid]="'EPSG:4326'"
-                                            >
-                                            </aol-collection-coordinates>
-                                        </aol-geometry-multipoint>              
-                                    </aol-feature>                                                                 
-                                    <aol-feature >
-                                        <aol-geometry-multilinestring >
-                                            <aol-collection-coordinates [coordinates]="section['splitPointTracks']" [srid]="'EPSG:4326'">
-                                            </aol-collection-coordinates>
-                                        </aol-geometry-multilinestring>
-                                    </aol-feature>
-                                </div>
-                            </div>
-                        </aol-source-vector>
-                        <aol-style>
-                            <aol-style-stroke [color]="'rgba(30, 250, 30,0.5)'" [width]="15"  ></aol-style-stroke>
-                            <aol-style-circle [radius]="3">
-                                <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
-                                <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
-                            </aol-style-circle>
-                        </aol-style>
-                    </aol-layer-vector>
-				</aol-map>
-			</div>
-		</div>
-		<div class="col-6">
-			<div class="" style="height:400px">
-				<aol-map #mapTrack width="100%" height="100%" >
-					<aol-interaction-default></aol-interaction-default>
-					<aol-control-defaults></aol-control-defaults>
-
-					<aol-view [zoom]="zoom">
-						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
-					</aol-view>
-
-					<aol-layer-tile [opacity]="1">
-							<aol-source-osm ></aol-source-osm> 
-					</aol-layer-tile>
-
-                    <aol-layer-group>
-                        <aol-layer-vector  >
-                            <aol-source-vector >
-                                <aol-style>
-                                    <aol-style-stroke [color]="'#000'" [width]=3 [lineDash]="[3, 5]"></aol-style-stroke>
-                                </aol-style>
-                                    <aol-feature #selectedFeatureString *ngIf="device.tracksCoord && device.controls.showTrack">
-                                        <aol-geometry-linestring>
-                                            <aol-collection-coordinates [coordinates]="device.tracksCoord" [srid]="'EPSG:4326'">
-                                            </aol-collection-coordinates>
-                                        </aol-geometry-linestring>
-                                    </aol-feature>
-                            </aol-source-vector>
-                        </aol-layer-vector>
-
-                    </aol-layer-group>
-				</aol-map>
-			</div>
-		</div> -->
-        
 		<div class="col-sm-6">
             <table class="table table-sm">
                 <tr>
@@ -159,8 +38,6 @@
 
 					<aol-layer-tile [opacity]="1" >
 							<aol-source-osm ></aol-source-osm> 
-					 	<!-- <aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz>-->
-						<!-- <aol-source-xyz url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" crossOrigin="anonymous"> </aol-source-xyz> -->
 					</aol-layer-tile>
 
                     <aol-layer-group *ngIf="mapRouteShow">
@@ -192,8 +69,6 @@
                             <aol-source-vector >
                                 <aol-style>
                                     <aol-style-stroke [color]="'#000'" [width]=3 [lineDash]="[3, 5]"></aol-style-stroke>
-                                    <!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
-                            <!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
                                 </aol-style>
                                     <aol-feature #selectedFeatureString *ngIf="device.tracksCoord && device.controls.showTrack">
                                         <aol-geometry-linestring>
