@@ -123,6 +123,24 @@ export class RoutesService {
         }
       }
     }
+	
+    for (i = 0; i < route.sections.length; i++) {
+		let tracksChecked = [];
+		route.sections[i]['splitPointTracks']=tracksChecked;
+		let lineString = null;
+		for (j = 0; j < route.sections[i].splitCoords.length; j++) {
+			sc = route.sections[i].splitCoords[j];
+			if(sc[2]){
+				if(lineString==null){
+					lineString = [];
+					tracksChecked.push(lineString);
+				}
+				lineString.push(sc);
+			}else{
+				lineString = null;
+			}
+		}
+	}
     return Math.round(((total - noCheckCount) / total) * 10000) / 100;
   }
   checkPointLast(route, point, maxDistance) {
@@ -271,6 +289,7 @@ export class RoutesService {
         canvas.width = width;
         canvas.height = height;
         var ctx = canvas.getContext('2d');
+		ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
         //console.log("canvas.toDataURL()", canvas.toDataURL("image/jpeg"));
         resolve(canvas.toDataURL('image/jpeg'));
