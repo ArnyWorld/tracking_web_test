@@ -125,8 +125,15 @@ player={
 
 	updatePlayer(){
 		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c,i) => i<=this.player.currentTime );
-		if (this.player.isPlaying)
-			this.map.instance.getView().setCenter(transform([this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][0], this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][1]], 'EPSG:4326', 'EPSG:3857'));
+		this.player.currentRealTime = this.selectedTrack['coordsPast'];
+	}
+	
+	updatePlayerRealTime(){
+		
+		console.log("this.player.currentRealTime)",this.player.currentRealTime);
+		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c,i) => i.t<=this.player.currentRealTime );
+		
+		this.map.instance.getView().setCenter(transform([this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][0], this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][1]], 'EPSG:4326', 'EPSG:3857'));
 	}
 	calcSpeed(track,time){
 		const a = track.trackb64[time];
@@ -156,7 +163,8 @@ player={
 				this.player.currentTime = track.coords.length-1;
 				this.player.length = track.coords.length-1;
 				this.player.min = 1;
-				this.player.startRealTime = ;
+				this.player.startRealTime = track.trackb64[0].t;
+				this.player.currentRealTime = this.player.startRealTime;
 				this.player.step = 1;
 				this.player.isPlaying = false;
 				track['coordsPast'] = track.coords;
@@ -187,9 +195,10 @@ player={
   playing(){
 	if (this.player.isPlaying){
 		setTimeout(()=>{
-			if (this.player.currentTime+1>=this.player.length){ this.player.isPlaying=false ; return;}
+			//if (this.player.currentTime+1>=this.player.length){ this.player.isPlaying=false ; return;}
 			this.player.currentTime++;
-			this.updatePlayer();			
+			this.player.currentRealTime+=this.player.speed*1000;
+			this.updatePlayerRealTime();			
 			this.playing();
 			
 		},10);
