@@ -126,10 +126,10 @@
 				<div> {{selectedTrack.route.name}}</div>
                 <div class="row" *ngIf="selectedTrack">
                     <div class="col-12 ps-3 pe-3 " *ngIf="!player.isPlaying">
-                        tiempo:  {{ selectedTrack.trackb64[player.currentTime].t | date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) | number:'1.2-2'}} m/s
+                        tiempo:  {{ selectedTrack.trackb64[player.currentTime].t | date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) }} 
                     </div>
                     <div class="col-12 ps-3 pe-3 " *ngIf="player.isPlaying">
-                        tiempo:  {{ player.currentRealTime| date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) | number:'1.2-2'}} m/s
+                        tiempo:  {{ player.currentRealTime| date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) }}
                     </div>
                 </div>
                 <div class="row">

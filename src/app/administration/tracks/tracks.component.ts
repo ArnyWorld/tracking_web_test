@@ -22,7 +22,7 @@ import { TracksService } from '../../api/tracks.service';
 import { AngularOpenlayersModule, FeatureComponent,MapComponent } from 'ng-openlayers';
 
 import { Layer as OlLayer } from 'ol/layer';
-import { map } from 'rxjs/operators';
+import { elementAt, map } from 'rxjs/operators';
 import { transform, fromLonLat } from 'ol/proj';
 import { Stroke } from 'ol/style';
 import { SelectEvent } from 'ol/interaction/Select';
@@ -135,12 +135,19 @@ player={
 		this.player.currentTime = this.selectedTrack['coordsPast'].length-1;
 		this.map.instance.getView().setCenter(transform([this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][0], this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][1]], 'EPSG:4326', 'EPSG:3857'));
 	}
+	round(v){
+		return Math.round(v*100)/100;
+	}
 	calcSpeed(track,time){
 		const a = track.trackb64[time];
 		const b = track.trackb64[time-1];
 		const t = (a.t-b.t)/1000;
         const d = olSphere.getDistance([a.lon,a.lat], [b.lon,b.lat]);		
-		return d/t;
+		const v = d/t;
+		if (v>2) 
+			return this.round(v*3600/1000) + 'km/h';
+		else
+			return this.round(v) + 'm/s' ;		
 	}
   loadTrack(track){
 	this.tracksService.find(track.id).subscribe((trackResult:any)=>{
