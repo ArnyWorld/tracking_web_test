@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
@@ -31,6 +31,7 @@ import { PanelFloatNavComponent } from '../../panel-float-nav/panel-float-nav.co
 import { SuggestionsService } from '../../api/suggestions.service';
 import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
+import * as olSphere from 'ol/sphere';
 
 
 @Component({
@@ -43,6 +44,8 @@ import { identifierName } from '@angular/compiler';
 })
 //TREBOL-15 Para verificación servicio de control de sesiones
 export class TracksComponent implements OnInit {
+	@ViewChild('map') map: MapComponent;
+	
   modalRef?: BsModalRef;
   constructor(
     private personalApi: PersonalService,
@@ -74,6 +77,7 @@ export class TracksComponent implements OnInit {
   keyword = '';
   countSession = 0;
 
+  selectedTrack: any;
   routes: any[];
   personals: any[];
   personalType: any[];
@@ -101,9 +105,97 @@ export class TracksComponent implements OnInit {
   keys(obj) {
     return Object.keys(obj);
   }
+  
+createControls(){
+	return {
+		isPlayer:false,		
+	};
+}
+player={
+	length:0,
+	currentTime:0,	
+	currentRealTime:0,	
+	startRealTime:0,
+	step:1,
+	min:1,
+	isPlaying:false,
+	speed:1,
+	thread:null,
+}
+
+	updatePlayer(){
+		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c,i) => i<=this.player.currentTime );
+		if (this.player.isPlaying)
+			this.map.instance.getView().setCenter(transform([this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][0], this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][1]], 'EPSG:4326', 'EPSG:3857'));
+	}
+	calcSpeed(track,time){
+		const a = track.trackb64[time];
+		const b = track.trackb64[time-1];
+		const t = (a.t-b.t)/1000;
+        const d = olSphere.getDistance([a.lon,a.lat], [b.lon,b.lat]);		
+		return d/t;
+	}
+  loadTrack(track){
+	this.tracksService.find(track.id).subscribe((trackResult:any)=>{
+		if (trackResult.content!=null){
+			if(trackResult.content.length>0){
+				track = trackResult.content[0];
+				track['controls'] = this.createControls();
+				console.log("track",track);
+				this.tracksService.getExtend(track);
+				const extent = track.extend;		
+				const corner1 = transform([extent[0],extent[1]], 'EPSG:4326', 'EPSG:3857');
+				const corner2 = transform([extent[2],extent[3]], 'EPSG:4326', 'EPSG:3857');
+				const extent3857 = [corner1[0],corner1[1],corner2[0],corner2[1]];
+				
+				this.map.instance.getView().fit(track.extend_3857, {
+					padding: [100, 100, 100, 100],
+					maxZoom: 18,
+					duration: 300
+				});	
+				this.player.currentTime = track.coords.length-1;
+				this.player.length = track.coords.length-1;
+				this.player.min = 1;
+				this.player.startRealTime = ;
+				this.player.step = 1;
+				this.player.isPlaying = false;
+				track['coordsPast'] = track.coords;
+				this.selectedTrack = track;
+
+			}
+		}
+	});
+  }
+  startPlayer(){
+	if (!this.player.isPlaying){
+		this.player.isPlaying = true;
+		this.playing();	
+	}
+  }
+  stopPlayer(){
+	this.player.isPlaying = false;
+	this.updatePlayer();
+  }
+  rewindPlayer(){
+	this.player.currentTime = 1;
+	this.updatePlayer();
+  }
+  forwardPlayer(){
+	this.player.currentTime = this.player.length;
+	this.updatePlayer();
+  }
+  playing(){
+	if (this.player.isPlaying){
+		setTimeout(()=>{
+			if (this.player.currentTime+1>=this.player.length){ this.player.isPlaying=false ; return;}
+			this.player.currentTime++;
+			this.updatePlayer();			
+			this.playing();
+			
+		},10);
+	}
+  }
   load() {
-   
-	
 	this.routesService.getList().subscribe((res: any) => {
 		this.routes = res.content;
 		this.personalApi.getAll2().subscribe((res: any) => {

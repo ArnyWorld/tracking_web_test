@@ -2,8 +2,8 @@
     <div class="text-center pt-5">
         <h2>Trayectos </h2>
     </div>
-    <div class="card ">
-        <div class="card-body " style="overflow-y: scroll;">          
+    <div class="row ">
+        <div class="col-12" style="overflow-y: scroll;">
             <div class="input-group mb-3">
                 <input type="text" class="form-control form-control-sn" [(ngModel)]="keyword" (input)="filtrar()" placeholder="Buscar" aria-label="" aria-describedby="basic-addon1">
             </div>
@@ -11,7 +11,7 @@
                 <table class="table table-sm table-bordered  ">
                     <thead>
                         <tr>
-                          <!--   <td scope="col">id</td> -->
+                            <!--   <td scope="col">id</td> -->
                             <td scope="col">Nombre</td>
                             <td scope="col">Trayectos</td>
                         </tr>
@@ -24,17 +24,26 @@
                                 <table class="table table-sm" *ngIf="personal.assignments">
                                     <tr *ngFor="let assignment of personal.assignments">
                                         <!-- <th>id</th><td>{{assignment.id}}</td> -->
-                                        <th>Ruta</th><td>{{assignment.route?.name}}</td>
+                                        <th>Ruta</th>
+                                        <td>{{assignment.route?.name}}</td>
                                         <td>
                                             <table class="table table-sm table-bordered" *ngIf="assignment.tracks">
                                                 <tr *ngFor="let track of assignment.tracks">
-                                                  <!--   <th>id</th><td>{{track.id}}</td> -->
-                                                    <th>Abandonado</th><td>{{track.abandoned}}</td>
-                                                    <th>Completado</th><td>{{track.complete}}</td>
-                                                    <th>Inicio</th><td *ngIf="track.start_date>0"> {{ track.start_date  | date:'dd/MM/yyyy HH:mm:ss' }}</td><td *ngIf="track.start_date==0">--:--</td>
-                                                    <th>Fin</th><td *ngIf="track.end_date>0"> {{ track.end_date  | date:'dd/MM/yyyy HH:mm:ss' }}</td><td *ngIf="track.end_date==0">--:--</td>
-                                                    <th>Tiempo</th><td *ngIf="track.start_date>0 && track.end_date>0">{{(track.end_date-track.start_date)/1000/3600 |number:'1.2-2'}} hrs</td><td *ngIf="track.end_date==0||track.start_date==0">--:--</td>
-                                                    <th><span class="btn btn-sm btn-primary"><i class="fa fa-map"></i></span></th>
+                                                    <!--   <th>id</th><td>{{track.id}}</td> -->
+                                                    <th>Abandonado</th>
+                                                    <td>{{track.abandoned}}</td>
+                                                    <th>Completado</th>
+                                                    <td>{{track.complete}}</td>
+                                                    <th>Inicio</th>
+                                                    <td *ngIf="track.start_date>0"> {{ track.start_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                                                    <td *ngIf="track.start_date==0">--:--</td>
+                                                    <th>Fin</th>
+                                                    <td *ngIf="track.end_date>0"> {{ track.end_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                                                    <td *ngIf="track.end_date==0">--:--</td>
+                                                    <th>Tiempo</th>
+                                                    <td *ngIf="track.start_date>0 && track.end_date>0">{{(track.end_date-track.start_date)/1000/3600 |number:'1.2-2'}} hrs</td>
+                                                    <td *ngIf="track.end_date==0||track.start_date==0">--:--</td>
+                                                    <th><span class="btn btn-sm btn-primary" (click)="loadTrack(track)"><i class="fa fa-map"></i></span></th>
                                                 </tr>
                                             </table>
                                         </td>
@@ -47,16 +56,101 @@
             </form>
 
         </div>
-        
-        <div class="card-body " style="overflow-y: scroll;">         
-            <aol-map #map width="100%" height="100%">
-				<aol-interaction-default></aol-interaction-default>
-				<aol-control-defaults></aol-control-defaults>
 
-				<aol-view [zoom]="18">
-					<!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
-					<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
-				</aol-view>
+        <div class="col-12">
+            <aol-map #map width="100%" height="800px">
+                <aol-interaction-default></aol-interaction-default>
+                <aol-control-defaults></aol-control-defaults>
+
+                <aol-view [zoom]="18">
+                    <!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+                    <aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+                </aol-view>
+
+                <aol-layer-tile>
+                    <aol-source-osm></aol-source-osm>
+                </aol-layer-tile>
+
+                <aol-layer-group>
+                    <div *ngIf="selectedTrack && !selectedTrack.controls.isPlayer">
+                        <aol-layer-vector>
+                            <aol-source-vector>
+                                <aol-style>
+                                    <aol-style-stroke [color]="'rgba(10, 10, 10)'" [width]=3 [lineDash]="[3, 5]"></aol-style-stroke>
+                                    <!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+                                    <!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
+                                </aol-style>
+                                <aol-feature *ngIf="selectedTrack ">
+                                    <aol-geometry-linestring>
+                                        <aol-collection-coordinates [coordinates]="selectedTrack.coordsPast" [srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-linestring>
+                                </aol-feature>
+                            </aol-source-vector>
+                        </aol-layer-vector>
+                    </div>
+
+                    <aol-layer-vector [zIndex]="750" *ngIf="selectedTrack">
+                        <aol-source-vector>
+                            <div *ngFor="let section of selectedTrack.route.sections">
+
+                                <aol-feature>
+                                    <aol-geometry-multipoint>
+                                        <aol-collection-coordinates [coordinates]="section.splitCoordsChecked" [srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-multipoint>
+                                </aol-feature>
+                                <aol-feature *ngIf="section['splitPointTracks']">
+                                    <aol-geometry-multilinestring>
+                                        <aol-collection-coordinates [coordinates]="section['splitPointTracks']" [srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-multilinestring>
+                                </aol-feature>
+                            </div>
+                        </aol-source-vector>
+                        <aol-style>
+                            <aol-style-stroke [color]="'rgba(30, 250, 30,0.8)'" [width]="15"></aol-style-stroke>
+                            <aol-style-circle [radius]="3">
+                                <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                            </aol-style-circle>
+                        </aol-style>
+                    </aol-layer-vector>
+                </aol-layer-group>
             </aol-map>
         </div>
     </div>
+    
+		<div  id="overlayMenuDevice" style="z-index:9999">
+			<div *ngIf="selectedTrack">
+				<div> {{selectedTrack.route.name}}</div>
+                <div class="row" *ngIf="selectedTrack">
+                    <div class="col-12 ps-3 pe-3 ">
+                        tiempo:  {{ selectedTrack.trackb64[player.currentTime].t | date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) | number:'1.2-2'}} m/s
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ps-3 pe-3 ">
+                        <input type="range" (input)="updatePlayer()" [(ngModel)]="player.currentTime" class="form-range" [min]="player.min" [max]="player.length" [step]="player.step" >
+                    </div>
+                </div>
+                <div class="row">
+                    <div> <select [(ngModel)]="player.speed">
+                            <option value="1">Tiempo Real</option>
+                            <option value="2">x2</option>
+                            <option value="5">x5</option>
+                            <option value="60">Cada 1min</option>
+                            <option value="300">Cada 5min</option>
+                        </select> 
+                    </div>
+                    <div  role="button"  class="col-3 mt-3 btnBlock"><span (click)="rewindPlayer()" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa fa-fast-backward"></i> </span></div>
+                    <div *ngIf="player.isPlaying" role="button"  class="col-3 mt-3 btnBlock"><span (click)="stopPlayer()" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-pause"></i> </span></div>
+                    <div *ngIf="!player.isPlaying" role="button"  class="col-3 mt-3 btnBlock"><span (click)="startPlayer()" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-play"></i> </span></div>
+                    <div  role="button"  class="col-3 mt-3 btnBlock"><span (click)="forwardPlayer()" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa fa-fast-forward"></i> </span></div>
+                </div>
+				<!-- <div (click)="exportGeojson(selectedDevice)" role="button"  class="mt-3 btnBlock">Exportar geojson<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span></div>
+				<div (click)="showReport(selectedDevice,modalReport)" role="button"  class="mt-3 btnBlock">Reporte<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span></div>-->
+			</div>
+		</div>
+		
+</div>

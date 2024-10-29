@@ -22,9 +22,6 @@ import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
 import { PersonaltypeService } from '../../api/jobroutes.services';
 
-
-
-
 //https://github.com/kamilfurtak/ng-openlayers/blob/master/apps/demo-ng-openlayers/src/app/select-interaction/select-interaction.component.ts
 @Component({
 	selector: 'app-dashboardmap',
