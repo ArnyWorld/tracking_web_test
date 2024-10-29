@@ -1,0 +1,62 @@
+<div class="container-fluid bg-light">
+    <div class="text-center pt-5">
+        <h2>Trayectos </h2>
+    </div>
+    <div class="card ">
+        <div class="card-body " style="overflow-y: scroll;">          
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-sn" [(ngModel)]="keyword" (input)="filtrar()" placeholder="Buscar" aria-label="" aria-describedby="basic-addon1">
+            </div>
+            <form id="bookingForm" action="#" method="" class="   needs-validation" novalidate autocomplete="off" style="height:240px;">
+                <table class="table table-sm table-bordered  ">
+                    <thead>
+                        <tr>
+                          <!--   <td scope="col">id</td> -->
+                            <td scope="col">Nombre</td>
+                            <td scope="col">Trayectos</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let personal of personalFiltred;index as i" class="fw-light">
+                            <!-- <td>{{personal.id}}</td> -->
+                            <td>{{personal.name}}</td>
+                            <td>
+                                <table class="table table-sm" *ngIf="personal.assignments">
+                                    <tr *ngFor="let assignment of personal.assignments">
+                                        <!-- <th>id</th><td>{{assignment.id}}</td> -->
+                                        <th>Ruta</th><td>{{assignment.route?.name}}</td>
+                                        <td>
+                                            <table class="table table-sm table-bordered" *ngIf="assignment.tracks">
+                                                <tr *ngFor="let track of assignment.tracks">
+                                                  <!--   <th>id</th><td>{{track.id}}</td> -->
+                                                    <th>Abandonado</th><td>{{track.abandoned}}</td>
+                                                    <th>Completado</th><td>{{track.complete}}</td>
+                                                    <th>Inicio</th><td *ngIf="track.start_date>0"> {{ track.start_date  | date:'dd/MM/yyyy HH:mm:ss' }}</td><td *ngIf="track.start_date==0">--:--</td>
+                                                    <th>Fin</th><td *ngIf="track.end_date>0"> {{ track.end_date  | date:'dd/MM/yyyy HH:mm:ss' }}</td><td *ngIf="track.end_date==0">--:--</td>
+                                                    <th>Tiempo</th><td *ngIf="track.start_date>0 && track.end_date>0">{{(track.end_date-track.start_date)/1000/3600 |number:'1.2-2'}} hrs</td><td *ngIf="track.end_date==0||track.start_date==0">--:--</td>
+                                                    <th><span class="btn btn-sm btn-primary"><i class="fa fa-map"></i></span></th>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+
+        </div>
+        
+        <div class="card-body " style="overflow-y: scroll;">         
+            <aol-map #map width="100%" height="100%">
+				<aol-interaction-default></aol-interaction-default>
+				<aol-control-defaults></aol-control-defaults>
+
+				<aol-view [zoom]="18">
+					<!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+					<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+				</aol-view>
+            </aol-map>
+        </div>
+    </div>

@@ -90,7 +90,8 @@ export class RoutesService {
 			stop.end_date = tracks[i].t;
 			stop.end_lat = tracks[i].lat;
 			stop.end_lon = tracks[i].t;
-			stop.duration = stop.end_date-stop.start_date;
+			// TREBOL-57 SUMAR A LAS PARADAS 5min
+			stop.duration = 300 + stop.end_date-stop.start_date;
 		}
 
 	}

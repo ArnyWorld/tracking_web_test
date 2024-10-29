@@ -17,9 +17,6 @@ import { MapComponent } from 'ng-openlayers';
 })
 
 export class ModalImportReportComponent implements OnInit {
-	@ViewChild('mapRoute') mapRoute: MapComponent;
-	@ViewChild('mapCheck') mapCheck: MapComponent;
-	@ViewChild('mapTrack') mapTrack: MapComponent;
 	@ViewChild('mapPrint') mapPrint: MapComponent;
 	img1: any;
 	img2: any;
@@ -29,10 +26,7 @@ export class ModalImportReportComponent implements OnInit {
 	@Output() onClose = new EventEmitter<string>();
 	
 	constructor(
-		private jobroutesService: JobroutesService,
-		private routesService: RoutesService,
-		private pointsService: PointsService,
-		private districtPointsService: DistrictPointsService,){};
+		private routesService: RoutesService,){};
 
 		jobroutes:any = [];
 	ngOnInit(): void {

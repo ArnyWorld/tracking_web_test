@@ -33,6 +33,9 @@ export class TracksService {
 		);
 	}
 
+	findByAssignment(idAssignment: string = '') {
+		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}?assignment_id[equal]=${idAssignment}`)
+	}
 	find(id: string = '') {
 		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`)
 		.pipe((tap(async (res:any)=>{

@@ -5,6 +5,25 @@
             <!-- <span href="#" class="btn btn-sm btn-outline-dark rounded-full" (click)="openModal(modalNew)">Crear Personal</span> -->
         </p>
     </div>
+    <ng-template #modalConfig role="document" let-modal class="center-modal">        
+        <div class="modal-header">
+            <h4 class="modal-title pull-left">Configurar dispositivo {{selectedDevice.id}}</h4>
+            <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+                <span aria-hidden="true" class="visually-hidden">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-1 row">
+                <table class="table table-sm">
+                    <tr *ngFor="let config of configs"><td><input type="checkbox" [(ngModel)]="config.check" style="text-align: end;">{{config.key}}</td><td><input class="input-form" type="text" [(ngModel)]="config.value" /></td> </tr>
+                </table>        
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="sendConfig()"> Enviar configuración</button>
+            <button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+        </div>
+    </ng-template>
     <div class="card ">
         <div class="card-body " style="overflow-y: scroll;">
             <!-- Start Form -->
@@ -23,31 +42,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let device of devices;index as i" class="fw-light">
+                        <tr *ngFor="let device of devicesFilter;index as i" class="fw-light">
                             <td>
                                 {{device.id}}
                             </td>
                             <td>
-                                <table class="littleTable" *ngIf="device.config">
-                                    <tr *ngFor="let key of keys(device.config)">
-                                        <th>{{key}}</th>
-                                        <td>{{device.config[key] }}</td>
+                                <table class="littleTable" *ngIf="device.configFilter">
+                                    <tr *ngFor="let key of keys(device.configFilter)">
+                                        <th class="config-tag" (dblclick)="openModalConfig(modalConfig,device,key,device.configFilter[key])">{{key}}</th>
+                                        <td>{{device.configFilter[key] }}</td>
                                     </tr>
                                 </table>
                             </td>
                             <td>
-                                <table class="littleTable" *ngIf="device.states">
-                                    <tr *ngFor="let key of keys(device.states)">
+                                <table class="littleTable" *ngIf="device.statesFilter">
+                                    <tr *ngFor="let key of keys(device.statesFilter)">
                                         <th>{{key}}</th>
-                                        <td>{{device.states[key] }}</td>
+                                        <td>{{device.statesFilter[key] }}</td>
                                     </tr>
                                 </table>
                             </td>
                             <td>
-                                <table class="littleTable" *ngIf="device.personal">
-                                    <tr *ngFor="let key of keys(device.personal)">
+                                <table class="littleTable" *ngIf="device.personalFilter">
+                                    <tr *ngFor="let key of keys(device.personalFilter)">
                                         <th>{{key}}</th>
-                                        <td>{{ device.personal[key] }}</td>
+                                        <td>{{ device.personalFilter[key] }}</td>
                                     </tr>
                                 </table>
                             </td>

@@ -32,9 +32,13 @@ export class AssignmentsService {
 	  );
 	}
   
+	findByPersonal(personalId: string = '') {
+		return this.http.get(this.apiUrl + `assignments/bypersonal?personal_id=${personalId}`);
+	  }
+	
 	find(id: string = '') {
-	  return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
-	}
+		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
+	  }
   
 	getAll(
 	  size: number = 100,

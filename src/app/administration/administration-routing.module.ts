@@ -5,6 +5,7 @@ import { UsersComponent } from './users/users.component';
 import { PersonalComponent } from './personal/personal.component';
 import { SessionsComponent } from './sessions/sessions.component';
 import { DevicesComponent } from './devices/devices.component';
+import { TracksComponent } from './tracks/tracks.component';
 
 const routes: Routes = [
 	{ path: '', component: LayoutComponent },
@@ -13,6 +14,7 @@ const routes: Routes = [
 	{ path: 'sessions', component: SessionsComponent },
 	{ path: 'devices', component: DevicesComponent },
 	{ path: 'routes', component: PersonalComponent },
+	{ path: 'tracks', component: TracksComponent },
 	/*{ path: '', component: LayoutComponent, loadChildren: () => import('./users/users.component').then(m => m.UsersComponent )  }, //canActivate: [AutenticadorGuard]*/
 	
 ];

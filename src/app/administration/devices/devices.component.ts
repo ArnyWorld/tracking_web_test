@@ -16,9 +16,11 @@ import { PersonaltypeService } from '../../api/jobroutes.services';
 import { SessionsService } from '../../api/sessions.service';
 import { WSapiService } from '../../api/wsapi.service';
 import { DevicesService } from '../../api/devices.service';
+import { TracksService } from '../../api/tracks.service';
+
 @Component({
   selector: 'app-devices',
-  standalone: true,
+  standalone: true,  
   providers: [BsModalService],
   imports: [CommonModule, FormsModule, ReactiveFormsModule,QrCodeModule],
   templateUrl: './devices.component.html',
@@ -65,15 +67,88 @@ export class DevicesComponent implements OnInit {
 	noDevices= [];
 	devices: any[];
 	devicesFilter: any[];
+	selectedDevice:any;
+	configs:any;
+	
+	openModalConfig(template,device,key,value){
+		this.selectedDevice = device;
+		this.configs = [];
+		let config = {check:true,key:key,value:value};
+		let configUpdate = {check:false,key:"REQ_UPDATE",value:"1"};
+		this.configs.push(config);
+		this.configs.push(configUpdate);
+		this.modalRef = this.modalService.show(template, {
+			class: 'modal-dialog-centered modal-lg ',			
+		});
+	}
+	sendConfig(){
+		let configPost = {};
+		this.configs.forEach((config:any)=>{
+			if(config.check){
+				configPost[config.key] = config.value;
+			}
+		});
+		this.deviceService.setConfig(this.selectedDevice.id,configPost).subscribe(response=>{
+			console.log("updateConfig.setConfig.response:",response);
+		});
+	}
+	closeModal(){
+		this.modalRef.hide();
+	}
 
 	ngOnInit(): void {		
 		this.load();
 	}
 	filtrar(){
-		if (this.keyword == "") {this.personalFiltred = this.personals; return;}
+		
+		if (this.keyword == "") {
+			this.devices.forEach(d=>d['configFilter']=JSON.parse(JSON.stringify(d.config)));
+			this.devices.forEach(d=>d['statesFilter']=JSON.parse(JSON.stringify(d.states)));
+			
+				this.devices.forEach(d=>d['personalFilter']=d.personal!=undefined?JSON.parse(JSON.stringify(d.personal)):null);
+			return;}
 		if (this.keyword.length < 3) return;
-		this.personalFiltred = this.personals.filter( (p:any)=>{
+		
+		/*this.devices = this.devices.filter( (p:any)=>{
 			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
+		});*/
+		let keyword = this.keyword.toUpperCase();
+		this.devicesFilter.forEach((device:any)=>{
+			device.configFilter = {};
+			device.statesFilter = {};
+			device.personalFilter = {};
+			Object.keys(device.config).forEach(k=>{	
+				if (k.includes(keyword)){
+					device.configFilter[k]=device.config[k];
+					return true;	
+				}
+				return false;
+			})
+			Object.keys(device.states).forEach(k=>{	
+				if (k.includes(keyword)){
+					device.statesFilter[k]=device.states[k];
+					return true;	
+				}
+				return false;
+			})
+			if(device.personal!=null){
+				Object.keys(device.personal).forEach(k=>{	
+					if (k.includes(keyword)){
+						device.personalFilter[k]=device.states[k];
+						return true;	
+					}
+					
+					if (device.personal[k]!=undefined){
+						if(typeof device.personal[k] === 'string' || device.personal[k] instanceof String){
+							if(device.personal[k].includes(keyword)){
+								device.personalFilter[k]=device.personal[k];
+								return true; 
+							}
+						}
+					}
+					return false;
+				})
+			}
 		});
 	}
 	registerAll(){
@@ -125,15 +200,19 @@ export class DevicesComponent implements OnInit {
 					this.wsapiService.getDevices().subscribe((devicesResult:any)=>{
 						console.log("this.wsapiService",devicesResult);						
 						this.devices = devicesResult.devices;
+						this.devices.forEach(d=>d['configFilter']=JSON.parse(JSON.stringify(d.config)));
+						this.devices.forEach(d=>d['statesFilter']=JSON.parse(JSON.stringify(d.states)));
+						this.devicesFilter = this.devices;
 						this.devices.forEach((device:any) => {
 							device['personal'] = this.personals.find(p=>p.id==device.states['ID_USER']);
+							if (device['personal']!= undefined)
+								device['personalFilter'] = JSON.parse(JSON.stringify(this.personals.find(p=>p.id==device.states['ID_USER'])));
 							let registredDevice = this.dbDevices.find(d=> d.id == device.id);
 							if (registredDevice == undefined )
 								this.noDevices.push(device);
 							else
 								this.countSession++;
 						});
-						
 					});
 				});
 			});

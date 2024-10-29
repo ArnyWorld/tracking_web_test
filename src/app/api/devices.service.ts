@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class DevicesService {
 	apiUrl = environment.apiserver;
+	apiUrlWs = environment.wsapiserver;
 	apiName = 'devices';
 	prefix = '';
 	constructor(private http: HttpClient) { }
@@ -16,21 +17,18 @@ export class DevicesService {
 	setPrefix(prefix: string) {
 		this.prefix = prefix;
 	}
-
 	register(datos: any) {
 		return this.http.post(
 			this.apiUrl + this.prefix + `/${this.apiName}/sync`,
 			datos
 		);
 	}
-
 	update(datos: any, id: any): Observable<any> {
 		return this.http.put(
 			this.apiUrl + this.prefix + `/${this.apiName}/${id}`,
 			datos
 		);
 	}
-
 	find(id: string = '') {
 		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
 	}
@@ -54,7 +52,9 @@ export class DevicesService {
 			`/devices/getlist/listdevices`
 		);
 	}
-
+	setConfig(deviceId,config){		
+		return this.http.post(this.apiUrlWs + `/device/${deviceId}/setup/state`, config);
+	}
 	delete(id: string | number): Observable<any> {
 		return this.http.delete(
 			this.apiUrl + this.prefix + `/${this.apiName}/${id}`

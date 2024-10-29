@@ -26,6 +26,8 @@ import { ModalImportRoutesMultiComponent } from './modal-import-routes-multi/mod
 import { BotcomliveComponent } from './botcomlive/botcomlive.component';
 import { ModalImportAssignmentsComponent } from './modal-import-assignations/modal-import-assignments.component';
 import { ModalImportReportComponent } from './modal-import-report/modal-import-report.component';
+import { ModalDeviceConfigComponent } from './modal-device-config/modal-device-config.component';
+import { TracksComponent } from '../administration/tracks/tracks.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -44,6 +46,7 @@ export class SocketOne extends Socket {
 	DashboardmappolyComponent,
 	RoutessectionsComponent,
 	DistrictsComponent,
+	ModalDeviceConfigComponent,
 	ModalImportPersonalComponent,
 	ModalImportPersonalRegistroComponent,
 	ModalImportRoutesComponent,
@@ -53,7 +56,7 @@ export class SocketOne extends Socket {
 	ModalImportAssignmentsComponent,
 	ModalImportReportComponent,
 	BotcomComponent,
-	BotcomliveComponent,
+	BotcomliveComponent
   ],
   imports: [
 	TabsModule,
