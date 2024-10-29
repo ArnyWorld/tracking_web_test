@@ -118,6 +118,7 @@ player={
 	startRealTime:0,
 	step:1,
 	min:1,
+	timeout:10,
 	isPlaying:false,
 	speed:1,
 	thread:null,
@@ -125,14 +126,13 @@ player={
 
 	updatePlayer(){
 		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c,i) => i<=this.player.currentTime );
-		this.player.currentRealTime = this.selectedTrack['coordsPast'];
+		this.player.currentRealTime = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length-1].t;
 	}
-	
+
 	updatePlayerRealTime(){
+		this.selectedTrack['coordsPast'] = this.selectedTrack['trackb64'].filter((track,i) => track.t<=this.player.currentRealTime ).map(t=>[t.lon,t.lat]);
 		
-		console.log("this.player.currentRealTime)",this.player.currentRealTime);
-		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c,i) => i.t<=this.player.currentRealTime );
-		
+		this.player.currentTime = this.selectedTrack['coordsPast'].length-1;
 		this.map.instance.getView().setCenter(transform([this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][0], this.selectedTrack['coordsPast'][this.selectedTrack['coordsPast'].length-1][1]], 'EPSG:4326', 'EPSG:3857'));
 	}
 	calcSpeed(track,time){
@@ -196,12 +196,11 @@ player={
 	if (this.player.isPlaying){
 		setTimeout(()=>{
 			//if (this.player.currentTime+1>=this.player.length){ this.player.isPlaying=false ; return;}
-			this.player.currentTime++;
-			this.player.currentRealTime+=this.player.speed*1000;
+			this.player.currentRealTime+=this.player.speed*this.player.timeout;
 			this.updatePlayerRealTime();			
 			this.playing();
 			
-		},10);
+		},this.player.timeout);
 	}
   }
   load() {

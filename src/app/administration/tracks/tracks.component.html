@@ -125,8 +125,11 @@
 			<div *ngIf="selectedTrack">
 				<div> {{selectedTrack.route.name}}</div>
                 <div class="row" *ngIf="selectedTrack">
-                    <div class="col-12 ps-3 pe-3 ">
+                    <div class="col-12 ps-3 pe-3 " *ngIf="!player.isPlaying">
                         tiempo:  {{ selectedTrack.trackb64[player.currentTime].t | date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) | number:'1.2-2'}} m/s
+                    </div>
+                    <div class="col-12 ps-3 pe-3 " *ngIf="player.isPlaying">
+                        tiempo:  {{ player.currentRealTime| date:'HH:mm:ss' }} vel:  {{ calcSpeed(selectedTrack, player.currentTime) | number:'1.2-2'}} m/s
                     </div>
                 </div>
                 <div class="row">
@@ -139,6 +142,7 @@
                             <option value="1">Tiempo Real</option>
                             <option value="2">x2</option>
                             <option value="5">x5</option>
+                            <option value="30">Cada 30s</option>
                             <option value="60">Cada 1min</option>
                             <option value="300">Cada 5min</option>
                         </select> 
