@@ -192,13 +192,43 @@
                             </aol-source-vector>
                             <aol-style>
                                 <aol-style-stroke [color]="'rgba(30, 250, 30,0.8)'" [width]="15"  ></aol-style-stroke>
-                                <aol-style-circle [radius]="3">
+                                <aol-style-circle [radius]="8">
                                     <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                                     <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
                                 </aol-style-circle>
                             </aol-style>
                         </aol-layer-vector>
 					</div>
+                    
+                <aol-layer-vector [zIndex]="1750">
+                    <aol-source-vector> 
+                        <div *ngFor="let device of devices">
+                            <div *ngIf="device.controls.showChecks && device.routeSelected!=null">                                            
+                                <aol-feature  *ngIf=" device.routeSelected.firstCheck && device.routeSelected.lastCheck">  
+                                    <aol-geometry-multipoint>
+                                        <aol-collection-coordinates
+                                        [coordinates]="[[device.routeSelected.firstCheck[0],device.routeSelected.firstCheck[1]],[device.routeSelected.lastCheck[0],device.routeSelected.lastCheck[1]]]"[srid]="'EPSG:4326'"
+                                        >
+                                        </aol-collection-coordinates>
+                                        <!-- <aol-geometry-point  >
+                                            <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                        </aol-geometry-point>-->
+                                    </aol-geometry-multipoint>                    
+                                    <!--<aol-geometry-point>
+                                            <aol-coordinate [x]="device.routeSelected.firstCheck.lon" [y]="device.routeSelected.firstCheck.lon" [srid]="'EPSG:4326'"></aol-coordinate>
+                                    </aol-geometry-point>               -->
+                                </aol-feature>          
+                            </div>
+                        </div>
+                    </aol-source-vector>
+                    <aol-style>
+                        <aol-style-stroke [color]="'rgba(255, 0, 0,0.8)'" [width]="5"  ></aol-style-stroke>
+                        <aol-style-circle [radius]="12">
+                            <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                            <aol-style-fill [color]="'#ffcc77ff'"></aol-style-fill>
+                        </aol-style-circle>
+                    </aol-style>
+                </aol-layer-vector>
 				
 			<!--
 					<div *ngIf="devices">

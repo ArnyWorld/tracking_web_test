@@ -91,7 +91,7 @@ export class RoutesService {
 				stop.end_lat = tracks[i].lat;
 				stop.end_lon = tracks[i].t;
 				// TREBOL-57 SUMAR A LAS PARADAS 5min  
-				stop.duration = 300 + stop.end_date - stop.start_date;
+				stop.duration = 300000 + (stop.end_date - stop.start_date);
 			}
 		}
 		return stops;
@@ -105,6 +105,8 @@ export class RoutesService {
 		let i: number, j: number, k: number;
 		let sc: any;
 		console.log("checkPoints");
+		let firstCheck ;
+		let lastCheck ;
 		for (i = 0; i < route.sections.length; i++) {
 			for (j = 0; j < route.sections[i].splitCoords.length; j++) {
 				total++;
@@ -117,13 +119,16 @@ export class RoutesService {
 						[sc[0], sc[1]]
 					);
 					if (d < maxDistance) {
+						if (firstCheck==null) firstCheck = sc;
+						lastCheck = sc;
 						route.sections[i].splitCoordsChecked.push(sc);
 						sc[2] = true;
 					}
 				}
 			}
 		}
-
+		route['firstCheck'] = firstCheck;
+		route['lastCheck'] = lastCheck;
 		for (i = 0; i < route.sections.length; i++) {
 			let tracksChecked = [];
 			route.sections[i]['splitPointTracks'] = tracksChecked;
@@ -162,6 +167,7 @@ export class RoutesService {
 				d = olSphere.getDistance([point.lon, point.lat], [sc[0], sc[1]]);
 				if (d < maxDistance) {
 					sc[2] = true;
+					//route['lastCheck'] = sc;
 					route.sections[i].splitCoordsChecked.push(sc);
 				}
 			}
