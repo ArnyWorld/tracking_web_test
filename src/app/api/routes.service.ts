@@ -11,6 +11,8 @@ import Feature from 'ol/Feature';
 import { PointsService } from './points.service';
 
 
+let SPLIT_MIN_MTS = 4;
+let SPLIT_MAX_MTS = 15;
 
 @Injectable({
 	providedIn: 'root',
@@ -19,6 +21,7 @@ export class RoutesService {
 	apiUrl = environment.apiserver;
 	apiName = 'routes';
 	prefix = '';
+
 	constructor(private http: HttpClient) { }
 
 	setPrefix(prefix: string) {
@@ -112,7 +115,6 @@ export class RoutesService {
 				total++;
 				sc = route.sections[i].splitCoords[j];
 				if (sc[2] == true) continue;
-				noCheckCount++;
 				for (k = 0; k < tracks.length; k++) {
 					d = olSphere.getDistance(
 						[tracks[k].lon, tracks[k].lat],
@@ -125,6 +127,8 @@ export class RoutesService {
 						sc[2] = true;
 					}
 				}
+				if (sc[2] == true) continue;
+				noCheckCount++;
 			}
 		}
 		route['firstCheck'] = firstCheck;
@@ -146,6 +150,8 @@ export class RoutesService {
 				}
 			}
 		}
+		console.log("calcc", total);
+		console.log("noCheckCount", noCheckCount);
 		return Math.round(((total - noCheckCount) / total) * 10000) / 100;
 	}
 	checkPointLast(route, point, maxDistance) {
@@ -163,13 +169,15 @@ export class RoutesService {
 				total++;
 				sc = route.sections[i].splitCoords[j];
 				if (sc[2] == true) continue;
-				noCheckCount++;
 				d = olSphere.getDistance([point.lon, point.lat], [sc[0], sc[1]]);
 				if (d < maxDistance) {
+					if (route['firstCheck']==null) route['firstCheck'] = sc;
 					sc[2] = true;
-					//route['lastCheck'] = sc;
+					route['lastCheck'] = sc;
 					route.sections[i].splitCoordsChecked.push(sc);
 				}
+				if (sc[2] == true) continue;
+				noCheckCount++;
 			}
 		}
 		//return (total-noCheckCount)  + " / " + total;
@@ -673,7 +681,7 @@ export class RoutesService {
 						};
 					});
 					route['sections'].forEach((t) => {
-						t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
+						t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
 						t['splitCoordsChecked'] = [];
 					});
 				});
@@ -704,7 +712,7 @@ export class RoutesService {
 			};
 		});
 		route['sections'].forEach((t) => {
-			t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
+			t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
 		});
 		route['splitCoordsLine'] = [];
 		route['sections'].forEach((t) => {
@@ -842,7 +850,7 @@ export class RoutesService {
 							};
 						});
 						route['sections'].forEach((t) => {
-							t['splitCoords'] = this.splitPointsCoord(t.coords, 4, 30);
+							t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
 						});
 						route['splitCoordsLine'] = [];
 						route['sections'].forEach((t) => {

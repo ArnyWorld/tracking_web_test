@@ -22,6 +22,8 @@ import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
 import { PersonaltypeService } from '../../api/jobroutes.services';
 
+let maxPointDistance = 10;
+
 //https://github.com/kamilfurtak/ng-openlayers/blob/master/apps/demo-ng-openlayers/src/app/select-interaction/select-interaction.component.ts
 @Component({
 	selector: 'app-dashboardmap',
@@ -354,7 +356,9 @@ export class DashboardmapComponent implements OnInit {
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 			if (device.routeSelected!=undefined)
-					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+			device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+			console.log("device.routeSelected",device.routeSelected);  
+			console.log("completed:" + device.routeSelected['completed']); 
 			
 			device['isReady'] = true;
 
@@ -584,7 +588,7 @@ export class DashboardmapComponent implements OnInit {
 					device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 									
 					if (device.routeSelected!=undefined)
-						 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+						 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
 					device['isReady'] = true;
 				},(err:any)=>console.log("err",err));*/
 			//});
@@ -642,7 +646,7 @@ export class DashboardmapComponent implements OnInit {
 			if (device.routeSelected!=null){
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 				if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],10);
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
 				device['isReady'] = true;
 			}
 		});
@@ -678,10 +682,10 @@ export class DashboardmapComponent implements OnInit {
 			device['stops'] = this.routesService.getStops(device['tracks']);
 			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
 			if (device['routeSelected']!=null){			
-				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'] , data.last, 10);
+				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'] , data.last,maxPointDistance);
 			}else{
 				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'], 10);
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
 			}
 		});
 

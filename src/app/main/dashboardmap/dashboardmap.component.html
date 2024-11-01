@@ -163,7 +163,7 @@
 					<!-- CHECKED GREEN CIRCLES -->
 					<div *ngIf="devices">
                         <aol-layer-vector  [zIndex]="750" >             
-                            <aol-source-vector> 
+                            <aol-source-vector> <!-- ya no -->
                                     <div *ngFor="let device of devices">
                                         <div *ngIf="device.controls.showChecks && device.routeSelected!=null">
                                             <div *ngFor="let section of device.routeSelected.sections">         
@@ -198,6 +198,33 @@
                                 </aol-style-circle>
                             </aol-style>
                         </aol-layer-vector>
+                       <!-- <aol-layer-vector  [zIndex]="850" >             
+                            <aol-source-vector>
+                                    <div *ngFor="let device of devices">
+                                        <div *ngIf="device.controls.showChecks && device.routeSelected!=null">
+                                            <div *ngFor="let section of device.routeSelected.sections">         
+                                                        
+                                                 <aol-feature >                    
+                                                    <aol-geometry-multipoint>
+                                                        <aol-collection-coordinates
+                                                        [coordinates]="section.splitCoords"
+                                                        [srid]="'EPSG:4326'"
+                                                        >
+                                                        </aol-collection-coordinates>
+                                                    </aol-geometry-multipoint>              
+                                                </aol-feature>                   
+                                            </div>
+                                        </div>
+                                    </div>
+                            </aol-source-vector>
+                            <aol-style>
+                                <aol-style-stroke [color]="'rgba(30, 250, 30,0.8)'" [width]="15"  ></aol-style-stroke>
+                                <aol-style-circle [radius]="8">
+                                    <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                    <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                </aol-style-circle>
+                            </aol-style>
+                        </aol-layer-vector>-->
 					</div>
                     
                 <aol-layer-vector [zIndex]="1750">
