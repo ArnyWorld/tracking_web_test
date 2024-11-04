@@ -11,11 +11,11 @@ export const environment = {
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.5.22:9988/trackingdb/',
-  //wsserver: 'https://trackingserver.kernotec.com',
- 	wsserver: 'http://172.20.50.123:7777',	
-  //wsapiserver: 'https://trackingserver.kernotec.com',
-  	wsapiserver: 'http://172.20.50.123:7777',	
-
+ wsserver: 'https://trackingserver.kernotec.com',
+ //	wsserver: 'http://172.20.50.123:7777',	
+  wsapiserver: 'https://trackingserver.kernotec.com',
+  //	wsapiserver: 'http://172.20.50.123:7777',	
+  
   /*apiserver: 'http://192.168.100.7:9988/trackingdb/',
   wsserver: 'http://192.168.100.7:7777',
   wsapiserver: 'http://192.168.100.7:7777',*/
