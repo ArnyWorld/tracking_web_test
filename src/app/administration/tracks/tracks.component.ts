@@ -250,6 +250,7 @@ export class TracksComponent implements OnInit {
 	load() {
 		this.routesService.getList().subscribe((res: any) => {
 			this.routes = res.content;
+			console.log("----this.routes",this.routes)
 			this.personalApi.getAll2().subscribe((res: any) => {
 				this.personals = res.content;
 				this.personalFiltred = this.personals;

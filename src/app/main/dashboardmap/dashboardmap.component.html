@@ -234,16 +234,9 @@
                                 <aol-feature  *ngIf=" device.routeSelected.firstCheck && device.routeSelected.lastCheck">  
                                     <aol-geometry-multipoint>
                                         <aol-collection-coordinates
-                                        [coordinates]="[[device.routeSelected.firstCheck[0],device.routeSelected.firstCheck[1]],[device.routeSelected.lastCheck[0],device.routeSelected.lastCheck[1]]]"[srid]="'EPSG:4326'"
-                                        >
+                                        [coordinates]="[[device.routeSelected.firstCheck[0],device.routeSelected.firstCheck[1]]]"[srid]="'EPSG:4326'">
                                         </aol-collection-coordinates>
-                                        <!-- <aol-geometry-point  >
-                                            <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
-                                        </aol-geometry-point>-->
-                                    </aol-geometry-multipoint>                    
-                                    <!--<aol-geometry-point>
-                                            <aol-coordinate [x]="device.routeSelected.firstCheck.lon" [y]="device.routeSelected.firstCheck.lon" [srid]="'EPSG:4326'"></aol-coordinate>
-                                    </aol-geometry-point>               -->
+                                    </aol-geometry-multipoint>              
                                 </aol-feature>          
                             </div>
                         </div>
@@ -253,6 +246,28 @@
                         <aol-style-circle [radius]="12">
                             <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
                             <aol-style-fill [color]="'#ffcc77ff'"></aol-style-fill>
+                        </aol-style-circle>
+                    </aol-style>
+                </aol-layer-vector>
+                <aol-layer-vector [zIndex]="1750">
+                    <aol-source-vector> 
+                        <div *ngFor="let device of devices">
+                            <div *ngIf="device.controls.showChecks && device.routeSelected!=null">                                            
+                                <aol-feature  *ngIf=" device.routeSelected.firstCheck && device.routeSelected.lastCheck">  
+                                    <aol-geometry-multipoint>
+                                        <aol-collection-coordinates
+                                        [coordinates]="[[device.routeSelected.lastCheck[0],device.routeSelected.lastCheck[1]]]"[srid]="'EPSG:4326'">
+                                        </aol-collection-coordinates>
+                                    </aol-geometry-multipoint>              
+                                </aol-feature>          
+                            </div>
+                        </div>
+                    </aol-source-vector>
+                    <aol-style>
+                        <aol-style-stroke [color]="'rgba(255, 255, 0,0.8)'" [width]="5"  ></aol-style-stroke>
+                        <aol-style-circle [radius]="12">
+                            <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                            <aol-style-fill [color]="'#ff2277ff'"></aol-style-fill>
                         </aol-style-circle>
                     </aol-style>
                 </aol-layer-vector>
@@ -328,6 +343,27 @@
                                                         </aol-geometry-linestring>
                                                     </aol-feature>
                                                 </div>
+                                            </div>
+                                        </div>
+                                     </div>
+								</aol-source-vector>
+							
+						</aol-layer-vector>
+						<aol-layer-vector  >					
+					
+								<aol-source-vector>
+									<aol-style>
+										<aol-style-stroke [color]="'rgba(230, 150, 50,0.8)'" [width]="2"  ></aol-style-stroke>
+									</aol-style>
+                                    <div *ngIf="devices" #forsplitpoints>
+                                        <div *ngFor="let device of devices">
+                                            <div *ngIf="device.routeSelected && device.controls.show">		
+                                                <aol-feature >
+                                                    <aol-geometry-multilinestring >
+                                                        <aol-collection-coordinates [coordinates]="device.routeSelected['tracksOut']" [srid]="'EPSG:4326'">
+                                                        </aol-collection-coordinates>
+                                                    </aol-geometry-multilinestring>
+                                                </aol-feature>
                                             </div>
                                         </div>
                                      </div>

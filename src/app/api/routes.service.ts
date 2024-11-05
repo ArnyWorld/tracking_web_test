@@ -9,6 +9,7 @@ import * as olSphere from 'ol/sphere';
 import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import { PointsService } from './points.service';
+import { forEach } from 'jszip';
 
 
 let SPLIT_MIN_MTS = 4;
@@ -108,9 +109,10 @@ export class RoutesService {
 		let i: number, j: number, k: number;
 		let sc: any;
 		console.log("checkPoints");
-		let firstCheck ;
-		let lastCheck ;
+		let firstCheck;
+		let lastCheck;
 		for (i = 0; i < route.sections.length; i++) {
+			
 			for (j = 0; j < route.sections[i].splitCoords.length; j++) {
 				total++;
 				sc = route.sections[i].splitCoords[j];
@@ -121,14 +123,58 @@ export class RoutesService {
 						[sc[0], sc[1]]
 					);
 					if (d < maxDistance) {
-						if (firstCheck==null) firstCheck = sc;
-						lastCheck = sc;
-						route.sections[i].splitCoordsChecked.push(sc);
+						route.sections[i].splitCoordsChecked.push(sc);					
 						sc[2] = true;
+					}else {
+						
 					}
 				}
 				if (sc[2] == true) continue;
 				noCheckCount++;
+			}
+		}
+		let checked = false;
+		let tracksIn = [];
+		let tracksOut = [];
+		route['tracksIn'] = tracksIn;
+		route['tracksOut'] = tracksOut;
+		let lineString = null;
+		let lineStringOut = null;
+		
+		for (k = 0; k < tracks.length; k++) {
+			checked = false;
+			for (i = 0; i < route.sections.length; i++) {
+				for (j = 0; j < route.sections[i].splitCoords.length; j++) {
+					sc = route.sections[i].splitCoords[j];
+					d = olSphere.getDistance(
+						[tracks[k].lon, tracks[k].lat],
+						[sc[0], sc[1]]
+					);
+					if (d < maxDistance) {
+						if (firstCheck == null) firstCheck = sc;
+						checked=true;
+						lastCheck = sc;
+						break;
+					}else{
+						checked=false;
+					}
+				}
+				if (checked) break;
+			}
+			if(checked){
+				if (lineString == null) {
+					lineString = [];
+					tracksIn.push(lineString);
+				}
+				lineString.push([sc[0],sc[1]]);
+				lineStringOut = null;
+			}else{					
+				lineString = null;
+				if (lineStringOut == null) {
+					lineStringOut = [];
+					tracksOut.push(lineStringOut);
+				}
+				lineStringOut.push([sc[0],sc[1]]);
 			}
 		}
 		route['firstCheck'] = firstCheck;
@@ -171,7 +217,7 @@ export class RoutesService {
 				if (sc[2] == true) continue;
 				d = olSphere.getDistance([point.lon, point.lat], [sc[0], sc[1]]);
 				if (d < maxDistance) {
-					if (route['firstCheck']==null) route['firstCheck'] = sc;
+					if (route['firstCheck'] == null) route['firstCheck'] = sc;
 					sc[2] = true;
 					route['lastCheck'] = sc;
 					route.sections[i].splitCoordsChecked.push(sc);
@@ -661,29 +707,7 @@ export class RoutesService {
 		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/routelist`).pipe(
 			tap((result: any) => {
 				result.content.forEach((route: any) => {
-					route['extend'] = [+180, 90, -180, -90];
-					route['sections'] = Array.from(
-						this.groupBy(route.points, (p) => p.section)
-					).map((p: any, index: number) => {
-						return {
-							uuid: index,
-							coords: p[1].map((pp: any) => {
-								route['extend'][0] =
-									pp.lon < route['extend'][0] ? pp.lon : route['extend'][0];
-								route['extend'][1] =
-									pp.lat < route['extend'][1] ? pp.lat : route['extend'][1];
-								route['extend'][2] =
-									pp.lon > route['extend'][2] ? pp.lon : route['extend'][2];
-								route['extend'][3] =
-									pp.lat > route['extend'][3] ? pp.lat : route['extend'][3];
-								return [pp.lon, pp.lat];
-							}),
-						};
-					});
-					route['sections'].forEach((t) => {
-						t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
-						t['splitCoordsChecked'] = [];
-					});
+					this.setupSections(route);
 				});
 				return result;
 			})
@@ -711,6 +735,8 @@ export class RoutesService {
 				}),
 			};
 		});
+		route['tracksIn'] = [];
+		route['tracksOut'] = [];
 		route['sections'].forEach((t) => {
 			t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
 		});
@@ -723,7 +749,7 @@ export class RoutesService {
 		let i, j;
 		for (i = 0; i < route['sections'].length; i++)
 			for (j = 0; j < route['sections'][i]['splitCoords'].length; j++)
-				route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]); 
+				route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]);
 	}
 
 	getAll(
@@ -733,24 +759,18 @@ export class RoutesService {
 		descending: false,
 		keyword: any = ''
 	) {
+		let me = this;
 		if (localStorage.getItem('routes') != null) {
 			return {
 				subscribe: (res_ = (a) => { }, err_ = (a) => { }) => {
-
 					let openRequest = indexedDB.open('store', 1);
-
 					openRequest.onupgradeneeded = function (event) {
 						let db = openRequest.result;
 						if (!db.objectStoreNames.contains('routes')) {
 							db.createObjectStore('routes', { keyPath: 'id' });
 						}
-						console.log("(indexedDB) openRequest.onupgradeneeded created");
 					};
-
-					openRequest.onerror = function () {
-						console.error("Error", openRequest.error);
-					};
-
+					openRequest.onerror = function () {	console.error("Error", openRequest.error);	};
 					let db = null;
 					openRequest.onsuccess = function () {
 						db = openRequest.result;
@@ -758,9 +778,7 @@ export class RoutesService {
 							db.close();
 							alert("La base de datos está desactualizada, por favor recargue la página.")
 						};
-						console.log("(indexedDB) openRequest.onsuccess success");
 						try {
-
 							const transaction = db.transaction("routes", "readwrite"); // (1)
 							let routes = transaction.objectStore("routes");
 							var allRecords = routes.getAll();
@@ -768,31 +786,27 @@ export class RoutesService {
 							allRecords.onsuccess = function (res) {
 								console.log("(indexedDB) onsuccess", res.target.result);
 								console.log("(indexedDB) onsuccess  allRecords.result--", allRecords.result);
-								//console.log("(indexedDB) onsuccess obj",allRecords.result);	
-								res_({ content: JSON.parse(JSON.stringify(allRecords.result)) });
+								let routes = JSON.parse(JSON.stringify(allRecords.result)) ;
+								routes.forEach(route=>me.setupSections(route));
+								res_({ content: routes});
 							};
 						} catch (e) {
 							err_("err");
 						}
 					};
-
 				}
 			};
 		} else {
 			let openRequest = indexedDB.open('store', 1);
-
 			openRequest.onupgradeneeded = function (event) {
 				let db = openRequest.result;
 				if (!db.objectStoreNames.contains('routes')) {
 					db.createObjectStore('routes', { keyPath: 'id' });
 				}
-				console.log("openRequest.onupgradeneeded created");
 			};
-
 			openRequest.onerror = function () {
 				console.error("Error", openRequest.error);
 			};
-
 			let db = null;
 			openRequest.onsuccess = function () {
 				db = openRequest.result;
@@ -800,27 +814,6 @@ export class RoutesService {
 					db.close();
 					alert("La base de datos está desactualizada, por favor recargue la página.")
 				};
-				console.log("openRequest.onsuccess success");
-
-
-			};
-			let addData = (data) => {
-
-				const transaction = db.transaction("routes", "readwrite"); // (1)
-				let routes = transaction.objectStore("routes");
-				let route = data;//{id:'asd12',name:'route1'};
-				let request = routes.add(route);
-				console.log("openRequest.onupgradeneeded add added");
-				console.log(db);
-
-				request.onsuccess = () => {
-					// request.result contains key of the added object
-					console.log(`New route added, email: ${request.result}`);
-				}
-
-				request.onerror = (err) => {
-					console.error(`Error to add new route: ${err}`, err)
-				}
 			};
 
 			return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/`).pipe(
@@ -829,43 +822,11 @@ export class RoutesService {
 					let routes = transaction.objectStore("routes");
 
 					result.content.forEach(async (route: any) => {
-
-						route['extend'] = [+180, 90, -180, -90];
-						route['sections'] = Array.from(
-							this.groupBy(route.points, (p) => p.section)
-						).map((p: any, index: number) => {
-							return {
-								uuid: index,
-								coords: p[1].map((pp: any) => {
-									route['extend'][0] =
-										pp.lon < route['extend'][0] ? pp.lon : route['extend'][0];
-									route['extend'][1] =
-										pp.lat < route['extend'][1] ? pp.lat : route['extend'][1];
-									route['extend'][2] =
-										pp.lon > route['extend'][2] ? pp.lon : route['extend'][2];
-									route['extend'][3] =
-										pp.lat > route['extend'][3] ? pp.lat : route['extend'][3];
-									return [pp.lon, pp.lat];
-								}),
-							};
-						});
-						route['sections'].forEach((t) => {
-							t['splitCoords'] = this.splitPointsCoord(t.coords, SPLIT_MIN_MTS, SPLIT_MAX_MTS);
-						});
-						route['splitCoordsLine'] = [];
-						route['sections'].forEach((t) => {
-							t['splitCoordsCells'] = [];
-							t['splitCoordsChecked'] = [];
-						});
-
-						let i, j;
-						for (i = 0; i < route['sections'].length; i++)
-							for (j = 0; j < route['sections'][i]['splitCoords'].length; j++)
-								route['splitCoordsLine'].push(route['sections'][i]['splitCoords'][j]);
+						let request = await routes.add(route);
 					});
 
 					result.content.forEach(async (route: any) => {
-						let request = await routes.add(route);
+						this.setupSections(route);
 					});
 
 					localStorage.setItem('routes', 'loaded');
