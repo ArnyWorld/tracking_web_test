@@ -18,6 +18,10 @@ export class WSapiService {
 		console.log("url",this.apiUrl + `/${this.apiName}/${id}/tracks`);
 	  return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracks`);
 	}
+	getHistoryTracks(id: string = '') {
+		console.log("url",this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
+	  return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
+	}
   
 	getDevices() {
 	  return this.http.get(this.apiUrl + `/devices`);

@@ -346,23 +346,37 @@ export class DashboardmapComponent implements OnInit {
 		device.controls.showChecks = true;
 		device.controls.showStops = false;
 		this.selectedDevice = device;
-		this.cargarRutas(device);
+		this.loadAllRoute(device);
 	}
-	cargarRutas(device){		
+	loadAllRoute(device){		
 		//if (device['tracks'] !=undefined) return;
+		if (device.states['ON_ROUTE']=="1"){
+			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{			
+				device['tracks'] = res.tracks;
+				device['stops'] = this.routesService.getStops(device['tracks']);
+				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+				if (device.routeSelected!=undefined)
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+				console.log("device.routeSelected",device.routeSelected);  
+				console.log("completed:" + device.routeSelected['completed']); 
+				
+				device['isReady'] = true;
 
-		this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{			
-			device['tracks'] = res.tracks;
-			device['stops'] = this.routesService.getStops(device['tracks']);
-			device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-			if (device.routeSelected!=undefined)
-			device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
-			console.log("device.routeSelected",device.routeSelected);  
-			console.log("completed:" + device.routeSelected['completed']); 
-			
-			device['isReady'] = true;
+			},(err:any)=>console.log("err",err));
+		}else{			
+			this.wsapiService.getHistoryTracks(device.id).subscribe( (res:any)=>{			
+				device['tracks'] = res.tracks;
+				device['stops'] = this.routesService.getStops(device['tracks']);
+				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
+				if (device.routeSelected!=undefined)
+				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+				console.log("device.routeSelected",device.routeSelected);  
+				console.log("completed:" + device.routeSelected['completed']); 
+				
+				device['isReady'] = true;
 
-		},(err:any)=>console.log("err",err));
+			},(err:any)=>console.log("err",err));
+		}
 	}
 	createControls(){
 		return {
