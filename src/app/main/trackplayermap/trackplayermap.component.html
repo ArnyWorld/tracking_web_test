@@ -1,0 +1,60 @@
+<aol-layer-group>
+    <div *ngIf="selectedTrack && !selectedTrack.controls.isPlayer">
+        <aol-layer-vector>
+            <aol-source-vector>
+                <aol-style>
+                    <aol-style-stroke [color]="'rgba(10, 10, 10)'" [width]=3 [lineDash]="[3, 5]"></aol-style-stroke>
+                    <!-- <aol-style-fill [color]="'rgba(90, 17, 26, 0.5)'"></aol-style-fill> -->
+                    <!-- 		<aol-style-text [text]="'RUTA 12D-S'" [font]="'20px sans-serif'"></aol-style-text> -->
+                </aol-style>
+                <aol-feature *ngIf="selectedTrack ">
+                    <aol-geometry-linestring>
+                        <aol-collection-coordinates [coordinates]="selectedTrack.coordsPast" [srid]="'EPSG:4326'">
+                        </aol-collection-coordinates>
+                    </aol-geometry-linestring>
+                </aol-feature>
+            </aol-source-vector>
+        </aol-layer-vector>
+    </div>
+    <aol-layer-vector *ngIf="selectedRoute!=null">
+        <aol-source-vector>
+            <aol-style>
+                <aol-style-stroke [color]="'rgba(30, 30, 250,0.5)'" [width]="8" [lineDash]="[8.5, 8]"></aol-style-stroke>
+            </aol-style>
+            <div *ngFor="let section of selectedRoute.sections">
+                <aol-feature>
+                    <aol-geometry-linestring>
+                        <aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+                        </aol-collection-coordinates>
+                    </aol-geometry-linestring>
+                </aol-feature>
+            </div>
+        </aol-source-vector>
+    </aol-layer-vector>
+    <aol-layer-vector [zIndex]="750" *ngIf="selectedTrack">
+        <aol-source-vector>
+            <div *ngFor="let section of selectedTrack.route.sections">
+
+                <aol-feature>
+                    <aol-geometry-multipoint>
+                        <aol-collection-coordinates [coordinates]="section.splitCoordsChecked" [srid]="'EPSG:4326'">
+                        </aol-collection-coordinates>
+                    </aol-geometry-multipoint>
+                </aol-feature>
+                <aol-feature *ngIf="section['splitPointTracks']">
+                    <aol-geometry-multilinestring>
+                        <aol-collection-coordinates [coordinates]="section['splitPointTracks']" [srid]="'EPSG:4326'">
+                        </aol-collection-coordinates>
+                    </aol-geometry-multilinestring>
+                </aol-feature>
+            </div>
+        </aol-source-vector>
+        <aol-style>
+            <aol-style-stroke [color]="'rgba(30, 250, 30,0.8)'" [width]="15"></aol-style-stroke>
+            <aol-style-circle [radius]="3">
+                <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+            </aol-style-circle>
+        </aol-style>
+    </aol-layer-vector>
+</aol-layer-group>

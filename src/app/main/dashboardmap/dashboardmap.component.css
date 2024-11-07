@@ -119,6 +119,23 @@ body {
 
 }
 
+#overlayMenuDeviceRight{
+    background-color:#ffffffee;
+    border-radius: 15px 0 0 15px ;
+    position: absolute;
+	z-index: 1;
+	top: 150px;
+	right: 390px;
+    padding:5px;
+    transition: 0.25s linear;
+    border:0.25px solid #444;
+}
+#overlayMenuDeviceRight:hover{    
+    background-color:#ffffffff;
+    padding:5px;
+
+}
+
 /*button bar*/
 
 .btn-group button {
@@ -147,24 +164,166 @@ body {
 	background-color: #3e8e41;
 	color: #fff; 
   }
-
-  .my-overlay-class{
-    
-    width:60px;
-    height:90px;
-    scale:0.6;
-    margin-left:-50%;
-    margin-top:-170%;
-    
-    overflow: hidden;
-    user-select: none;
-    /*pointer-events: none;*/
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    /* border: 1px solid #000; */
+  .marker-device-container{
     transition: all 0.5s ease;
+    width:0;
+    height:0;
+    overflow: hidden;
+    /*pointer-events: none;*/
+  }
+  .marker-device-container:active{
+    /*pointer-events: none;*/
+  }
+  .marker-device-container:hover > .marker-device {
+    /*pointer-events: none;*/
+}
+.marker-device{
+  border: 2px solid #ffb120; 
+  position:relative;
+  /*width:60px;*/
+  width:160px;
+  height:160px;
+  /*height:90px;*/
+  margin-left:-80px;
+  margin-top:-80px;   
+  scale:0.6;
+  /*margin-left:-50%;*/
+  /*margin-top:-170%;   */ 
+ /* overflow: hidden;*/
+ /* -webkit-user-select: none; /* Safari */
+  /*-ms-user-select: none; /* IE 10 and IE 11 */
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+.marker-device-container:hover > .marker-device2 {
+  /*pointer-events: none;*/
+}
+.marker-device-selected > .marker-device2{
+    opacity: 1;
+}
+
+.marker-device2{
+  opacity: 0.4;
+  border: 2px solid #ffb120; 
+  border-radius: 50% 50% 50% 50%;
+  position:relative;
+  text-align: center;
+  width:40px;
+  height:40px;
+  margin-left:-20px;
+  margin-top:-20px;   
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+.marker-device2:hover{
+    border: 2px solid #20ffb1; 
+    scale:1.1;
+    opacity: 1;
+}
+.marker-device2:hover .tooltipx {
+
+}
+.tooltipx:before {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #777777;
+    bottom: -6px;
+    content: "";
+    height: 0;
+    left: 50%;
+    margin-left: -6px;
+    position: absolute;
+    width: 0;
+}
+
+.tooltipx {
+    font-size: 10px;
+    display: block;    
+    background-color: #777777bb;
+    width:auto;
+    color: #FFFFFF;
+    /*left: -25%;*/
+    left: -60px;
+    width:160px;
+    /*top: 50px;*/
+    top: -50px;
+    /*padding: 10px 5px;*/
+    
+
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+}
+ 
+.pin1 {
+    position: absolute;
+    /*
+    top: 40%;
+    left: 50%;
+    margin-left: -115px;
+    */
+    text-align: center;
+    margin-left: -1px;
+    top: -80%;
+    border-radius: 50% 50% 50% 0;
+    border: 8px solid #3c8dd3;
+    width: 40px;
+    height: 40px;
+    transform: rotate(-45deg);
   }
   
-  .my-overlay-class:hover{
-    scale:0.8;
+  .pin1 i {
+    
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -5px;
+    width: 20px;
+    height: 20px;
+  }
+  /* center point */
+  /*
+  .pin1::after {
+    position: absolute;
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    margin-left: -5px;
+    margin-top: -5px;
+    background-color: #3c8dd3;
+  }*/
+  
+  .pin1-active{
+    border: 8px solid #1aa64b;    
+  }
+  .pin1-active::after{
+    background-color: #1aa64b;
+    
+  }
+  
+  .pin2 {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    margin-left: 115px;
+    
+    border-radius: 50%;
+    border: 8px solid #fff;
+    width: 8px;
+    height: 8px;
+  }
+  
+  .pin2::after {
+    position: absolute;
+    content: '';
+    width: 0px;
+    height: 0px;
+    bottom: -30px;
+    left: -6px;
+    border: 10px solid transparent;
+    border-top: 17px solid #fff;
   }

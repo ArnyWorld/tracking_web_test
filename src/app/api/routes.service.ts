@@ -140,6 +140,7 @@ export class RoutesService {
 		route['tracksOut'] = tracksOut;
 		let lineString = null;
 		let lineStringOut = null;
+		let lastTrack = null;
 		
 		for (k = 0; k < tracks.length; k++) {
 			checked = false;
@@ -153,7 +154,7 @@ export class RoutesService {
 					if (d < maxDistance) {
 						if (firstCheck == null) firstCheck = sc;
 						checked=true;
-						lastCheck = sc;
+						lastCheck = sc;						
 						break;
 					}else{
 						checked=false;
@@ -166,7 +167,7 @@ export class RoutesService {
 					lineString = [];
 					tracksIn.push(lineString);
 				}
-				lineString.push([sc[0],sc[1]]);
+				lineString.push([tracks[k].lon, tracks[k].lat]);
 				lineStringOut = null;
 			}else{					
 				lineString = null;
@@ -174,7 +175,7 @@ export class RoutesService {
 					lineStringOut = [];
 					tracksOut.push(lineStringOut);
 				}
-				lineStringOut.push([sc[0],sc[1]]);
+				lineStringOut.push([tracks[k].lon, tracks[k].lat]);
 			}
 		}
 		route['firstCheck'] = firstCheck;

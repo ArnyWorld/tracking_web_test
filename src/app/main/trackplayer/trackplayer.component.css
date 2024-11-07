@@ -1,0 +1,42 @@
+
+#overlayMenuDeviceRight{
+    background-color:#ffffffee;
+    border-radius: 15px 15px 0 0 ;
+    position: absolute;
+	z-index: 1;
+	bottom: 0px;
+	right: 50%;
+    padding:5px;
+    transition: 0.25s linear;
+    border:0.25px solid #444;
+    
+    transform: translate(25%, 0);
+    font-size: 10px;
+}
+#overlayMenuDeviceRight:hover{    
+    background-color:#ffffffff;
+    padding:5px;
+}
+.btnBlockSmall{
+    font-size: 8pt;
+    scale: 0.8;
+    
+}
+
+
+
+.tooltipx {
+    font-size: 15px;
+    display: block;    
+    width:20px;
+    margin:auto;
+    color: #FFFFFF;
+    /*left: -25%;*/
+    right: 0px;
+    /*top: 50px;*/
+    top: -20px;
+    /*padding: 10px 5px;*/
+
+    position: absolute;
+}
+ 

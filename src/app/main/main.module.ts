@@ -28,6 +28,8 @@ import { ModalImportAssignmentsComponent } from './modal-import-assignations/mod
 import { ModalImportReportComponent } from './modal-import-report/modal-import-report.component';
 import { ModalDeviceConfigComponent } from './modal-device-config/modal-device-config.component';
 import { TracksComponent } from '../administration/tracks/tracks.component';
+import { TrackplayerComponent } from "./trackplayer/trackplayer.component";
+import { TrackplayermapComponent } from './trackplayermap/trackplayermap.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -56,17 +58,19 @@ export class SocketOne extends Socket {
 	ModalImportAssignmentsComponent,
 	ModalImportReportComponent,
 	BotcomComponent,
-	BotcomliveComponent
+	TrackplayerComponent,
+	BotcomliveComponent,
+	TrackplayermapComponent,
   ],
   imports: [
-	TabsModule,
+    TabsModule,
     FormsModule,
     ReactiveFormsModule,
-    AngularOpenlayersModule ,
+    AngularOpenlayersModule,
     CommonModule,
     MainRoutingModule,
-    SocketIoModule,
-  ],
+    SocketIoModule
+],
   providers: [SocketOne,BsModalService],
 })
 export class MainModule { }

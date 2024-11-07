@@ -23,14 +23,15 @@
 				<button class="btn btn-small " (click)="botReset()"> Reset</button>
 			</div>
 		</div>
-		<div  id="overlayMenuDevice" style="z-index:9999">
+		<div  id="overlayMenuDeviceRight" style="z-index:9999">
 			<div *ngIf="selectedDevice">
 				<div> {{selectedDevice.personal.name}}</div>
-				<div (click)="exportGeojson(selectedDevice)" role="button"  class="mt-3 btnBlock">Exportar geojson<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span></div>
-				<div (click)="showReport(selectedDevice,modalReport)" role="button"  class="mt-3 btnBlock">Reporte<span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span></div>
+				<div (click)="exportGeojson(selectedDevice)" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>Exportar geojson</div>
+				<div (click)="showReport(selectedDevice,modalReport)" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-file"></i> </span>Reporte</div>
+				<div (click)="selectedDevice.controls.showPlayer=true" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-play"></i> </span>Reproducir</div>
 			</div>
 		</div>
-		
+		<app-trackplayer [tracks]="selectedDevice.tracks" (onClose)="selectedDevice.controls.showPlayer=false"  *ngIf="selectedDevice?.controls?.showPlayer"> </app-trackplayer>
 		<div style="height: 100%">
 			<aol-map #map width="100%" height="100%">
 				<aol-interaction-default></aol-interaction-default>
@@ -58,7 +59,7 @@
             
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
                  <div >
-				<aol-layer-group>					
+				<aol-layer-group *ngIf="!selectedDevice?.controls?.showPlayer">					
 				 	<!-- <aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
 							<aol-feature>
@@ -78,10 +79,9 @@
 					<aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-overlay>
 							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>
-							<aol-content>
-								<div class="my-overlay-class">
-                                    
-                                    <svg xmlns="http://www.w3.org/2000/svg">
+							<aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':device.controls.show}" (click)="gotoDevice(device)">
+								<div class="marker-device2"   (click)="gotoDevice(device)">
+                                    <!-- <svg xmlns="http://www.w3.org/2000/svg">
                                         <g
                                             id="layer1"
                                             transform="translate(-108.98034,-91.800702)"><path
@@ -124,7 +124,15 @@
                                      <image href="favicon.ico" height="20" width="20" x="120" y="120" />
                                      </g>
        
-                                    </svg>
+                                    </svg>-->
+                                <!--     
+                                <div class="box2 arrow-bottom">
+                                    {{device.personal.name}}
+                                </div>-->
+                                    <div class="pin1" [ngClass]="{'pin1-active':device.controls.show}">
+                                        <i class="fas {{device.personal.personal_type.icon}} d-block fa-xs" [style.color]="device.personal.personal_type.color" ></i>
+                                    </div>
+	                                <span class="tooltipx">{{device.personal.name}}</span>
 								</div>
 							</aol-content>
 						</aol-overlay>				
@@ -134,7 +142,6 @@
 					<div *ngIf="devices">
 						<div *ngFor="let device of devices" >
 							<aol-layer-vector *ngFor="let stop of device.stops" [zIndex]="1100">
-								
 									<aol-source-vector *ngIf="device.stops && device.controls.showStops">									
 											<aol-feature >
 													<aol-geometry-point >
@@ -326,11 +333,10 @@
                             </aol-style>
                         
                         </aol-layer-vector>
-						<aol-layer-vector  >					
-					
+						<aol-layer-vector  [zIndex]="1750">
 								<aol-source-vector>
 									<aol-style>
-										<aol-style-stroke [color]="'rgba(30, 30, 250,0.5)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
+										<aol-style-stroke [color]="'rgba(30, 30, 250, 0.5)'" [width]="6" [lineDash]="[8.5, 8]" ></aol-style-stroke>
 									</aol-style>
                                     <div *ngIf="devices" #forsplitpoints>
                                         <div *ngFor="let device of devices">
@@ -351,23 +357,44 @@
 						</aol-layer-vector>
 						<aol-layer-vector  >					
 					
-								<aol-source-vector>
-									<aol-style>
-										<aol-style-stroke [color]="'rgba(230, 150, 50,0.8)'" [width]="2"  ></aol-style-stroke>
-									</aol-style>
-                                    <div *ngIf="devices" #forsplitpoints>
-                                        <div *ngFor="let device of devices">
-                                            <div *ngIf="device.routeSelected && device.controls.show">		
-                                                <aol-feature >
-                                                    <aol-geometry-multilinestring >
-                                                        <aol-collection-coordinates [coordinates]="device.routeSelected['tracksOut']" [srid]="'EPSG:4326'">
-                                                        </aol-collection-coordinates>
-                                                    </aol-geometry-multilinestring>
-                                                </aol-feature>
-                                            </div>
+                            <aol-source-vector>
+                                <aol-style>
+                                    <aol-style-stroke [color]="'rgba(230, 50, 50, 0.9)'" [width]="3"  ></aol-style-stroke>
+                                </aol-style>
+                                <div *ngIf="devices" #forsplitpoints>
+                                    <div *ngFor="let device of devices">
+                                        <div *ngIf="device.routeSelected && device.controls.tracksOut">		
+                                            <aol-feature >
+                                                <aol-geometry-multilinestring >
+                                                    <aol-collection-coordinates [coordinates]="device.routeSelected['tracksOut']" [srid]="'EPSG:4326'">
+                                                    </aol-collection-coordinates>
+                                                </aol-geometry-multilinestring>
+                                            </aol-feature>
                                         </div>
-                                     </div>
-								</aol-source-vector>
+                                    </div>
+                                 </div>
+                            </aol-source-vector>
+							
+						</aol-layer-vector>
+						<aol-layer-vector  >					
+					
+                            <aol-source-vector>
+                                <aol-style>
+                                    <aol-style-stroke [color]="'rgba(50, 50, 230, 0.9)'" [width]="3"  ></aol-style-stroke>
+                                </aol-style>
+                                <div *ngIf="devices" #forsplitpoints>
+                                    <div *ngFor="let device of devices">
+                                        <div *ngIf="device.routeSelected && device.controls.tracksIn">		
+                                            <aol-feature >
+                                                <aol-geometry-multilinestring >
+                                                    <aol-collection-coordinates [coordinates]="device.routeSelected['tracksIn']" [srid]="'EPSG:4326'">
+                                                    </aol-collection-coordinates>
+                                                </aol-geometry-multilinestring>
+                                            </aol-feature>
+                                        </div>
+                                    </div>
+                                 </div>
+                            </aol-source-vector>
 							
 						</aol-layer-vector>
 					<!--        SO HEAVY  ON BIG ROUTE
@@ -521,6 +548,7 @@
 						</aol-layer-vector>
 					</div>
 				</aol-layer-group>
+                <app-trackplayermap [selectedRoute]="selectedRoute" *ngIf="selectedDevice?.controls?.showPlayer"></app-trackplayermap>
             </div>
 				<!-- many green points 
 				<div *ngIf="devices">
@@ -564,7 +592,7 @@
 		<button class="btn btn-sm btn-outline-primary" (click)="filterDevices()">filtrar</button>
 		
 </div>
-
+            <span><input type="checkbox" ([ngModel])="multipleDevice">Selección Multiple </span>
 			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
 
 				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true" (click)="gotoDevice(device)">
@@ -573,23 +601,39 @@
 						<small>bat:{{ device.last.bat}}%</small>
 					</div>
 				</a>
-				<div>
-					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
+				<div class="p-3 row">
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-{{device.id}}" [(ngModel)]="device?.controls.show">
 						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Ruta </label>
 					</div>					
-					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-track-{{device.id}}" [(ngModel)]="device?.controls.showTrack">
 						<label class="form-check-label small" for="dev-track-show-track-{{device.id}}"> Ver Trayecto </label>
 					</div>					
-					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-checks-{{device.id}}" [(ngModel)]="device?.controls.showChecks">
 						<label class="form-check-label small" for="dev-track-show-checks-{{device.id}}"> Ver Checkpoints </label>
 					</div>					
-					<div class="form-check form-check-sm" *ngIf="device.controls!=null">
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-stops-{{device.id}}" [(ngModel)]="device?.controls.showStops">
 						<label class="form-check-label small" for="dev-track-show-stops-{{device.id}}"> Ver Paradas </label>
+					</div>					
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
+						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-tracksin-{{device.id}}" [(ngModel)]="device?.controls.tracksIn">
+						<label class="form-check-label small" for="dev-track-show-tracksin-{{device.id}}"> Trayecto dentro</label>
+					</div>					
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
+						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-tracksout-{{device.id}}" [(ngModel)]="device?.controls.tracksOut">
+						<label class="form-check-label small" for="dev-track-show-tracksout-{{device.id}}"> Trayecto fuera </label>
+					</div>						
+					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
+						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="!device?.controls.historic" (click)="device.controls.historic = true; loadAllRoute(device)">Cargar Histórico</span>
+						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="device?.controls.historic" (click)="device.controls.historic = false; loadAllRoute(device)">Cargar Actual</span>
 					</div>		
+                    <div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
+						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='1'" >EN RUTA</span>
+						<span class="btn btn-sm btn-outline-danger p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='0'" >SIN RUTA</span>
+                    </div>
 				</div>
 					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
 					 Dispositivo:{{ device.config.INFO_MODEL}} <br>

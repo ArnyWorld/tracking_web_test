@@ -21,7 +21,7 @@ import { TracksService } from '../../api/tracks.service';
 import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
 import { PersonaltypeService } from '../../api/jobroutes.services';
-
+declare var $:any;
 let maxPointDistance = 10;
 
 //https://github.com/kamilfurtak/ng-openlayers/blob/master/apps/demo-ng-openlayers/src/app/select-interaction/select-interaction.component.ts
@@ -140,6 +140,7 @@ export class DashboardmapComponent implements OnInit {
 	maxdevices = 20;
 	layerMap = 'osm';
 	opacityMap = 1;
+	multipleDevice = false;
 	updateOpacity(){
 
 	}
@@ -196,7 +197,9 @@ export class DashboardmapComponent implements OnInit {
 		});	*/
 		setTimeout(() => {
 			if (route!== undefined) route.controls.show = true;
+			
 		}, 200);
+
 	}
 	cargarRoutes(callback) {
 		this.routesService.getAll(200, 1, 'id',false,'').subscribe((result: any) => {
@@ -287,6 +290,10 @@ export class DashboardmapComponent implements OnInit {
 	cargarPersonal(callback){
 		this.personalService.getSync().subscribe((result: any) => {
 			this.personal = result.content;
+			this.personal.forEach(persona=>{
+				persona['personal_type'] = this.personalType.find(pt=>pt.id==persona.personal_type_id);
+			});
+			
 			console.log("personal",this.personal);
 			if (callback!=null) callback();
 		});
@@ -298,26 +305,27 @@ export class DashboardmapComponent implements OnInit {
 		});
 	}
 	ngOnInit() {
-		this.cargarPersonal(()=>{
-			this.cargarRoutes(()=>{
-				//this.loadSuggestions();
-				//this.loadTracks();
-				setInterval(() => {
-					this.updateConnection();
-					
-				}, 2000);
-				setTimeout(() => {
-					this.socketComm();
-				}, 1000);
+		this.loadPersonalType(()=>{
+			this.cargarPersonal(()=>{
+				this.cargarRoutes(()=>{
+					//this.loadSuggestions();
+					//this.loadTracks();
+					setInterval(() => {
+						this.updateConnection();
+					}, 2000);
+					setTimeout(() => {
+						this.socketComm();
+					}, 1000);
+				});
 			});
-			this.loadPersonalType();
 		});
 	}
 	personalType = [];
-	loadPersonalType(){		
+	loadPersonalType(callback){		
 		this.personaltypeService.getAll().subscribe((res:any)=>{
 			this.personalType = res.content;
 			console.log("this.personalType",this.personalType);
+			if(callback!=null)  callback();
 		});
 	}
 	splitPerZoom(array){
@@ -338,6 +346,12 @@ export class DashboardmapComponent implements OnInit {
 		return coords.map(s=>s[2]);
 	}
 	gotoDevice(device){
+		this.devices.forEach(device=>{
+			device.controls.show = false;
+			device.controls.showTrack = false;
+			device.controls.showChecks = false;
+			device.controls.showStops = false;
+		});
 		this.map.instance.getView().setCenter(transform([device.last.lon, device.last.lat], 'EPSG:4326', 'EPSG:3857'));
 		this.map.instance.getView().setZoom(16);
 		device.controls.show = true;
@@ -350,7 +364,7 @@ export class DashboardmapComponent implements OnInit {
 	}
 	loadAllRoute(device){		
 		//if (device['tracks'] !=undefined) return;
-		if (device.states['ON_ROUTE']=="1"){
+		if (device.states['ON_ROUTE']=="1" && !device.controls.historic){
 			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{			
 				device['tracks'] = res.tracks;
 				device['stops'] = this.routesService.getStops(device['tracks']);
@@ -383,8 +397,11 @@ export class DashboardmapComponent implements OnInit {
 			selected:false,
 			show:false,
 			showTrack:false,
+			showPlayer:false,
 			showChecks:false,
 			showStops:false,
+			tracksIn:false,
+			tracksOut:false,
 		};
 	}
 	createRouteControls(){
@@ -457,8 +474,6 @@ export class DashboardmapComponent implements OnInit {
 		device.ms = (new Date().getTime() - device.msl);
 		device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
 		//this.addTask((callback)=>{
-
-
 
 		//});
 	}
