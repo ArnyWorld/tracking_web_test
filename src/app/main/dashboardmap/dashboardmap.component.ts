@@ -443,6 +443,30 @@ export class DashboardmapComponent implements OnInit {
 			class: 'modal-dialog-centered modal-lg ',			
 		});
 	}	
+	showPlayer(selectedDevice){
+		console.log("selectedDevice",selectedDevice);
+		selectedDevice['selectedTrack'] = {
+			trackb64 : JSON.parse(JSON.stringify(selectedDevice.tracks.map(track=>{ return {
+				't':parseInt(track.t),
+				'lat':parseFloat(track.lat),
+				'lon':parseFloat(track.lon),
+				'bat':parseInt(track.bat),
+				'acc':parseInt(track.acc),
+			};}
+			))),
+			controls :{
+				isPlayer : false
+			}
+
+		};
+		//selectedDevice.controls['isPlayer'] = false;
+		selectedDevice.selectedTrack['coords'] = selectedDevice.selectedTrack.trackb64.map(t=>[t.lon,t.lat]);
+		selectedDevice.selectedTrack['coordsPast'] = selectedDevice.selectedTrack.trackb64.map(t=>[t.lon,t.lat]);		
+		selectedDevice.selectedTrack['route'] = selectedDevice.routeSelected;
+		selectedDevice.selectedTrack['selectedRoute'] = selectedDevice.routeSelected;
+		selectedDevice.controls.showPlayer = true;
+
+	}
 	closeModal(){
 		this.modalRef.hide();
 	}

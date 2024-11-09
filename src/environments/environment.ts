@@ -7,13 +7,13 @@ export const environment = {
 
   apipersonalserver: 'http://172.20.5.32:9987/tre_personal',
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
-  apiserver: 'https://trackingserver.kernotec.com/trackingdb/',
+  apiserver: 'http://172.20.1.69:9988/trackingdb/',
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.50.123:9988/trackingdb/',
   //apiserver: 'http://172.20.5.22:9988/trackingdb/',
- wsserver: 'https://trackingserver.kernotec.com',
+ wsserver: 'http://172.20.1.69:7777/',
  //	wsserver: 'http://172.20.50.123:7777',	
-  wsapiserver: 'https://trackingserver.kernotec.com',
+  wsapiserver: 'http://172.20.1.69:7777',
   //	wsapiserver: 'http://172.20.50.123:7777',	
   
   /*apiserver: 'http://192.168.100.7:9988/trackingdb/',

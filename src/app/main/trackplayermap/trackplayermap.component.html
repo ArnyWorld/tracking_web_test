@@ -1,5 +1,23 @@
 <aol-layer-group>
     <div *ngIf="selectedTrack && !selectedTrack.controls.isPlayer">
+        <aol-layer-vector #markersLayer [zIndex]="1000" *ngIf="selectedTrack.coordsPast ">
+            <aol-overlay>
+                <aol-coordinate [x]="selectedTrack.coordsPast[selectedTrack.coordsPast.length-1][0]" [y]="selectedTrack.coordsPast[selectedTrack.coordsPast.length-1][1]" [srid]="'EPSG:4326'" >	</aol-coordinate>
+                <aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':true}" >
+                    <div class="marker-device2" >
+                        <div class="pin1" [ngClass]="{'pin1-active':true}">
+                            <!-- <i class="fas {{device.personal.personal_type.icon}} d-block fa-xs" [style.color]="device.personal.personal_type.color" ></i> -->
+                        </div>
+                        <span class="tooltipx">
+                            <table>
+                                <tr><th>Hora</th><td>{{ selectedTrack.player?.currentRealTime | date:'HH:mm:ss'}}</td> </tr>
+                                <tr><th>Señal</th><td>buena</td> </tr>
+                            </table>
+                        </span>
+                    </div>
+                </aol-content>
+            </aol-overlay>				
+        </aol-layer-vector>
         <aol-layer-vector>
             <aol-source-vector>
                 <aol-style>

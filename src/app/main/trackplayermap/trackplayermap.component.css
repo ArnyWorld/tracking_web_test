@@ -1,0 +1,98 @@
+.pin1 {
+  position: absolute;
+  /*
+    top: 40%;
+    left: 50%;
+    margin-left: -115px;
+    */
+  text-align: center;
+  margin-left: -1px;
+  top: -80%;
+  border-radius: 50% 50% 50% 0;
+  border: 8px solid #3c8dd3;
+  width: 40px;
+  height: 40px;
+  transform: rotate(-45deg);
+}
+
+.pin1 i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -5px;
+  width: 20px;
+  height: 20px;
+}
+.pin1-active {
+  border: 8px solid #1aa64b;
+}
+.pin1-active::after {
+  background-color: #1aa64b;
+}
+
+.marker-device-container {
+  transition: all 0.5s ease;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  /*pointer-events: none;*/
+}
+.marker-device-selected > .marker-device2 {
+  opacity: 1;
+}
+
+.marker-device2 {
+  opacity: 0.4;
+  border: 2px solid #ffb120;
+  border-radius: 50% 50% 50% 50%;
+  position: relative;
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+.marker-device2:hover {
+  border: 2px solid #20ffb1;
+  scale: 1.1;
+  opacity: 1;
+}
+
+.tooltipx table {
+    width:100%;
+}
+.tooltipx {
+    font-size: 11px;
+    display: block;    
+    background-color: #ffffffbb;
+    width:auto;
+    color: #090909;
+    /*left: -25%;*/
+    left: -40px;
+    width: 120px;
+    /*top: 50px;*/
+    top: -50px;
+    /*padding: 10px 5px;*/
+    border-radius: 5px;
+    border:0.5px solid #333;
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    text-align: center;
+}
+ 
+.tooltipx:before {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #777777;
+    bottom: -6px;
+    content: "";
+    height: 0;
+    left: 50%;
+    margin-left: -6px;
+    position: absolute;
+    width: 0;
+}
