@@ -52,13 +52,14 @@
     <aol-layer-vector [zIndex]="750" *ngIf="selectedTrack">
         <aol-source-vector>
             <div *ngFor="let section of selectedTrack.route.sections">
-
+<!--
                 <aol-feature>
                     <aol-geometry-multipoint>
                         <aol-collection-coordinates [coordinates]="section.splitCoordsChecked" [srid]="'EPSG:4326'">
                         </aol-collection-coordinates>
                     </aol-geometry-multipoint>
                 </aol-feature>
+                -->
                 <aol-feature *ngIf="section['splitPointTracks']">
                     <aol-geometry-multilinestring>
                         <aol-collection-coordinates [coordinates]="section['splitPointTracks']" [srid]="'EPSG:4326'">

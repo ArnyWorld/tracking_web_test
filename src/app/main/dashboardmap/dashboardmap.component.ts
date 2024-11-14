@@ -21,6 +21,7 @@ import { TracksService } from '../../api/tracks.service';
 import { HttpClient } from '@angular/common/http';
 import { identifierName } from '@angular/compiler';
 import { PersonaltypeService } from '../../api/jobroutes.services';
+import Geolocation from 'ol/Geolocation.js';
 declare var $:any;
 let maxPointDistance = 10;
 
@@ -304,6 +305,41 @@ export class DashboardmapComponent implements OnInit {
 			this.tracks = res.content;
 		});
 	}
+	localPosition:any;
+	getLocation() {
+	  if (navigator.geolocation) {
+		  navigator.geolocation.getCurrentPosition((pos)=>{
+			this.localPosition = pos;
+		  });
+		} else {
+		  
+		}
+   }
+	loadLocation(){
+		//this.getLocation();
+		const geolocation = new Geolocation({
+			projection: this.map.instance.getView().getProjection(),
+			trackingOptions: {
+				enableHighAccuracy: true
+			  },
+            tracking: true
+		  });
+		  geolocation.setTracking(true);
+		  geolocation.on('change:position', function(evt) {
+			var coordinate = geolocation.getPosition();
+			this.localPosition  = "aas";//JSON.stringify({coord:coordinate[0]});
+			console.log(geolocation.getPosition());
+			console.log("this.localPosition"+JSON.stringify(this.localPosition));
+		  });
+		 /* geolocation.on('change', function(evt) {
+			this.localPosition  = geolocation.getPosition(); 
+			console.log(geolocation.getPosition());
+		  });*/
+		  geolocation.on('error', function(evt) {
+			//this.localPosition  = evt; 
+			window.console.log(evt.message);
+		});
+	}
 	ngOnInit() {
 		this.loadPersonalType(()=>{
 			this.cargarPersonal(()=>{
@@ -315,6 +351,7 @@ export class DashboardmapComponent implements OnInit {
 					}, 2000);
 					setTimeout(() => {
 						this.socketComm();
+						this.loadLocation();
 					}, 1000);
 				});
 			});
@@ -606,6 +643,16 @@ export class DashboardmapComponent implements OnInit {
 				//this.filterDevices(),
 				this.socket.emit("device.subscribe",[device.id]);
 			}
+		});	
+		
+		this.socket.on('server.suggestion.new', (suggestionData: any) => {
+			console.log('server.suggestion.new',suggestionData);			
+		});	
+		this.socket.on('server.claim.new', (claimData: any) => {
+			console.log('server.claim.new',claimData);			
+		});			
+		this.socket.on('server.emergency.new', (emergencyData: any) => {
+			console.log('server.emergency.new', emergencyData);			
 		});	
 		
 		this.socket.on('device.emergency', (deviceData: any) => {
