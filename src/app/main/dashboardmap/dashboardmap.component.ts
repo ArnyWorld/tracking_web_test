@@ -406,11 +406,11 @@ export class DashboardmapComponent implements OnInit {
 				device['tracks'] = res.tracks;
 				device['stops'] = this.routesService.getStops(device['tracks']);
 				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-				if (device.routeSelected!=undefined)
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
-				console.log("device.routeSelected",device.routeSelected);  
-				console.log("completed:" + device.routeSelected['completed']); 
-				
+				if (device.routeSelected!=undefined){
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+					console.log("device.routeSelected",device.routeSelected);  
+					console.log("completed:" + device.routeSelected['completed']); 
+				}
 				device['isReady'] = true;
 
 			},(err:any)=>console.log("err",err));
@@ -419,11 +419,11 @@ export class DashboardmapComponent implements OnInit {
 				device['tracks'] = res.tracks;
 				device['stops'] = this.routesService.getStops(device['tracks']);
 				device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-				if (device.routeSelected!=undefined)
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
-				console.log("device.routeSelected",device.routeSelected);  
-				console.log("completed:" + device.routeSelected['completed']); 
-				
+				if (device.routeSelected!=undefined){
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+					console.log("device.routeSelected",device.routeSelected);  
+					console.log("completed:" + device.routeSelected['completed']); 
+				}
 				device['isReady'] = true;
 
 			},(err:any)=>console.log("err",err));
@@ -534,22 +534,28 @@ export class DashboardmapComponent implements OnInit {
 		device['controls'] = this.createControls();
 		device.ms = (new Date().getTime() - device.msl);
 		device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-		//this.addTask((callback)=>{
-
-		//});
+		console.log("--formatDevice device.states['ID_USER'] :-- ",device.states['ID_USER']);
+		if (callback!=null) callback(device);
 	}
 	removeDevice(deviceData){
 		let device = this.deviceList.find(d=>d.id==deviceData.id);
-		if (device == null) return;
-		this.deviceList.splice(this.deviceList.indexOf(device),1);
-		this.filterDevices();
+		if (device != null) 
+			this.deviceList.splice(this.deviceList.indexOf(device),1);
+
+		
+		let device1 = this.devices.find(d=>d.id==deviceData.id);
+		if (device1 != null) 
+			this.devices.splice(this.devices.indexOf(device1),1);
+
+		//this.filterDevices();
 	}
 	addDevice(deviceData){
 		let device = this.deviceList.find(d=>d.id==deviceData.id);
-		if (device==null) { 
+		if (device==undefined) { 
 			device = deviceData;
-			this.deviceList.push(deviceData), 
-			this.formatDevice(device,null);}
+			this.deviceList.push(device), 
+			this.formatDevice(device,null);
+		}
 		return device;
 	}
 	filterPersonalTypes=[9,14];
@@ -571,10 +577,11 @@ export class DashboardmapComponent implements OnInit {
 		this.updateDevices();
 	}
 	verifyFilter(device){
-		if (this.filterDevice(device)){
-			let deviceNew = this.devices.filter(d=>d.id == device.id);
-			if( device == null)
-				this.devices.push(deviceNew);
+		console.log("verifyFilter. filterDevice :  ",device);
+		if (this.filterDevice(device)){			
+			let deviceExist = this.devices.find(d=>d.id == device.id);
+			if( deviceExist == null)
+				this.devices.push(device);
 			return true;
 		}
 		return false;
@@ -629,22 +636,30 @@ export class DashboardmapComponent implements OnInit {
 			console.log('devices:', devicesData);
 			this.deviceList = devicesData;
 			this.deviceList.forEach((device: any, index: number) => {
-				this.formatDevice(device,()=>{ 
-					
-				});
+				this.formatDevice(device,null);
 			});
 			this.filterDevices();
 		});
 		
-		this.socket.on('device.new', (deviceData: any) => {
-			console.log('device.new',deviceData);
-			let device = this.addDevice(deviceData);
-			if(this.verifyFilter(device)) {	
-				//this.filterDevices(),
-				this.socket.emit("device.subscribe",[device.id]);
-			}
+		this.socket.on('device.session.start', (deviceData: any) => {
+			console.log('device.session.start',deviceData);
+			this.addDevice(deviceData);
 		});	
-		
+		this.socket.on('device.new', (deviceData: any) => {
+			console.log('device.new ',deviceData);
+			let device = this.addDevice(deviceData);			
+			this.formatDevice(device,(deviceFormated)=>{ 				
+				console.log('device.session.start formatDevice',deviceFormated);	
+				if(this.verifyFilter(deviceFormated)) {	
+					this.socket.emit("device.subscribe",[deviceFormated.id]);
+				}
+			});
+		});	
+
+		this.socket.on('device.session.end', (deviceData: any) => {//disconnected
+			console.log('device.session.end',deviceData);
+			this.removeDevice(deviceData);
+		});	
 		this.socket.on('server.suggestion.new', (suggestionData: any) => {
 			console.log('server.suggestion.new',suggestionData);			
 		});	
@@ -653,18 +668,12 @@ export class DashboardmapComponent implements OnInit {
 		});			
 		this.socket.on('server.emergency.new', (emergencyData: any) => {
 			console.log('server.emergency.new', emergencyData);			
-		});	
-		
+		});			
 		this.socket.on('device.emergency', (deviceData: any) => {
-			
+			console.log('server.emergency', deviceData);			
 		});
 			
-		this.socket.on('device.remove', (deviceData: any) => {//disconnected
-			console.log('device.remove',deviceData);
-			this.removeDevice(deviceData);
-		});	
-		this.socket.on('device', (data)=>{	//nuevo dispositivo
-			//console.log('device',data);
+		this.socket.on('device', (data)=>{
 			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null){
 				device = data;
@@ -672,38 +681,35 @@ export class DashboardmapComponent implements OnInit {
 			}
 			device.marker = {img:'assets/ic_device/ic_device_l0_e0_c0_b0.svg'};
 			device['msl'] = new Date().getTime();
-			//if (device.states['ID_ROUTE'] != data.states['ID_ROUTE'])
-			//device['routeSelected'] =  Object.assign({}, this.routes.find(r => r.id==device.states['ID_ROUTE'])); //{... this.routes.find(r => r.id==device.states['ID_ROUTE'])};
 			device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
 			if (device['routeSelected']!= undefined) device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
 			device['tracksCoord'] = [];
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-			//this.addTask((callback)=>{
-			/* TREBOL-39 Descargar rutas y recorrido al hacer clic para reducir carga*/
-	/*			this.wsapiService.getTracks(device.id).subscribe( (res:any)=>{
-					device['tracks'] = res.tracks;
-					device['stops'] = this.routesService.getStops(device['tracks']);
-					device['tracksCoord'] = device['tracks'].map(t=>[t.lon,t.lat]);
-									
-					if (device.routeSelected!=undefined)
-						 device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
-					device['isReady'] = true;
-				},(err:any)=>console.log("err",err));*/
-			//});
 				
 		});
 		this.socket.on('device.state', (data: any) => {
-			//console.log('device.state',data);
+			console.log('device.state',data);
+			
 			let device = this.deviceList.find((d: any) => d.id == data.id);
+				
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
 			}
-			this.verifyFilter(device);
 			
-			device.states = data.states;
+			if ( device.states['ID_ROUTE'] != data.states['ID_ROUTE'] ){
+				Object.keys(data.states).forEach(k=>device.states[k]=data.states[k]);
+				device['routeSelected'] = this.routes.find(r => r.id==device.states['ID_ROUTE']);
+				if (device['routeSelected']!= undefined) {
+					device['routeSelected'] = JSON.parse(JSON.stringify(device['routeSelected']));
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'] , device['tracks'],maxPointDistance);
+				}
+			}else
+			Object.keys(data.states).forEach(k=>device.states[k]=data.states[k]);
+			this.formatDevice(device,null);
+			this.verifyFilter(device);
 		});
 		this.socket.on('device.config', (data: any) => {
 			console.log('device.config',data);
@@ -712,7 +718,7 @@ export class DashboardmapComponent implements OnInit {
 				this.socket.emit("device",data.id);
 				return;
 			}
-			device.config = data.config;
+			Object.keys(data.config).forEach(k=>device.config[k]=data.config[k]);
 		});
 		this.socket.on('device.setup', (data: any) => {
 			console.log('device.setup',data);
@@ -765,17 +771,15 @@ export class DashboardmapComponent implements OnInit {
 			
 		});
 		this.socket.on('device.last', (data: any) => {
-			//console.log("last",data);
 			let device = this.deviceList.find((d: any) => d.id == data.id);
-			//console.log("device",device);
 			if (device == null){
 				this.socket.emit("device",data.id);
 				return;
 			}
-			if (!device['isReady']) return;
 			device.ms = (new Date().getTime() - device.msl);
 			device.msl = new Date().getTime();
 			device.last = data.last;
+			if (!device['isReady']) return;
 			this.updateDeviceMarker(device);
 			if (device.states?.ON_ROUTE == "0") return;			
 			device['tracks'].push(data.last);			
