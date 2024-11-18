@@ -308,6 +308,16 @@ export class DashboardmapComponent implements OnInit {
 	localPosition = [-68.0698635, -16.5319308];
 	templocalPosition = [-68.0698635, -16.5319308];
 	isLocation = false;
+	
+	getLocation() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((pos)=>{
+			  //this.localPosition = pos;
+			});
+		  } else {
+			
+		  }
+	 }
 	updatePosition() {
 		this.localPosition = this.templocalPosition;
 	}
@@ -787,7 +797,8 @@ export class DashboardmapComponent implements OnInit {
 				device.routeSelected['completed'] = this.routesService.checkPointLast(device['routeSelected'], data.last, maxPointDistance);
 			} else {
 				device['routeSelected'] = this.routes.find(r => r.id == device.states['ID_ROUTE']);
-				device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
+				if (device['routeSelected']!=null)
+					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
 			}
 		});
 
