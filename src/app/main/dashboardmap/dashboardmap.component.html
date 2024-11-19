@@ -87,7 +87,7 @@
 							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>
 							<aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':device.controls.show}" (click)="gotoDevice(device)">
 								<div class="marker-device2"   (click)="gotoDevice(device)">                                   
-                                    <div class="pin1" [ngClass]="{'pin1-active':device.controls.show}">
+                                    <div class="pin1" [ngClass]="{'pin1-active':device.controls.show}" *ngIf="device.personal">
                                         <i class="fas {{device.personal.personal_type.icon}} d-block fa-xs" [style.color]="device.personal.personal_type.color" ></i>
                                     </div>
 	                                <span class="tooltipx">{{device.personal.name}}</span>

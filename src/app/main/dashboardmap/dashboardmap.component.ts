@@ -322,6 +322,7 @@ export class DashboardmapComponent implements OnInit {
 		this.localPosition = this.templocalPosition;
 	}
 	setPost(coordinate) {
+		console.log("setPost",coordinate);
 		this.templocalPosition = coordinate;
 		if (this.isLocation) {
 			this.localPosition = this.templocalPosition;
