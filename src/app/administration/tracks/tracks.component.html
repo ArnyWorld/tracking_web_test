@@ -7,7 +7,7 @@
             <div class="input-group mb-3">
                 <input type="text" class="form-control form-control-sn" [(ngModel)]="keyword" (input)="filtrar()" placeholder="Buscar" aria-label="" aria-describedby="basic-addon1">
             </div>
-            <form id="bookingForm" action="#" method="" class="   needs-validation" novalidate autocomplete="off" style="height:240px;">
+            <form id="bookingForm" action="#" method="" class="   needs-validation" novalidate autocomplete="off" style="height:140px;">
                 <table class="table table-sm table-bordered  ">
                     <thead>
                         <tr>
@@ -58,7 +58,7 @@
         </div>
 
         <div class="col-12">
-            <aol-map #map width="100%" height="800px">
+            <aol-map #map width="100%" height="1000px">
                 <aol-interaction-default></aol-interaction-default>
                 <aol-control-defaults></aol-control-defaults>
 
@@ -135,7 +135,7 @@
         </div>
     </div>
 
-    <div id="overlayMenuDevice" style="z-index:9999">
+    <div id="overlayMenuDevice" style="z-index:9999" >
         <div *ngIf="selectedTrack">
             <div> {{selectedTrack.route.name}}</div>
             <div class="row" *ngIf="selectedTrack">

@@ -592,6 +592,10 @@ export class DashboardmapComponent implements OnInit {
 			if (deviceExist == null)
 				this.devices.push(device);
 			return true;
+		}else{			
+			let deviceExist = this.devices.find(d => d.id == device.id);
+			if (deviceExist != null)
+				this.devices.splice(this.devices.indexOf(deviceExist,1));
 		}
 		return false;
 	}
@@ -671,6 +675,10 @@ export class DashboardmapComponent implements OnInit {
 		});
 		this.socket.on('server.suggestion.new', (suggestionData: any) => {
 			console.log('server.suggestion.new', suggestionData);
+		/*	this.suggestions.find(suggestionData.id).subscribe((suggestion)=>{
+				if (suggestion.content.audio.length>0)
+					suggestion.content.session.device_id
+			});*/
 		});
 		this.socket.on('server.claim.new', (claimData: any) => {
 			console.log('server.claim.new', claimData);
@@ -717,7 +725,8 @@ export class DashboardmapComponent implements OnInit {
 				}
 			} else
 				Object.keys(data.states).forEach(k => device.states[k] = data.states[k]);
-			this.formatDevice(device, null);
+			//this.formatDevice(device, null);
+			this.updateDeviceMarker(device);
 			this.verifyFilter(device);
 		});
 		this.socket.on('device.config', (data: any) => {
