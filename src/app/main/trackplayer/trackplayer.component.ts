@@ -114,12 +114,15 @@ export class TrackplayerComponent {
 	}
 	updatePlayer() {
 		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c, i) => i <= this.player.currentTime);
+		this.selectedTrack['track'] = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1];
+		
 		this.player.currentRealTime = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1].t;
 	}
 	updatePlayerRealTime() {
-		//console.log("this.selectedTrack['trackb64']",this.selectedTrack['trackb64']);
+		//console.log("this.selectedTrack['trackb64']",this.selectedTrack['trackb64']);		
 		this.selectedTrack['coordsPast'] = this.selectedTrack['trackb64'].filter((track, i) => track.t <= this.player.currentRealTime).map(t => [t.lon, t.lat]);
 		this.player.currentTime = this.selectedTrack['coordsPast'].length - 1;
+		this.selectedTrack['track'] = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1];
 
 		const a = this.selectedTrack['coords'][this.selectedTrack['coordsPast'].length - 1];
 		if (this.interpolate){

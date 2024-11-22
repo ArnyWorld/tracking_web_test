@@ -431,6 +431,20 @@ export class DashboardmapComponent implements OnInit {
 					console.log("device.routeSelected", device.routeSelected);
 					console.log("completed:" + device.routeSelected['completed']);
 				}
+				if( res.tracks.length==0 ){
+					this.wsapiService.getTracks(device.id).subscribe((res: any) => {
+						device['tracks'] = res.tracks;
+						device['stops'] = this.routesService.getStops(device['tracks']);
+						device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
+						if (device.routeSelected != undefined) {
+							device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
+							console.log("device.routeSelected", device.routeSelected);
+							console.log("completed:" + device.routeSelected['completed']);
+						}
+						device['isReady'] = true;
+		
+					}, (err: any) => console.log("err", err));
+				}else
 				device['isReady'] = true;
 
 			}, (err: any) => console.log("err", err));
@@ -562,8 +576,8 @@ export class DashboardmapComponent implements OnInit {
 		let device = this.deviceList.find(d => d.id == deviceData.id);
 		if (device == undefined) {
 			device = deviceData;
-			this.deviceList.push(device),
-				this.formatDevice(device, null);
+			this.deviceList.push(device);
+			this.formatDevice(device, null);
 		}
 		return device;
 	}
@@ -690,7 +704,16 @@ export class DashboardmapComponent implements OnInit {
 			console.log('server.emergency', deviceData);
 		});
 
-		this.socket.on('device', (data) => {
+		this.socket.on('device', (deviceData) => {
+			console.log('device.new ', deviceData);
+			let device = this.addDevice(deviceData);
+			this.formatDevice(device, (deviceFormated) => {
+				console.log('device.session.start formatDevice', deviceFormated);
+				if (this.verifyFilter(deviceFormated)) {
+					this.socket.emit("device.subscribe", [deviceFormated.id]);
+				}
+			});
+			/*
 			let device = this.deviceList.find((d: any) => d.id == data.id);
 			if (device == null) {
 				device = data;
@@ -704,8 +727,9 @@ export class DashboardmapComponent implements OnInit {
 			device['controls'] = this.createControls();
 			device.ms = (new Date().getTime() - device.msl);
 			device['personal'] = this.personal.find(p => p.id == device.states['ID_USER']);
-
+*/
 		});
+
 		this.socket.on('device.state', (data: any) => {
 			console.log('device.state', data);
 
@@ -716,6 +740,8 @@ export class DashboardmapComponent implements OnInit {
 				return;
 			}
 
+			if (device.states['ID_USER'] != data.states['ID_USER']) 
+				device['personal'] = this.personal.find(p => p.id == data.states['ID_USER']);
 			if (device.states['ID_ROUTE'] != data.states['ID_ROUTE']) {
 				Object.keys(data.states).forEach(k => device.states[k] = data.states[k]);
 				device['routeSelected'] = this.routes.find(r => r.id == device.states['ID_ROUTE']);

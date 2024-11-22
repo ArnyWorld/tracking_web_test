@@ -11,7 +11,7 @@
                         <span class="tooltipx">
                             <table>
                                 <tr><th>Hora</th><td>{{ selectedTrack.player?.currentRealTime | date:'HH:mm:ss'}}</td> </tr>
-                                <tr><th>Señal</th><td>buena</td> </tr>
+                                <tr><th>Señal</th><td> {{signalType(selectedTrack?.track.acc)}} ({{ selectedTrack?.track.acc }}m) </td> </tr>
                             </table>
                         </span>
                     </div>

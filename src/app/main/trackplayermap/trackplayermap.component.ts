@@ -8,4 +8,11 @@ import { Component, Input } from '@angular/core';
 export class TrackplayermapComponent {
 	@Input() selectedTrack;
 	@Input() selectedRoute;
+	signalType(acc){
+		if (acc <14)
+			return 'buena';
+		if (acc <20)
+			return 'regular';
+		return 'mala';
+	}
 }

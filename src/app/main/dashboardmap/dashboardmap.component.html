@@ -604,6 +604,9 @@
 						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='1'" >EN RUTA</span>
 						<span class="btn btn-sm btn-outline-danger p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='0'" >SIN RUTA</span>
                     </div>
+                    <div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
+						
+                    </div>
 				</div>
 					<div class="col-10 mb-1 small" *ngIf="device && device?.last ">					
 					 Dispositivo:{{ device.config.INFO_MODEL}} <br>
