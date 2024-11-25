@@ -561,10 +561,11 @@ export class DashboardmapComponent implements OnInit {
 		if (callback != null) callback(device);
 	}
 	removeDevice(deviceData) {
+		console.log("removeDevice",deviceData);
+
 		let device = this.deviceList.find(d => d.id == deviceData.id);
 		if (device != null)
 			this.deviceList.splice(this.deviceList.indexOf(device), 1);
-
 
 		let device1 = this.devices.find(d => d.id == deviceData.id);
 		if (device1 != null)
@@ -674,13 +675,7 @@ export class DashboardmapComponent implements OnInit {
 		});
 		this.socket.on('device.new', (deviceData: any) => {
 			console.log('device.new ', deviceData);
-			let device = this.addDevice(deviceData);
-			this.formatDevice(device, (deviceFormated) => {
-				console.log('device.session.start formatDevice', deviceFormated);
-				if (this.verifyFilter(deviceFormated)) {
-					this.socket.emit("device.subscribe", [deviceFormated.id]);
-				}
-			});
+			this.addDevice(deviceData);
 		});
 
 		this.socket.on('device.session.end', (deviceData: any) => {//disconnected
@@ -772,16 +767,6 @@ export class DashboardmapComponent implements OnInit {
 				return;
 			}
 			device.setup = data.setup;
-		});
-
-		this.socket.on('device.removed', (data: any) => {
-			console.log('device.removed', data);
-			let device = this.deviceList.find((d: any) => d.id == data.id);
-			if (device != null) {
-				this.deviceList.splice(this.deviceList.indexOf(device), 1);
-				this.devices.splice(this.devices.indexOf(device), 1);
-				return;
-			}
 		});
 		this.socket.on('device.tracks', (data: any) => {
 			console.log('device.tracks', data);
