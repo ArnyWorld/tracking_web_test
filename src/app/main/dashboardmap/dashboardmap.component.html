@@ -612,9 +612,13 @@
 					 Dispositivo:{{ device.config.INFO_MODEL}} <br>
 					 Ruta: {{device?.routeSelected?.name}}<br> 
 					 Completado: {{device?.routeSelected?.completed}} %<br>
+					 Sesion I: {{device?.states?.SESSION_START | date:'dd/MM/yyyy HH:mm:ss' }}<br>
+					 Sesion F: {{device?.states?.SESSION_END>0?(device?.states?.SESSION_END | date:'dd/MM/yyyy HH:mm:ss'):'' }}<br>
 					 Hora: {{device?.last.t | date:'dd/MM/yyyy HH:mm:ss' }}<br>
-					 Latencia: {{device.ms}}ms</div>
+					 Latencia: {{device.ms}}ms<br>
+					 Hace: {{device.elapsed}}ms<br>
                      --Emergency: {{ device.states['IS_EMERGENCY'] }}<br>
+                     </div>
 
 			</div>
 		</div>

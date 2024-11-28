@@ -23,7 +23,7 @@ import { identifierName } from '@angular/compiler';
 import { PersonaltypeService } from '../../api/jobroutes.services';
 import Geolocation from 'ol/Geolocation.js';
 declare var $: any;
-let maxPointDistance = 10;
+let maxPointDistance = 20;
 
 //https://github.com/kamilfurtak/ng-openlayers/blob/master/apps/demo-ng-openlayers/src/app/select-interaction/select-interaction.component.ts
 @Component({
@@ -422,18 +422,38 @@ export class DashboardmapComponent implements OnInit {
 
 			}, (err: any) => console.log("err", err));
 		} else {
-			this.wsapiService.getHistoryTracks(device.id).subscribe((res: any) => {
-				device['tracks'] = res.tracks;
-				device['stops'] = this.routesService.getStops(device['tracks']);
-				device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
-				if (device.routeSelected != undefined) {
-					device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
-					console.log("device.routeSelected", device.routeSelected);
-					console.log("completed:" + device.routeSelected['completed']);
-				}
-				if( res.tracks.length==0 ){
-					this.wsapiService.getTracks(device.id).subscribe((res: any) => {
-						device['tracks'] = res.tracks;
+			if(device.states['LAST_TRACK_ID']=="0"){
+				this.wsapiService.getHistoryTracks(device.id).subscribe((res: any) => {
+					device['tracks'] = res.tracks;
+					device['stops'] = this.routesService.getStops(device['tracks']);
+					device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
+					if (device.routeSelected != undefined) {
+						device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
+						console.log("device.routeSelected", device.routeSelected);
+						console.log("completed:" + device.routeSelected['completed']);
+					}
+					if( res.tracks.length==0 ){
+						this.wsapiService.getTracks(device.id).subscribe((res: any) => {
+							device['tracks'] = res.tracks;
+							device['stops'] = this.routesService.getStops(device['tracks']);
+							device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
+							if (device.routeSelected != undefined) {
+								device.routeSelected['completed'] = this.routesService.checkPoints(device['routeSelected'], device['tracks'], maxPointDistance);
+								console.log("device.routeSelected", device.routeSelected);
+								console.log("completed:" + device.routeSelected['completed']);
+							}
+							device['isReady'] = true;
+			
+						}, (err: any) => console.log("err", err));
+					}else
+					device['isReady'] = true;
+
+				}, (err: any) => console.log("err", err));
+			}else{
+				this.tracksService.find(device.states['LAST_TRACK_ID']).subscribe((res:any) => {
+					console.log("LAST_TRACK_ID",res);
+					if (res.content.length>0){
+						device['tracks'] = res.content[0].trackb64;
 						device['stops'] = this.routesService.getStops(device['tracks']);
 						device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
 						if (device.routeSelected != undefined) {
@@ -441,13 +461,11 @@ export class DashboardmapComponent implements OnInit {
 							console.log("device.routeSelected", device.routeSelected);
 							console.log("completed:" + device.routeSelected['completed']);
 						}
+						
 						device['isReady'] = true;
-		
-					}, (err: any) => console.log("err", err));
-				}else
-				device['isReady'] = true;
-
+				}
 			}, (err: any) => console.log("err", err));
+			}
 		}
 	}
 	createControls() {
@@ -625,8 +643,8 @@ export class DashboardmapComponent implements OnInit {
 		if (Object.keys(device.last).length == 0)
 			isValid = false;
 
-		if ((device.last['bat'] < this.filterBattery))
-			isValid = false;
+		/*if ((device.last['bat'] < this.filterBattery))
+			isValid = false;*/
 		//filtro por estado:emergencia
 		if (!(device.states['IS_EMERGENCY'] == this.filterEmergency))
 			isValid = false;

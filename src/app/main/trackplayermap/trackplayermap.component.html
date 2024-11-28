@@ -10,8 +10,10 @@
                         </div>
                         <span class="tooltipx">
                             <table>
+                                <tr><th>Fecha</th><td>{{ selectedTrack.player?.currentRealTime | date:'dd/MM/yy'}}</td> </tr>
                                 <tr><th>Hora</th><td>{{ selectedTrack.player?.currentRealTime | date:'HH:mm:ss'}}</td> </tr>
                                 <tr><th>Señal</th><td> {{signalType(selectedTrack?.track.acc)}} ({{ selectedTrack?.track.acc }}m) </td> </tr>
+                                <tr><th>Bateria </th><td> {{selectedTrack?.track.bat}}% </td> </tr>
                             </table>
                         </span>
                     </div>

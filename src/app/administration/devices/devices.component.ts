@@ -109,47 +109,57 @@ export class DevicesComponent implements OnInit {
 			return;}
 		if (this.keyword.length < 3) return;
 		
-		/*this.devices = this.devices.filter( (p:any)=>{
-			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
-		});*/
-		let keyword = this.keyword.toUpperCase();
+		let keywords = this.keyword.split("|");
+
+		
 		this.devicesFilter.forEach((device:any)=>{
 			device.configFilter = {};
 			device.statesFilter = {};
 			device.personalFilter = {};
-			Object.keys(device.config).forEach(k=>{	
-				if (k.includes(keyword)){
-					device.configFilter[k]=device.config[k];
-					return true;	
-				}
-				return false;
-			})
-			Object.keys(device.states).forEach(k=>{	
-				if (k.includes(keyword)){
-					device.statesFilter[k]=device.states[k];
-					return true;	
-				}
-				return false;
-			})
-			if(device.personal!=null){
-				Object.keys(device.personal).forEach(k=>{	
+		});
+		for(let i = 0 ; i<keywords.length;i++){
+			//let keyword = this.keyword.toUpperCase();
+			let keyword = keywords[i].toUpperCase();
+			this.devicesFilter.forEach((device:any)=>{
+				Object.keys(device.config).forEach(k=>{	
 					if (k.includes(keyword)){
-						device.personalFilter[k]=device.states[k];
+						device.configFilter[k]=device.config[k];
 						return true;	
-					}
-					
-					if (device.personal[k]!=undefined){
-						if(typeof device.personal[k] === 'string' || device.personal[k] instanceof String){
-							if(device.personal[k].includes(keyword)){
-								device.personalFilter[k]=device.personal[k];
-								return true; 
-							}
-						}
 					}
 					return false;
 				})
-			}
-		});
+				Object.keys(device.states).forEach(k=>{	
+					if (k.includes(keyword)){
+						device.statesFilter[k]=device.states[k];
+						return true;	
+					}
+					return false;
+				})
+				if(device.personal!=null){
+					Object.keys(device.personal).forEach(k=>{	
+						if (k.includes(keyword)){
+							device.personalFilter[k]=device.states[k];
+							return true;	
+						}
+						
+						if (device.personal[k]!=undefined){
+							if(typeof device.personal[k] === 'string' || device.personal[k] instanceof String){
+								if(device.personal[k].includes(keyword)){
+									device.personalFilter[k]=device.personal[k];
+									return true; 
+								}
+							}
+						}
+						return false;
+					})
+				}
+			});
+		}
+
+		/*this.devices = this.devices.filter( (p:any)=>{
+			return p.name.toLowerCase().includes(this.keyword.toLowerCase());
+		});*/
+
 	}
 	registerAll(){
 		let syncDevices = [];
