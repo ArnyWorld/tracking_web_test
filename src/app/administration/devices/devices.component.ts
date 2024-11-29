@@ -207,7 +207,7 @@ export class DevicesComponent implements OnInit {
 					//this.taskerImage(this.personals,0);
 					
 					console.log("this.personals",this.personals);
-					this.wsapiService.getDevices().subscribe((devicesResult:any)=>{
+					this.wsapiService.getAllDevices().subscribe((devicesResult:any)=>{
 						console.log("this.wsapiService",devicesResult);						
 						this.devices = devicesResult.devices;
 						this.devices.forEach(d=>d['configFilter']=JSON.parse(JSON.stringify(d.config)));

@@ -411,6 +411,10 @@ export class DashboardmapComponent implements OnInit {
 		if (device.states['ON_ROUTE'] == "1" && !device.controls.historic) {
 			this.wsapiService.getTracks(device.id).subscribe((res: any) => {
 				device['tracks'] = res.tracks;
+				if (device['tracks'].length>0) {
+					device['last'] = device['tracks'][device['tracks'].length-1];
+					console.log("device['last']:",device['last']);
+				}
 				device['stops'] = this.routesService.getStops(device['tracks']);
 				device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
 				if (device.routeSelected != undefined) {
@@ -425,6 +429,10 @@ export class DashboardmapComponent implements OnInit {
 			if(device.states['LAST_TRACK_ID']=="0"){
 				this.wsapiService.getHistoryTracks(device.id).subscribe((res: any) => {
 					device['tracks'] = res.tracks;
+					if (device['tracks'].length>0) {
+						device['last'] = device['tracks'][device['tracks'].length-1];
+						console.log("device['last']:",device['last']);
+					}
 					device['stops'] = this.routesService.getStops(device['tracks']);
 					device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
 					if (device.routeSelected != undefined) {
@@ -435,6 +443,10 @@ export class DashboardmapComponent implements OnInit {
 					if( res.tracks.length==0 ){
 						this.wsapiService.getTracks(device.id).subscribe((res: any) => {
 							device['tracks'] = res.tracks;
+							if (device['tracks'].length>0) {
+								device['last'] = device['tracks'][device['tracks'].length-1];
+								console.log("device['last']:",device['last']);
+							}
 							device['stops'] = this.routesService.getStops(device['tracks']);
 							device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
 							if (device.routeSelected != undefined) {
@@ -454,6 +466,10 @@ export class DashboardmapComponent implements OnInit {
 					console.log("LAST_TRACK_ID",res);
 					if (res.content.length>0){
 						device['tracks'] = res.content[0].trackb64;
+						if (device['tracks'].length>0) {
+							device['last'] = device['tracks'][device['tracks'].length-1];
+							console.log("device['last']:",device['last']);
+						}
 						device['stops'] = this.routesService.getStops(device['tracks']);
 						device['tracksCoord'] = device['tracks'].map(t => [t.lon, t.lat]);
 						if (device.routeSelected != undefined) {
@@ -535,7 +551,6 @@ export class DashboardmapComponent implements OnInit {
 			controls: {
 				isPlayer: false
 			}
-
 		};
 		//selectedDevice.controls['isPlayer'] = false;
 		selectedDevice.selectedTrack['coords'] = selectedDevice.selectedTrack.trackb64.map(t => [t.lon, t.lat]);
@@ -543,7 +558,6 @@ export class DashboardmapComponent implements OnInit {
 		selectedDevice.selectedTrack['route'] = selectedDevice.routeSelected;
 		selectedDevice.selectedTrack['selectedRoute'] = selectedDevice.routeSelected;
 		selectedDevice.controls.showPlayer = true;
-
 	}
 	closeModal() {
 		this.modalRef.hide();
@@ -640,9 +654,9 @@ export class DashboardmapComponent implements OnInit {
 		} else
 			isValid = false;
 		//filtro por bateria
-		if (Object.keys(device.last).length == 0)
+		/*if (Object.keys(device.last).length == 0)
 			isValid = false;
-
+*/
 		/*if ((device.last['bat'] < this.filterBattery))
 			isValid = false;*/
 		//filtro por estado:emergencia
@@ -825,6 +839,13 @@ export class DashboardmapComponent implements OnInit {
 			}
 			device.ms = (new Date().getTime() - device.msl);
 			device.msl = new Date().getTime();
+			/*if (device.last.lat!=0 && device.last.lon!=0)
+				device.last = data.last;
+			else{
+				device.last.t = data.t;
+				device.last.bat = data.bat;
+				device.last.acc = data.acc;
+			}*/
 			device.last = data.last;
 			if (!device['isReady']) return;
 			this.updateDeviceMarker(device);

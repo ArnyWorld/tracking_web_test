@@ -6,24 +6,27 @@ import { ServicioApi } from './servicio-api';
 
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class WSapiService {
 	apiUrl = environment.wsapiserver;
 	apiName = 'device';
 	prefix = '';
-	constructor(private http: HttpClient) {}
-  
+	constructor(private http: HttpClient) { }
+
 	getTracks(id: string = '') {
-		console.log("url",this.apiUrl + `/${this.apiName}/${id}/tracks`);
-	  return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracks`);
+		console.log("url", this.apiUrl + `/${this.apiName}/${id}/tracks`);
+		return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracks`);
 	}
 	getHistoryTracks(id: string = '') {
-		console.log("url",this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
-	  return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
+		console.log("url", this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
+		return this.http.get(this.apiUrl + `/${this.apiName}/${id}/tracksHistory`);
 	}
-  
+
 	getDevices() {
-	  return this.http.get(this.apiUrl + `/devices`);
+		return this.http.get(this.apiUrl + `/devices`);
 	}
-  }
+	getAllDevices() {
+		return this.http.get(this.apiUrl + `/devicesAll`);
+	}
+}

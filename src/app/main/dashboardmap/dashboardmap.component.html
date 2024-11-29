@@ -595,11 +595,11 @@
 					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<input class="form-check-input form-check-sm" type="checkbox" value="" id="dev-track-show-tracksout-{{device.id}}" [(ngModel)]="device?.controls.tracksOut">
 						<label class="form-check-label small" for="dev-track-show-tracksout-{{device.id}}"> Trayecto fuera </label>
-					</div>						
+					</div>
 					<div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="!device?.controls.historic" (click)="device.controls.historic = true; loadAllRoute(device)">Cargar Histórico</span>
 						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="device?.controls.historic" (click)="device.controls.historic = false; loadAllRoute(device)">Cargar Actual</span>
-					</div>		
+					</div>
                     <div class="col-6 form-check form-check-sm" *ngIf="device.controls!=null">
 						<span class="btn btn-sm btn-outline-primary p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='1'" >EN RUTA</span>
 						<span class="btn btn-sm btn-outline-danger p-0 m-0" *ngIf="device?.states['ON_ROUTE']=='0'" >SIN RUTA</span>
