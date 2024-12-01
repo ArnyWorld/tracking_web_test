@@ -5,7 +5,11 @@
 
         <div class="row">
             <div class="col-12 ps-3 pe-3 ">
-                <input type="range" (input)="updatePlayer()" [(ngModel)]="player.currentTime" class="form-range" [min]="player.min" [max]="player.length" [step]="player.step">
+                <div *ngFor="let selectedTrack of selectedTracks">
+                    <input type="range" [(ngModel)]="selectedTrack.player.currentTime" class="form-range" [min]="selectedTrack.player.min" [max]="player.length" [step]="selectedTrack.player.step">
+                </div>               
+
+                <input type="range" (input)="updatePlayer()" [(ngModel)]="player.currentRealTime" class="form-range" [min]="player.startRealTime" [max]="player.endRealTime" [step]="player.step">
             </div>
         </div>
         

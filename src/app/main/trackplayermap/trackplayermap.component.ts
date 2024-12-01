@@ -6,8 +6,10 @@ import { Component, Input } from '@angular/core';
   styleUrl: './trackplayermap.component.css'
 })
 export class TrackplayermapComponent {
-	@Input() selectedTrack;
-	@Input() selectedRoute;
+	@Input() selectedTracks;
+	/*@Input() selectedTrack;
+	@Input() selectedRoute;*/
+	
 	signalType(acc){
 		if (acc <14)
 			return 'buena';

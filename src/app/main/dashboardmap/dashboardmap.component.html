@@ -34,7 +34,7 @@
 			</div>
 		</div>
 
-		<app-trackplayer [trackData]="selectedDevice.selectedTrack"  (onClose)="selectedDevice.controls.showPlayer=false"  *ngIf="selectedDevice?.controls?.showPlayer"> </app-trackplayer>
+		<app-trackplayer [trackData]="selectedTracks"  (onClose)="selectedTracks=[]"  *ngIf="selectedTracks.length>0"> </app-trackplayer>
 
 		<div style="height: 100%">
 			<aol-map #map width="100%" height="100%">
@@ -65,7 +65,7 @@
             
 				<!-- <aol-graticule [strokeStyle]="graticuleStyle" [showLabels]="true"></aol-graticule> -->
                  <div >
-				<aol-layer-group *ngIf="!selectedDevice?.controls?.showPlayer">					
+				<aol-layer-group *ngIf="selectedTracks.length==0">					
 				 	<!-- <aol-layer-vector #markersLayer *ngFor="let device of devices; index as i" [zIndex]="1000">
 						<aol-source-vector *ngIf="device!=undefined && device.controls!=undefined">
 							<aol-feature>
@@ -518,7 +518,7 @@
 						</aol-layer-vector>
 					</div>
 				</aol-layer-group>
-                <app-trackplayermap [selectedRoute]="selectedDevice.selectedRoute" [selectedTrack]="selectedDevice.selectedTrack" *ngIf="selectedDevice?.controls?.showPlayer"></app-trackplayermap>
+                <app-trackplayermap [selectedTracks]="selectedTracks" *ngIf="selectedTracks.length>0"></app-trackplayermap>
             </div>
 				<!-- many green points 
 				<div *ngIf="devices">

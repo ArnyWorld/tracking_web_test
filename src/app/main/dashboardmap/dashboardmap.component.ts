@@ -138,6 +138,7 @@ export class DashboardmapComponent implements OnInit {
 	selectedRoute: any;
 	selectedLineString: any;
 	selectedRoutes = [];
+	selectedTracks = [];
 	maxdevices = 20;
 	layerMap = 'osm';
 	opacityMap = 1;
@@ -558,6 +559,7 @@ export class DashboardmapComponent implements OnInit {
 		selectedDevice.selectedTrack['route'] = selectedDevice.routeSelected;
 		selectedDevice.selectedTrack['selectedRoute'] = selectedDevice.routeSelected;
 		selectedDevice.controls.showPlayer = true;
+		this.selectedTracks.push(selectedDevice.selectedTrack);
 	}
 	closeModal() {
 		this.modalRef.hide();
