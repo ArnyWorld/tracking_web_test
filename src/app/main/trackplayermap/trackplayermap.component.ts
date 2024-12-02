@@ -17,4 +17,5 @@ export class TrackplayermapComponent {
 			return 'regular';
 		return 'mala';
 	}
+	
 }

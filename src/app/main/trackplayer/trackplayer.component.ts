@@ -14,6 +14,7 @@ import { ScheduleService } from '../../api/schedule.service';
 import { TracksService } from '../../api/tracks.service';
 import { ImagesService } from '../../api/images.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { Route } from '@angular/router';
 
 @Component({
   selector: 'app-trackplayer',
@@ -62,6 +63,7 @@ export class TrackplayerComponent {
 	interpolate = false;
 	constructor(
 		private tracksService: TracksService,
+		private routesService: RoutesService,
 	){}
 	ngOnInit(): void {
 		this.load();
@@ -110,13 +112,32 @@ export class TrackplayerComponent {
 			selectedTrack.player.currentRealTime = this.player.currentRealTime;
 		});
 		this.updatePlayerRealTime();
+		this.updateFullRouteCheck();
+	}
+	updatePlayerTrack(selectedTrack) {
+		selectedTrack['tracksPast'] = selectedTrack['trackb64'].filter((track, i) => i <= selectedTrack.player.currentTime);
+		selectedTrack['coordsPast'] = selectedTrack['tracksPast'].map(t => [t.lon, t.lat]);
+		
+		selectedTrack['track'] = selectedTrack['trackb64'][selectedTrack['coordsPast'].length - 1];
+		
+	
+		selectedTrack['speed'] = this.calcSpeed(selectedTrack['trackb64'], selectedTrack.player.currentTime);
+		
+		this.routesService.resetSplitcoord(selectedTrack['route']);
+		if (selectedTrack['route'] != null)
+			selectedTrack.route['completed'] = this.routesService.checkPoints(selectedTrack['route'], selectedTrack.tracksPast, this.maxPointDistance); 
+		selectedTrack.player.currentRealTime = selectedTrack['track'].t;
 	}
 	updatePlayerRealTime() {
 		this.selectedTracks.forEach( selectedTrack =>{
-			selectedTrack['coordsPast'] = selectedTrack['trackb64'].filter((track, i) => track.t <= this.player.currentRealTime).map(t => [t.lon, t.lat]);
+			selectedTrack['tracksPast'] = selectedTrack['trackb64'].filter((track, i) => track.t <= this.player.currentRealTime);
+			selectedTrack['coordsPast'] = selectedTrack['tracksPast'].map(t => [t.lon, t.lat]);
 			selectedTrack.player.currentTime = selectedTrack['coordsPast'].length - 1;
 			selectedTrack['track'] = selectedTrack['trackb64'][selectedTrack['coordsPast'].length - 1];
 	
+			selectedTrack['speed'] = this.calcSpeed(selectedTrack['trackb64'], selectedTrack.player.currentTime);
+
+			//this.last = selectedTrack.tracksPast[selectedTrack.tracksPast.length-1];
 			const a = selectedTrack['coords'][selectedTrack['coordsPast'].length - 1];
 			
 		});
@@ -125,8 +146,9 @@ export class TrackplayerComponent {
 		return Math.round(v * 100) / 100;
 	}
 	calcSpeed(track, time) {
-		const a = track.trackb64[time];
-		const b = track.trackb64[time - 1];
+		if (time == 0) return 0;
+		const a = track[time];
+		const b = track[time - 1];
 		const t = (a.t - b.t) / 1000;
 		const d = olSphere.getDistance([a.lon, a.lat], [b.lon, b.lat]);
 		const v = d / t;
@@ -193,8 +215,24 @@ export class TrackplayerComponent {
 		this.updatePlayer();
 			
 	}
+	updateFullRouteCheck(){
+		this.selectedTracks.forEach(selectedTrack => {
+			if (selectedTrack['route'] != null){
+				this.routesService.resetSplitcoord(selectedTrack['route']);
+				selectedTrack.route['completed'] = this.routesService.checkPoints(selectedTrack['route'], selectedTrack.tracksPast, this.maxPointDistance);
+			}
+		} );
+	}
+	updateRouteCheck(){
+		this.selectedTracks.forEach(selectedTrack => {
+			this.last = selectedTrack.tracksPast[selectedTrack.tracksPast.length-1];
+			if (selectedTrack['route'] != null && this.last != null)
+				selectedTrack.route['completed'] = this.routesService.checkPointLast(selectedTrack['route'], this.last, this.maxPointDistance);
+		} );
+	}
 	startPlayer() {		
 		this.player.isPlaying = true;
+		this.updateFullRouteCheck();
 		this.playing();
 	}
 	stopPlayer() {
@@ -202,11 +240,22 @@ export class TrackplayerComponent {
 		this.updatePlayer();
 	}
 	rewindPlayer() {
+		
+		this.selectedTracks.forEach(selectedTrack => {
+			selectedTrack.player.currentRealTime = selectedTrack.player.startRealTime;				
+			selectedTrack.player.currentTime = 1;
+		});		
+		this.player.currentRealTime = this.player.startRealTime;
 		this.player.currentTime = 1;
-		this.updatePlayer();
+		this.updatePlayer();		
+		//this.updatePlayerRealTime();	
 	}
 	forwardPlayer() {
-		this.player.currentTime = this.player.length;
+		this.selectedTracks.forEach(selectedTrack => {
+			selectedTrack.player.currentRealTime = selectedTrack.player.endRealTime;				
+			selectedTrack.player.currentTime = selectedTrack.player.length;
+		});		
+		this.player.currentRealTime = this.player.endRealTime;
 		this.updatePlayer();
 	}
 	rewindPlayerOne() {
@@ -217,16 +266,20 @@ export class TrackplayerComponent {
 		this.player.currentTime += 1;
 		this.updatePlayer();
 	}
+	maxPointDistance = 10;
+	last:any;
 	playing() {
 		if (this.player.isPlaying) {
 			setTimeout(() => {
 				if (this.player.currentTime+this.player.speed * this.player.timeout>=this.player.endRealTime){ this.player.isPlaying=false ; return;}
 				this.player.currentRealTime += this.player.speed * this.player.timeout;		
 				this.selectedTracks.forEach(selectedTrack => {
-					selectedTrack.player.currentRealTime = this.player.currentRealTime;					
-				});			
-				this.updatePlayerRealTime();			
+					selectedTrack.player.currentRealTime = this.player.currentRealTime;
+				});
+				this.updatePlayerRealTime();
+				this.updateRouteCheck();
 				this.playing();
+				
 
 			}, this.player.timeout);
 		}

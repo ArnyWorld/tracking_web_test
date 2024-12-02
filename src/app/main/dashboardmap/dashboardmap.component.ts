@@ -394,7 +394,18 @@ export class DashboardmapComponent implements OnInit {
 	removeSelected(device){
 		if (this.selectedDevices.find(s=>s.id == device.id)){
 			this.selectedDevices.splice(this.selectedDevices.indexOf(device),1);
+			device.controls.show = false;
+			device.controls.showTrack = false;
+			device.controls.showChecks = false;
+			device.controls.showStops = false;
+			if(this.selectedDevice.id == device.id){				
+				if (this.selectedDevices.length >0)
+					this.selectedDevice = this.selectedDevices[0];
+				else
+					this.selectedDevice = null;
+			}
 		}
+
 	}
 	gotoDevice(device) {
 		if (this.multipleDevice){
@@ -576,9 +587,10 @@ export class DashboardmapComponent implements OnInit {
 				//selectedDevice.controls['isPlayer'] = false;
 				selectedDevice1.selectedTrack['coords'] = selectedDevice1.selectedTrack.trackb64.map(t => [t.lon, t.lat]);
 				selectedDevice1.selectedTrack['coordsPast'] = selectedDevice1.selectedTrack.trackb64.map(t => [t.lon, t.lat]);
-				selectedDevice1.selectedTrack['route'] = selectedDevice1.routeSelected;
+				selectedDevice1.selectedTrack['route'] = JSON.parse(JSON.stringify(selectedDevice1.routeSelected));
+				this.routesService.resetSplitcoord(selectedDevice1.selectedTrack['route']);
 				selectedDevice1.selectedTrack['personal'] = selectedDevice1.personal;
-				selectedDevice1.selectedTrack['selectedRoute'] = selectedDevice1.routeSelected;
+				selectedDevice1.selectedTrack['selectedRoute'] = selectedDevice1.selectedTrack['route']
 				selectedDevice1.controls.showPlayer = true;
 				this.selectedTracks.push(selectedDevice1.selectedTrack);
 			} );
@@ -593,6 +605,7 @@ export class DashboardmapComponent implements OnInit {
 					'lon': parseFloat(track.lon),
 					'bat': parseInt(track.bat),
 					'acc': parseInt(track.acc),
+					'stp': parseInt(track.stp),
 				};
 			}
 			))),

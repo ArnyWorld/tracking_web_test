@@ -7,7 +7,7 @@
             <div class="col-12 ps-3 pe-3 ">
                 <div *ngFor="let selectedTrack of selectedTracks" class="row">
                     <div class="col-6">{{selectedTrack.personal.name}} </div>
-                    <div class="col-6"><input type="range" [(ngModel)]="selectedTrack.player.currentTime" class="form-range" [min]="selectedTrack.player.min" [max]="player.length" [step]="selectedTrack.player.step"></div>
+                    <div class="col-6"><input type="range" [(ngModel)]="selectedTrack.player.currentTime" (input)="updatePlayerTrack(selectedTrack)" class="form-range" [min]="selectedTrack.player.min" [max]="player.length" [step]="selectedTrack.player.step"></div>
                 </div>               
 
                 <div class="row">

@@ -100,6 +100,21 @@ export class RoutesService {
 		}
 		return stops;
 	}
+	resetSplitcoord(route){
+		let i: number, j: number, k: number;
+		let sc: any;
+		for (i = 0; i < route.sections.length; i++) {
+			route.sections[i]['splitPointTracks'] = [];
+		}
+		for (i = 0; i < route.sections.length; i++) {			
+			for (j = 0; j < route.sections[i].splitCoords.length; j++) {
+				route.sections[i].splitCoords[j][2]=false;
+
+			}
+		}
+		route['completed'] = 0;
+
+	}
 	checkPoints(route, tracks, maxDistance) {
 		if (route == null) return 0;
 		if (route.length == 0) return 0;

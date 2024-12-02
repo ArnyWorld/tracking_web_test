@@ -14,6 +14,8 @@
                                 <tr><th>Hora</th><td>{{ selectedTrack.player?.currentRealTime | date:'HH:mm:ss'}}</td> </tr>
                                 <tr><th>Señal</th><td> {{signalType(selectedTrack?.track.acc)}} ({{ selectedTrack?.track.acc }}m) </td> </tr>
                                 <tr><th>Bateria </th><td> {{selectedTrack?.track.bat}}% </td> </tr>
+                                <tr><th>Velocidad </th><td> {{selectedTrack?.speed}} </td> </tr>
+                                <tr><th>Completado </th><td> {{selectedTrack?.route?.completed}}% </td> </tr>
                             </table>
                         </span>
                     </div>
@@ -42,7 +44,7 @@
                 <aol-style-stroke [color]="'rgba(30, 30, 250,0.5)'" [width]="8" [lineDash]="[8.5, 8]"></aol-style-stroke>
             </aol-style>
             <div *ngFor="let selectedTrack of selectedTracks">
-                <div *ngFor="let section of selectedTrack.selectedRoute.sections">
+                <div *ngFor="let section of selectedTrack.route.sections">
                     <aol-feature>
                         <aol-geometry-linestring>
                             <aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
@@ -57,7 +59,7 @@
         <aol-source-vector>
             <div *ngFor="let selectedTrack of selectedTracks">
                 <div *ngFor="let section of selectedTrack.route.sections">
-    <!--
+                    <!--
                     <aol-feature>
                         <aol-geometry-multipoint>
                             <aol-collection-coordinates [coordinates]="section.splitCoordsChecked" [srid]="'EPSG:4326'">
