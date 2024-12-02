@@ -149,6 +149,8 @@ export class TrackplayerComponent {
 		if (time == 0) return 0;
 		const a = track[time];
 		const b = track[time - 1];
+		if (a == undefined) return 0;
+		if (b == undefined) return 0;
 		const t = (a.t - b.t) / 1000;
 		const d = olSphere.getDistance([a.lon, a.lat], [b.lon, b.lat]);
 		const v = d / t;
