@@ -32,6 +32,10 @@
 				<div (click)="showReport(selectedDevice,modalReport)" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-file"></i> </span>Reporte</div>
 				<div (click)="showPlayer(selectedDevice)" role="button"  class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-play"></i> </span>Reproducir</div>
 			</div>
+            <h4><input type="checkbox"  [(ngModel)]="multipleDevice">Selección Multiple </h4>
+			<div *ngFor="let selectedDevice of selectedDevices">
+				<div><span class="btn btn-sm btn-outline-danger" (click)="removeSelected(selectedDevice)">X</span> {{selectedDevice.personal.name}} </div>
+			</div>
 		</div>
 
 		<app-trackplayer [trackData]="selectedTracks"  (onClose)="selectedTracks=[]"  *ngIf="selectedTracks.length>0"> </app-trackplayer>
@@ -86,7 +90,7 @@
 						<aol-overlay>
 							<aol-coordinate [x]="device.last.lon" [y]="device.last.lat" [srid]="'EPSG:4326'" >	</aol-coordinate>
 							<aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':device.controls.show}" (click)="gotoDevice(device)">
-								<div class="marker-device2"   (click)="gotoDevice(device)">                                   
+								<div class="marker-device2"  >                                   
                                     <div class="pin1" [ngClass]="{'pin1-active':device.controls.show}" *ngIf="device.personal">
                                         <i class="fas {{device.personal.personal_type.icon}} d-block fa-xs" [style.color]="device.personal.personal_type.color" ></i>
                                     </div>
@@ -211,7 +215,7 @@
                                 <aol-feature  *ngIf=" device.routeSelected.firstCheck && device.routeSelected.lastCheck">  
                                     <aol-geometry-multipoint>
                                         <aol-collection-coordinates
-                                        [coordinates]="[[device.routeSelected.firstCheck[0],device.routeSelected.firstCheck[1]]]"[srid]="'EPSG:4326'">
+                                        [coordinates]="[[device.routeSelected.firstCheck[0],device.routeSelected.firstCheck[1]]]" [srid]="'EPSG:4326'">
                                         </aol-collection-coordinates>
                                     </aol-geometry-multipoint>              
                                 </aol-feature>          
@@ -233,7 +237,7 @@
                                 <aol-feature  *ngIf=" device.routeSelected.firstCheck && device.routeSelected.lastCheck">  
                                     <aol-geometry-multipoint>
                                         <aol-collection-coordinates
-                                        [coordinates]="[[device.routeSelected.lastCheck[0],device.routeSelected.lastCheck[1]]]"[srid]="'EPSG:4326'">
+                                        [coordinates]="[[device.routeSelected.lastCheck[0],device.routeSelected.lastCheck[1]]]" [srid]="'EPSG:4326'">
                                         </aol-collection-coordinates>
                                     </aol-geometry-multipoint>              
                                 </aol-feature>          
@@ -562,7 +566,6 @@
 		<button class="btn btn-sm btn-outline-primary" (click)="filterDevices()">filtrar</button>
 		
 </div>
-            <span><input type="checkbox" ([ngModel])="multipleDevice">Selección Multiple </span>
 			<div class="list-group list-group-flush border-bottom scrollarea" *ngFor="let device of devices">
 
 				<a href="#" class="list-group-item list-group-item-action  py-3 lh-tight" aria-current="true" (click)="gotoDevice(device)">

@@ -143,6 +143,7 @@ export class DashboardmapComponent implements OnInit {
 	layerMap = 'osm';
 	opacityMap = 1;
 	multipleDevice = false;
+	selectedDevices = [];
 	updateOpacity() {
 
 	}
@@ -390,7 +391,23 @@ export class DashboardmapComponent implements OnInit {
 	realized(coords) {
 		return coords.map(s => s[2]);
 	}
+	removeSelected(device){
+		if (this.selectedDevices.find(s=>s.id == device.id)){
+			this.selectedDevices.splice(this.selectedDevices.indexOf(device),1);
+		}
+	}
 	gotoDevice(device) {
+		if (this.multipleDevice){
+			device.controls.showTrack = true;
+			device.controls.showChecks = true;
+			device.controls.showStops = false;
+			this.loadAllRoute(device);
+			if (!this.selectedDevices.find(s=>s.id == device.id))
+				this.selectedDevices.push(device);
+			console.log("device added ", device);
+			this.selectedDevice = device;
+			return;
+		}
 		this.devices.forEach(device => {
 			device.controls.show = false;
 			device.controls.showTrack = false;
@@ -480,8 +497,8 @@ export class DashboardmapComponent implements OnInit {
 						}
 						
 						device['isReady'] = true;
-				}
-			}, (err: any) => console.log("err", err));
+					}
+				}, (err: any) => console.log("err", err));
 			}
 		}
 	}
@@ -537,6 +554,36 @@ export class DashboardmapComponent implements OnInit {
 		});
 	}
 	showPlayer(selectedDevice) {
+		if(this.multipleDevice){
+			this.selectedTracks = [];
+			this.selectedDevices.forEach( selectedDevice1 =>{
+				selectedDevice1['selectedTrack'] = {
+					trackb64: JSON.parse(JSON.stringify(selectedDevice1.tracks.map(track => {
+						return {
+							't': parseInt(track.t),
+							'lat': parseFloat(track.lat),
+							'lon': parseFloat(track.lon),
+							'bat': parseInt(track.bat),
+							'acc': parseInt(track.acc),
+							'stp': parseInt(track.stp),
+						};
+					}
+					))),
+					controls: {
+						isPlayer: false
+					}
+				};
+				//selectedDevice.controls['isPlayer'] = false;
+				selectedDevice1.selectedTrack['coords'] = selectedDevice1.selectedTrack.trackb64.map(t => [t.lon, t.lat]);
+				selectedDevice1.selectedTrack['coordsPast'] = selectedDevice1.selectedTrack.trackb64.map(t => [t.lon, t.lat]);
+				selectedDevice1.selectedTrack['route'] = selectedDevice1.routeSelected;
+				selectedDevice1.selectedTrack['personal'] = selectedDevice1.personal;
+				selectedDevice1.selectedTrack['selectedRoute'] = selectedDevice1.routeSelected;
+				selectedDevice1.controls.showPlayer = true;
+				this.selectedTracks.push(selectedDevice1.selectedTrack);
+			} );
+			return;
+		}
 		console.log("selectedDevice", selectedDevice);
 		selectedDevice['selectedTrack'] = {
 			trackb64: JSON.parse(JSON.stringify(selectedDevice.tracks.map(track => {

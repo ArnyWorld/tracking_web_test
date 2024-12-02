@@ -105,21 +105,11 @@ export class TrackplayerComponent {
 		thread: null,
 	}
 	updatePlayer() {
-		/*this.selectedTracks.forEach( selectedTrack =>{
-			selectedTrack['coordsPast'] = selectedTrack['coords'].filter((c, i) => i <= selectedTrack.player.currentTime);
-			selectedTrack['track'] = selectedTrack['trackb64'][selectedTrack['coordsPast'].length - 1];		
-			selectedTrack.player.currentRealTime = selectedTrack['trackb64'][selectedTrack['coordsPast'].length - 1].t;
-		});*/
 		console.log("this.player.currentRealTime",this.player.currentRealTime);
 		this.selectedTracks.forEach( selectedTrack =>{
 			selectedTrack.player.currentRealTime = this.player.currentRealTime;
 		});
 		this.updatePlayerRealTime();
-		/*
-		this.selectedTrack['coordsPast'] = this.selectedTrack['coords'].filter((c, i) => i <= this.player.currentTime);
-		this.selectedTrack['track'] = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1];		
-		this.player.currentRealTime = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1].t;
-		*/
 	}
 	updatePlayerRealTime() {
 		this.selectedTracks.forEach( selectedTrack =>{
@@ -128,31 +118,8 @@ export class TrackplayerComponent {
 			selectedTrack['track'] = selectedTrack['trackb64'][selectedTrack['coordsPast'].length - 1];
 	
 			const a = selectedTrack['coords'][selectedTrack['coordsPast'].length - 1];
-			if (this.interpolate){
-				const b = selectedTrack['coords'][selectedTrack['coordsPast'].length];
-				const iLon = a[0] + (b[0] - a[0])/2;
-				const iLat = a[1] + (b[1] - a[1])/2;				
-				//this.map.instance.getView().setCenter(transform([iLon, iLat], 'EPSG:4326', 'EPSG:3857'));
-			}else{			
-				//this.map.instance.getView().setCenter(transform([a[0], a[1]], 'EPSG:4326', 'EPSG:3857'));
-			}	
+			
 		});
-		/*
-		//console.log("this.selectedTrack['trackb64']",this.selectedTrack['trackb64']);		
-		this.selectedTrack['coordsPast'] = this.selectedTrack['trackb64'].filter((track, i) => track.t <= this.player.currentRealTime).map(t => [t.lon, t.lat]);
-		this.player.currentTime = this.selectedTrack['coordsPast'].length - 1;
-		this.selectedTrack['track'] = this.selectedTrack['trackb64'][this.selectedTrack['coordsPast'].length - 1];
-
-		const a = this.selectedTrack['coords'][this.selectedTrack['coordsPast'].length - 1];
-		if (this.interpolate){
-			const b = this.selectedTrack['coords'][this.selectedTrack['coordsPast'].length];
-			const iLon = a[0] + (b[0] - a[0])/2;
-			const iLat = a[1] + (b[1] - a[1])/2;
-			console.log("iLon iLat" ,iLon,iLat)
-			//this.map.instance.getView().setCenter(transform([iLon, iLat], 'EPSG:4326', 'EPSG:3857'));
-		}else{			
-			//this.map.instance.getView().setCenter(transform([a[0], a[1]], 'EPSG:4326', 'EPSG:3857'));
-		}*/
 	}
 	round(v) {
 		return Math.round(v * 100) / 100;
@@ -176,17 +143,6 @@ export class TrackplayerComponent {
 		if (acc<12) return `buena (${acc}mts)`;
 		if (acc<24) return `regular (${acc}mts)`;
 		return `mala (${acc}mts)`;
-	}
-	loadRoute(assignment){
-		/*this.routesService.find(assignment.route.id).subscribe(routeResponse=>{			
-			if (routeResponse.content.length>0){
-				assignment.route = routeResponse.content[0];
-				this.routesService.setupSections(assignment.route);
-				this.selectedRoute = routeResponse.content[0];				
-				this.selectedRoute = assignment.route;
-				console.log("loadRoute.selectedRoute",this.selectedRoute);
-			}
-		});*/
 	}
 	loadTrack(trackData) {
 		let size = -1;
@@ -234,37 +190,12 @@ export class TrackplayerComponent {
 		this.player.currentRealTime = this.player.startRealTime;
 		this.player.step = 1;
 		this.player.isPlaying = false;
-		
-		/*
-		this.selectedTrack = trackData;
-		this.tracksService.getExtend(this.selectedTrack);
-		this.selectedTrack['player'] = this.player;
-*/
-/*
-		this.player.currentTime = 0;//this.selectedTrack.coords.length - 1;
-		this.player.length = this.selectedTrack.coords.length - 1;
-		this.player.min = 1;
-		this.player.startRealTime = this.selectedTrack.trackb64[0].t;
-		this.player.currentRealTime = this.player.startRealTime;
-		this.player.step = 1;
-		this.player.isPlaying = false;
-		*/
 		this.updatePlayer();
 			
 	}
 	startPlayer() {		
-		/*this.selectedTracks.forEach( selectedTrack =>{
-			if (!selectedTrack.player.isPlaying) {
-				selectedTrack.player.isPlaying = true;
-			}	
-		});*/
 		this.player.isPlaying = true;
 		this.playing();
-		/*console.log("this.selectedTrack['trackb64']",this.selectedTrack['trackb64']);
-		if (!this.player.isPlaying) {
-			this.player.isPlaying = true;
-			this.playing();
-		}*/
 	}
 	stopPlayer() {
 		this.player.isPlaying = false;
@@ -289,10 +220,10 @@ export class TrackplayerComponent {
 	playing() {
 		if (this.player.isPlaying) {
 			setTimeout(() => {
-				if (this.player.currentTime+1>=this.player.length){ this.player.isPlaying=false ; return;}
-				this.player.currentRealTime += this.player.speed * this.player.timeout;			
+				if (this.player.currentTime+this.player.speed * this.player.timeout>=this.player.endRealTime){ this.player.isPlaying=false ; return;}
+				this.player.currentRealTime += this.player.speed * this.player.timeout;		
 				this.selectedTracks.forEach(selectedTrack => {
-					selectedTrack.player.currentRealTime += this.player.currentRealTime;					
+					selectedTrack.player.currentRealTime = this.player.currentRealTime;					
 				});			
 				this.updatePlayerRealTime();			
 				this.playing();
