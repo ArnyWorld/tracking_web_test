@@ -28,6 +28,7 @@
             <div class="" style="overflow: scroll;height:600px">
                 <table class="table table-sm table-striped w-100">
                     <thead>
+                        <th></th>
                         <th>id</th>
                         <th>document_number</th>
                         <th>names</th>
@@ -42,6 +43,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let registro of registros" >
+                            <td><input type="checkbox"[(ngModel)]="registro.person.check"> </td>
                             <td>{{registro.person.id}}</td>
                             <td>{{registro.person.document_number}}</td>
                             <td>{{registro.person.names}}</td>

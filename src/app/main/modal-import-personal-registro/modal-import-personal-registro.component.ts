@@ -75,6 +75,9 @@ export class ModalImportPersonalRegistroComponent implements OnInit {
 			(res:any)=>{
 				console.log("this.regpersonalService.res:",res);
 				this.registros = res;
+				this.registros.forEach(p=>{
+					p.person.check=false;
+				});
 			}
 		);
 	}
@@ -130,13 +133,19 @@ export class ModalImportPersonalRegistroComponent implements OnInit {
 	}
 	savePerson(registros:any,index:number) {
 		let person = registros [index].person;
-		console.log("person",person);
 		let p = (cadena:any) =>{
 			if (cadena == null) return "";
 			if (cadena == undefined) return "";
 			if (cadena == " ") return "";
 			return cadena;
 		};
+		if (!registros[index].person.check){
+			if (index < registros.length) 
+				this.savePerson(registros,index+1);
+			return;
+		}
+
+		console.log("person",person);
 		let newPerson = {
             "name": (`${p(person.names)} ${p(person.last_name_1)} ${p(person.last_name_2)} ${p(person.last_name_3)}`).replaceAll("  "," ").trim(),
             "code":  person.document_number,

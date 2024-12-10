@@ -676,7 +676,7 @@ export class DashboardmapComponent implements OnInit {
 		}
 		return device;
 	}
-	filterPersonalTypes = [9, 14];
+	filterPersonalTypes = [9, 14, 15];
 	filterBattery = 1;
 	filterEmergency = false;
 	filterDevices() {
