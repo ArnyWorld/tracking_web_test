@@ -1009,4 +1009,25 @@ export class RoutesService {
 			datos
 		);
 	}
+	
+    //new reports front y back
+    
+    calcDistance(tracks){
+        let dist = 0;
+        for(let k=1;k<tracks.length;k++){
+            dist += olSphere.getDistance(
+                [tracks[k-1].lon, tracks[k-1].lat],
+                [tracks[k].lon, tracks[k].lat]
+            );
+        }
+        return dist;
+    }
+    sumStopsTime(stops){
+        if (stops == null) return 0;
+        let time = 0;
+        for(let k=1;k<stops.length;k++){
+            time += stops[k].duration;
+        }
+        return time;
+    }
 }
