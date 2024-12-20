@@ -1,0 +1,31 @@
+<div class="divMain">
+	<div class="divMid">   
+        <div style="height: 100%">
+            <aol-map #map width="100%" height="100%">
+                <aol-interaction-default></aol-interaction-default>
+                
+                <aol-control-defaults></aol-control-defaults>
+
+                <aol-view [zoom]="zoom">
+                    <!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+                    <aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>                 
+                    <!-- <aol-coordinate  [y]="localPosition[1]" [x]="localPosition[0]" [srid]="'EPSG:4326'"></aol-coordinate> -->
+                </aol-view>
+
+                <!-- <aol-layer-tile [opacity]="1"> -->
+                    <!-- <aol-source-osm></aol-source-osm>    -->
+                    <!-- <aol-source-xyz url="http://172.20.50.59:6060/{z}/{x}/{y}.png">	</aol-source-xyz>  -->
+                    <!-- <aol-source-xyz url="http://172.20.50.123:8080/{z}/{x}/{y}.png"></aol-source-xyz> -->
+                    <!-- <aol-source-xyz url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png"></aol-source-xyz> -->
+                <!-- </aol-layer-tile> -->
+                
+                <aol-layer-tile [opacity]="opacityMap">
+                    <aol-source-osm *ngIf="layerMap=='osm'" ></aol-source-osm> 
+                    <aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz>
+                    <aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz>
+                </aol-layer-tile>
+            </aol-map>
+        </div>
+    </div>
+
+</div>

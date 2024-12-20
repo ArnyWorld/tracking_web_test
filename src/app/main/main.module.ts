@@ -30,6 +30,7 @@ import { ModalDeviceConfigComponent } from './modal-device-config/modal-device-c
 import { TracksComponent } from '../administration/tracks/tracks.component';
 import { TrackplayerComponent } from "./trackplayer/trackplayer.component";
 import { TrackplayermapComponent } from './trackplayermap/trackplayermap.component';
+import { ReportComponent } from './report/report.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -40,6 +41,7 @@ export class SocketOne extends Socket {
 
 @NgModule({
   declarations: [
+	ReportComponent,
     DashboardmapComponent,
 	PanelFloatNavComponent,
 	PanelRightComponent,

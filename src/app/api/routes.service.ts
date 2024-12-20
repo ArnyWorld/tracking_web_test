@@ -126,6 +126,8 @@ export class RoutesService {
 		console.log("checkPoints");
 		let firstCheck;
 		let lastCheck;
+		let firstCheckIndex=-1;
+		let lastCheckIndex=-1;
 		for (i = 0; i < route.sections.length; i++) {
 			
 			for (j = 0; j < route.sections[i].splitCoords.length; j++) {
@@ -156,6 +158,10 @@ export class RoutesService {
 		let lineString = null;
 		let lineStringOut = null;
 		let lastTrack = null;
+		let distance = 0;
+		let distance_between = 0;
+		let distance_before = 0;
+		let distance_after = 0;
 		
 		for (k = 0; k < tracks.length; k++) {
 			checked = false;
@@ -167,9 +173,11 @@ export class RoutesService {
 						[sc[0], sc[1]]
 					);
 					if (d < maxDistance) {
-						if (firstCheck == null) firstCheck = sc;
+						if (firstCheck == null) {firstCheck = sc; firstCheckIndex=k; };
+						distance += d;
 						checked=true;
-						lastCheck = sc;						
+						lastCheck = sc;
+                        lastCheckIndex = k				
 						break;
 					}else{
 						checked=false;
@@ -193,7 +201,9 @@ export class RoutesService {
 				lineStringOut.push([tracks[k].lon, tracks[k].lat]);
 			}
 		}
-		route['firstCheck'] = firstCheck;
+		route['firstCheckIndex']    = firstCheckIndex;
+		route['lastCheckIndex']     = lastCheckIndex;
+		route['firstCheck']         = firstCheck;
 		route['lastCheck'] = lastCheck;
 		for (i = 0; i < route.sections.length; i++) {
 			let tracksChecked = [];
@@ -234,6 +244,7 @@ export class RoutesService {
 				d = olSphere.getDistance([point.lon, point.lat], [sc[0], sc[1]]);
 				if (d < maxDistance) {
 					if (route['firstCheck'] == null) route['firstCheck'] = sc;
+					point['check']=true;
 					sc[2] = true;
 					route['lastCheck'] = sc;
 					route.sections[i].splitCoordsChecked.push(sc);
@@ -1015,6 +1026,41 @@ export class RoutesService {
     calcDistance(tracks){
         let dist = 0;
         for(let k=1;k<tracks.length;k++){
+            dist += olSphere.getDistance(
+                [tracks[k-1].lon, tracks[k-1].lat],
+                [tracks[k].lon, tracks[k].lat]
+            );
+        }
+        return dist;
+    }
+    calcDistanceBetween(tracks,indexBefore,indexAfter){
+        let dist = 0;
+		if (indexBefore==null) return 0;
+		if (indexAfter==null) return 0;
+        for(let k=indexBefore+1;k<indexAfter+1;k++){
+            dist += olSphere.getDistance(
+                [tracks[k-1].lon, tracks[k-1].lat],
+                [tracks[k].lon, tracks[k].lat]
+            );
+        }
+        return dist;
+    }
+    calcDistanceBefore(tracks,index){
+        let dist = 0;
+		if (index==null) return 0;
+        for(let k=1;k<index+1;k++){
+            dist += olSphere.getDistance(
+                [tracks[k-1].lon, tracks[k-1].lat],
+                [tracks[k].lon, tracks[k].lat]
+            );
+        }
+        return dist;
+    }
+    calcDistanceAfter(tracks,index){
+        let dist = 0;
+		if (index==null) return 0;
+		if (index==0) return 0;
+        for(let k=index+1;k<tracks.length;k++){
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
