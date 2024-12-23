@@ -204,7 +204,7 @@ export class RoutesService {
 		route['firstCheckIndex']    = firstCheckIndex;
 		route['lastCheckIndex']     = lastCheckIndex;
 		route['firstCheck']         = firstCheck;
-		route['lastCheck'] = lastCheck;
+		route['lastCheck'] 			= lastCheck;
 		for (i = 0; i < route.sections.length; i++) {
 			let tracksChecked = [];
 			route.sections[i]['splitPointTracks'] = tracksChecked;
@@ -1037,6 +1037,7 @@ export class RoutesService {
         let dist = 0;
 		if (indexBefore==null) return 0;
 		if (indexAfter==null) return 0;
+		if (indexBefore-1<0) return 0;
         for(let k=indexBefore+1;k<indexAfter+1;k++){
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
@@ -1060,6 +1061,7 @@ export class RoutesService {
         let dist = 0;
 		if (index==null) return 0;
 		if (index==0) return 0;
+		if (index-1<0) return 0;
         for(let k=index+1;k<tracks.length;k++){
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
