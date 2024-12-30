@@ -815,8 +815,11 @@ export class RoutesService {
 								console.log("(indexedDB) onsuccess  allRecords.result--", allRecords.result);
 								let routes = JSON.parse(JSON.stringify(allRecords.result)) ;
 								routes.forEach(route=>me.setupSections(route));
+								console.log("db routes",routes);
 								res_({ content: routes});
+
 							};
+							
 						} catch (e) {
 							err_("err");
 						}
@@ -1035,10 +1038,10 @@ export class RoutesService {
     }
     calcDistanceBetween(tracks,indexBefore,indexAfter){
         let dist = 0;
-		if (indexBefore==null) return 0;
+		if (indexBefore==null) return 0;		
 		if (indexAfter==null) return 0;
-		if (indexBefore-1<0) return 0;
         for(let k=indexBefore+1;k<indexAfter+1;k++){
+			if (k<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
@@ -1050,6 +1053,7 @@ export class RoutesService {
         let dist = 0;
 		if (index==null) return 0;
         for(let k=1;k<index+1;k++){
+			if (k<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
@@ -1060,9 +1064,9 @@ export class RoutesService {
     calcDistanceAfter(tracks,index){
         let dist = 0;
 		if (index==null) return 0;
-		if (index==0) return 0;
-		if (index-1<0) return 0;
+		if (index==0) return 0;		
         for(let k=index+1;k<tracks.length;k++){
+			if (k<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]

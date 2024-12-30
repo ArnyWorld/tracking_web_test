@@ -37,6 +37,8 @@ export class PersonalComponent implements OnInit {
 	personal = {
 		id: '',
 		name: '',
+		firstname: '',
+		lastname: '',
 		code: '',
 		image_id: '',
 		image: null,
@@ -49,6 +51,8 @@ export class PersonalComponent implements OnInit {
 	default = {
 		id: '',
 		name: '',
+		firstname: '',
+		lastname: '',
 		code: '',
 		image_id: '',
 		image: null,

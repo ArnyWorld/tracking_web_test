@@ -72,6 +72,17 @@
             </div>
         </div>
         <div class="col-12">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Tipo de personal para asignar</span>
+                </div>
+                
+                <select [(ngModel)]="personalTypeId" class="form-select">
+                    <option *ngFor="let personalType of personalTypes " [value]="personalType.id">{{personalType.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
             <table>
 
             </table>

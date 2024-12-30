@@ -109,14 +109,20 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-group mb-1">
-					<label class="fw-light" for="codigo">Código</label>
-					<input class="form-control" id="codigo" [(ngModel)]="personal.code" name="codigo" type="text" required>
-					<div *ngIf="userForm.controls['codigo']?.touched && userForm.controls['codigo']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+					<label class="fw-light" for="code">Código</label>
+					<input class="form-control" id="code" [(ngModel)]="personal.code" name="code" type="text" required>
+					<div *ngIf="userForm.controls['code']?.touched && userForm.controls['code']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
 						<p class="font-weight-light text-danger">el código es requerido</p>
 					</div>
 
 					<label class="fw-light" for="nombre">Nombre completo</label>
 					<input class="form-control" id="nombre" [(ngModel)]="personal.name" name="nombre" type="text" required>
+
+					<label class="fw-light" for="firstname">Nombre</label>
+					<input class="form-control" id="firstname" [(ngModel)]="personal.firstname" name="firstname" type="text" required>
+
+					<label class="fw-light" for="lastname">Apellido</label>
+					<input class="form-control" id="lastname" [(ngModel)]="personal.lastname" name="lastname" type="text" required>
 					
 					<div *ngIf="userForm.controls['nombre']?.touched && userForm.controls['nombre']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
 						<p class="font-weight-light text-danger">el nombre es requerido</p>
@@ -129,13 +135,15 @@
                         </ng-content>
 					</select>
 					
-					<label class="fw-light" for="nombre">Cargo</label>
+					<label class="fw-light" for="turno">Cargo</label>
 					<select class="form-select" aria-label="Seleccione un cargo" id="turno"  [(ngModel)]="personal.personal_type_id" name="turno" >
                         <ng-content *ngFor="let personaltype of personalType">
 						    <option [value]="personaltype.id" [label]="personaltype.name"></option>
                         </ng-content>
 					</select>
 					
+ 
+
 					<label class="fw-light" for="foto">Fotografía</label>
                     <ng-content *ngIf="personal.image!=null;else newImageTemp" >
                         <div class=" d-flex justify-content-center  text-center align-items-center" >
@@ -172,16 +180,28 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-group mb-1">
-					<label class="fw-light" for="codigo">Código</label>
-					<input class="form-control" id="codigo" [(ngModel)]="personal.code" name="codigo" type="text" required>
-					<div *ngIf="userForm.controls['codigo']?.touched && userForm.controls['codigo']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+					<label class="fw-light" for="code">Código</label>
+					<input class="form-control" id="code" [(ngModel)]="personal.code" name="code" type="text" required>
+					<div *ngIf="userForm.controls['code']?.touched && userForm.controls['code']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
 						<p class="font-weight-light text-danger">el código es requerido</p>
 					</div>
 
-					<label class="fw-light" for="nombre">Nombre de user</label>
-					<input class="form-control" id="nombre" [(ngModel)]="personal.name" name="nombre" type="text" required>
-					<div *ngIf="userForm.controls['nombre']?.touched && userForm.controls['nombre']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+					<label class="fw-light" for="name">Nombre completo de usuario</label>
+					<input class="form-control" id="name" [(ngModel)]="personal.name" name="nombre" type="text" required>
+					<div *ngIf="userForm.controls['name']?.touched && userForm.controls['name']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
 						<p class="font-weight-light text-danger">el nombre es requerido</p>
+					</div>
+
+					<label class="fw-light" for="firstname">Nombre de usuario</label>
+					<input class="form-control" id="firstname" [(ngModel)]="personal.firstname" name="firstname" type="text" required>
+					<div *ngIf="userForm.controls['firstname']?.touched && userForm.controls['firstname']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">el nombre es requerido</p>
+					</div>
+
+					<label class="fw-light" for="lastname">Apellido de usuario</label>
+					<input class="form-control" id="lastname" [(ngModel)]="personal.lastname" name="lastname" type="text" required>
+					<div *ngIf="userForm.controls['lastname']?.touched && userForm.controls['lastname']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
+						<p class="font-weight-light text-danger">el apellido es requerido</p>
 					</div>
 
 					<label class="fw-light" for="foto">Fotografía</label>

@@ -223,9 +223,13 @@ export class TrackplayerComponent {
 				this.routesService.resetSplitcoord(selectedTrack['route']);
 				selectedTrack.route['completed'] = this.routesService.checkPoints(selectedTrack['route'], selectedTrack.tracksPast, this.maxPointDistance);
 				selectedTrack.route['distance'] = Math.round(this.routesService.calcDistance(selectedTrack.tracksPast));
-				selectedTrack.route['distance_between']	= this.routesService.calcDistanceBetween(selectedTrack.tracksPast,selectedTrack['route'].firstCheckIndex,selectedTrack['route']['lastCheckIndex']);
-				selectedTrack.route['distance_before']	= this.routesService.calcDistanceBefore(selectedTrack.tracksPast,selectedTrack['route']['firstCheckIndex']);
-				selectedTrack.route['distance_after']	= this.routesService.calcDistanceAfter(selectedTrack.tracksPast,selectedTrack['route']['lastCheckIndex']);
+				
+				console.log("F0 precalc", selectedTrack.tracksPast.length,selectedTrack['route'].firstCheckIndex,selectedTrack['route'].lastCheckIndex);
+				selectedTrack.route['distance_between']	= this.routesService.calcDistanceBetween(selectedTrack.tracksPast,selectedTrack['route'].firstCheckIndex,selectedTrack['route'].lastCheckIndex);				
+				selectedTrack.route['distance_before']	= this.routesService.calcDistanceBefore(selectedTrack.tracksPast,selectedTrack['route'].firstCheckIndex);
+				selectedTrack.route['distance_after']	= this.routesService.calcDistanceAfter(selectedTrack.tracksPast,selectedTrack['route'].lastCheckIndex);
+				console.log("F route", selectedTrack['route'],);
+				console.log("F ",selectedTrack.route['distance_between'],selectedTrack.route['distance_before'],selectedTrack.route['distance_after']);
 			}
 		} );
 	}
@@ -239,7 +243,7 @@ export class TrackplayerComponent {
 				selectedTrack.route['distance'] = Math.round(this.routesService.calcDistance(selectedTrack.tracksPast));
 				selectedTrack.route['distance_between']	= this.routesService.calcDistanceBetween(selectedTrack.tracksPast,selectedTrack['route'].firstCheckIndex,selectedTrack['route']['lastCheckIndex']);
 				selectedTrack.route['distance_before']	= this.routesService.calcDistanceBefore(selectedTrack.tracksPast,selectedTrack['route']['firstCheckIndex']);
-				selectedTrack.route['distance_after']	= this.routesService.calcDistanceAfter(selectedTrack.tracksPast,selectedTrack['route']['lastCheckIndex']);
+				selectedTrack.route['distance_after']	= this.routesService.calcDistanceAfter(selectedTrack.tracksPast,selectedTrack['route']['lastCheckIndex']);				
 			}
 		} );
 	}
