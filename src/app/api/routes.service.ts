@@ -1041,7 +1041,7 @@ export class RoutesService {
 		if (indexBefore==null) return 0;		
 		if (indexAfter==null) return 0;
         for(let k=indexBefore+1;k<indexAfter+1;k++){
-			if (k<0) continue;
+			if (k-1<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
@@ -1053,7 +1053,7 @@ export class RoutesService {
         let dist = 0;
 		if (index==null) return 0;
         for(let k=1;k<index+1;k++){
-			if (k<0) continue;
+			if (k-1<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
@@ -1066,7 +1066,7 @@ export class RoutesService {
 		if (index==null) return 0;
 		if (index==0) return 0;		
         for(let k=index+1;k<tracks.length;k++){
-			if (k<0) continue;
+			if (k-1<0) continue;
             dist += olSphere.getDistance(
                 [tracks[k-1].lon, tracks[k-1].lat],
                 [tracks[k].lon, tracks[k].lat]
