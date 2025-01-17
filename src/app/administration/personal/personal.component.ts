@@ -111,6 +111,7 @@ export class PersonalComponent implements OnInit {
 						route_id:route.id,
 						schedule_id:1,
 						is_check:false,
+						deleted:0,
 					};
 				}else{
 					this.Assignments[i] = asignacion;

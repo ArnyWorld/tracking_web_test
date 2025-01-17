@@ -198,6 +198,7 @@ export class ModalImportPersonalRegistroComponent implements OnInit {
 			personal_id: contentPerson.id,
 			route_id: routeId,
 			schedule_id: 1,
+			deleted: 0,
 		}
 		console.log("assignment",JSON.stringify(assignment));
 		this.assignmentsService.register(assignment).subscribe((result: any) => {

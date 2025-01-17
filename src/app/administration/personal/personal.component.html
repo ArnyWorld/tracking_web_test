@@ -141,8 +141,6 @@
 						    <option [value]="personaltype.id" [label]="personaltype.name"></option>
                         </ng-content>
 					</select>
-					
- 
 
 					<label class="fw-light" for="foto">Fotografía</label>
                     <ng-content *ngIf="personal.image!=null;else newImageTemp" >
@@ -203,6 +201,13 @@
 					<div *ngIf="userForm.controls['lastname']?.touched && userForm.controls['lastname']?.invalid" class="lh-sm text-sm-end fw-lighter font-weight-light text-danger">
 						<p class="font-weight-light text-danger">el apellido es requerido</p>
 					</div>
+
+					<label class="fw-light" for="turno">Cargo</label>
+					<select class="form-select" aria-label="Seleccione un cargo" id="turno"  [(ngModel)]="personal.personal_type_id" name="turno" >
+                        <ng-content *ngFor="let personaltype of personalType">
+						    <option [value]="personaltype.id" [label]="personaltype.name"></option>
+                        </ng-content>
+					</select>
 
 					<label class="fw-light" for="foto">Fotografía</label>
                     <ng-content *ngIf="personal.image!=null; else newImageTemp" >

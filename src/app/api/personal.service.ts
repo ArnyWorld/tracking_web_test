@@ -66,7 +66,7 @@ export class PersonalService {
 	  return this.http.get(
 		this.apiUrl +
 		  this.prefix +
-		  `/${this.apiName}/sync`
+		  `/${this.apiName}/syncfull`
 		  //`/${this.apiName}?[personal_type_id][equal]=14`
 	  );
 	}
