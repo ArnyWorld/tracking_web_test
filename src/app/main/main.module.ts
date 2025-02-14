@@ -22,6 +22,8 @@ import { ModalImportRoutesComponent } from './modal-import-routes/modal-import-r
 import { BotcomComponent } from './botcom/botcom.component';
 import { ModalImportDevicesComponent } from './modal-import-devices/modal-import-devices.component';
 import { ModalImportGeojsonComponent } from './modal-import-geojson/modal-import-geojson.component';
+import { ModalImportKmlComponent } from './modal-import-kml/modal-import-kml.component';
+import { ModalEditRoutesComponent } from './modal-edit-routes/modal-edit-routes.component';
 import { ModalImportRoutesMultiComponent } from './modal-import-routes-multi/modal-import-routes-multi.component';
 import { BotcomliveComponent } from './botcomlive/botcomlive.component';
 import { ModalImportAssignmentsComponent } from './modal-import-assignations/modal-import-assignments.component';
@@ -57,6 +59,8 @@ export class SocketOne extends Socket {
 	ModalImportRoutesMultiComponent,
 	ModalImportDevicesComponent,
 	ModalImportGeojsonComponent,
+	ModalImportKmlComponent,
+	ModalEditRoutesComponent,
 	ModalImportAssignmentsComponent,
 	ModalImportReportComponent,
 	BotcomComponent,

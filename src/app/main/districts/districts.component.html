@@ -82,7 +82,6 @@
         <app-modal-import-personal (onClose)="this.modalRef.hide();"></app-modal-import-personal>
     </ng-template>
 
-
     <ng-template #modalImportPersonalRegistro role="document" let-modal class="center-modal">
         <app-modal-import-personal-registro (onClose)="this.modalRef.hide();"></app-modal-import-personal-registro>
     </ng-template>
@@ -105,7 +104,7 @@
 
                 <div class="list-group list-group-flush border-bottom scrollarea">
 
-                    <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
+                    <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">						
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar Distritos</span>
 						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonal,null)">Importar Personal</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportPersonalRegistro,null)">Importar Registro de Personal</span>

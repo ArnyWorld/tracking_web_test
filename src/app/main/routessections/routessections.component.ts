@@ -249,8 +249,10 @@ export class RoutessectionsComponent implements OnInit{
 	}
 	openModal(template: TemplateRef<void>, data?:any) {
 		this.modalRef = this.modalService.show(template, {
-			class: 'modal-dialog-centered modal-lg ',			
-		});
+			class: 'modal-dialog-centered modal-lg ',	
+			backdrop: 'static', 
+			keyboard: false
+		});		
 	}
 	sectionToPaths(route){
 		this.routesService.sectionToPaths(route);		

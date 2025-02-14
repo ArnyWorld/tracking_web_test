@@ -1,0 +1,83 @@
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Importar KML</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="form-group mb-1 row">
+		<div class="col-6 row" >
+			<div class="col-12">
+				<input class="form-control" type="text" [(ngModel)]="name_prefix"/>
+			</div> 
+			<div class="col-12">
+				<input class="form-control" type="file" (change)="readFile($event,importData)" />
+			</div> 
+			<div class="col-12 visually-hidden">
+				<textarea class="form-control" [(ngModel)]="importData.text" rows="10"></textarea>
+			</div>
+			<div class="col-12 d-flex justify-content-end mt-3">
+				<span class="btn btn-sm btn-outline-primary" (click)="joinRoutes()">Unir</span>
+			</div>
+			<div class="col-12" style="height:600px;overflow-y: scroll;">
+				<table class="table">
+					<tr>
+						<th></th><th>Ruta</th><th>Color</th><th></th>
+					</tr>
+					<tr *ngFor="let route of importData.routes" (click)="route.controls.selected=!route.controls.selected"  >
+						<td><input class="form-check-input" type="checkbox" [(ngModel)]="route.controls.selected" /></td><td><input class="form-control form-control-sm" [(ngModel)]="route.name" /></td><td><input class="form-control form-control-sm" [(ngModel)]="route.color" type="color" /></td><td></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="col-6 row" >
+			<div style="height: 600px; width:100%">
+				<aol-map #map width="100%" height="100%">
+					<aol-interaction-default> </aol-interaction-default>
+					<aol-control-defaults></aol-control-defaults>
+					<aol-view [zoom]="zoom">
+						<!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+					</aol-view>
+
+					<aol-layer-tile [opacity]="0.3" >
+						<aol-source-osm></aol-source-osm>
+					</aol-layer-tile>
+
+					<aol-layer-group >
+						<div *ngFor="let routeSelected of importData.routes">
+							<aol-layer-vector *ngIf="routeSelected.controls.selected" [zIndex]="750"  >             
+								<aol-source-vector> <!-- ya no -->
+									<div >
+										<div *ngFor="let section of routeSelected.sections">                                                                                                                             
+											<aol-feature >
+												<aol-geometry-multilinestring >
+													<aol-collection-coordinates [coordinates]="[section['coords']]" [srid]="'EPSG:4326'">
+													</aol-collection-coordinates>
+												</aol-geometry-multilinestring>
+											</aol-feature>
+										</div>
+									</div>
+								</aol-source-vector>
+								<aol-style>
+									<aol-style-stroke [color]="routeSelected.color" [width]="4"  ></aol-style-stroke>
+									<aol-style-circle [radius]="3">
+										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+										<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+									</aol-style-circle>
+								</aol-style>
+							</aol-layer-vector>
+						</div>
+					</aol-layer-group>
+				</aol-map>
+			</div>
+		</div>
+        
+        
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-full " (click)="saveOnDb()"> {{this.createProgress}}</button>
+    <button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>

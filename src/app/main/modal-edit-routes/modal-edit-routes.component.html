@@ -1,0 +1,153 @@
+<div class="modal-header">
+	<h4 class="modal-title pull-left">Editar Rutas</h4>
+	<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeModal()">
+		<span aria-hidden="true" class="visually-hidden">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<div class="form-group mb-1 row">
+			<div class="col-6 row"><div class="col-12">
+				<label>Filtrar</label>
+				<input class="form-control" type="text" [(ngModel)]="keyword" (input)="filter(keyword)"/>
+			</div> 
+			<div class="col-12 d-flex justify-content-end mt-3">
+				<span class="btn btn-sm btn-outline-success" (click)="openModal(modaMovePoints,null)">Copiar puntos</span>
+				<span class="btn btn-sm btn-outline-primary" (click)="joinRoutes()">Unir</span>
+				<span class="btn btn-sm btn-outline-danger" (click)="openModal(modalConfirmationDeletePoints,null)">Limpiar puntos</span>
+				<span class="btn btn-sm btn-outline-danger" (click)="openModal(modalConfirmationDelete,null)">Eliminar</span>
+			</div>
+			<div class="col-12" style="height:600px;overflow-y: scroll;">
+				<table class="table">
+					<tr>
+						<th></th>
+						<th>Ruta</th>
+						<th>Color</th>
+						<th></th>
+					</tr>
+					<ng-template ngFor let-route [ngForOf]="routes">
+						<tr *ngIf="route.controls.show" (click)="selectRoute(route)">
+							<td><input class="form-check-input" type="checkbox" [(ngModel)]="route.controls.selected" /></td>
+							<td><input class="form-control form-control-sm" [(ngModel)]="route.name" /></td>
+							<td><input class="form-control form-control-sm" [(ngModel)]="route.color" type="color" /></td>
+							<td></td>
+						</tr>
+					</ng-template>
+				</table>
+			</div>
+		</div>
+		<div class="col-6 row">
+			<div style="height: 600px; width:100%">
+				<aol-map #map width="100%" height="100%">
+					<aol-interaction-default> </aol-interaction-default>
+					<aol-control-defaults></aol-control-defaults>
+					<aol-view [zoom]="18">
+						<!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+						<aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+					</aol-view>
+
+					<aol-layer-tile [opacity]="0.3">
+						<aol-source-osm></aol-source-osm>
+					</aol-layer-tile>
+
+					<aol-layer-group>
+						<div *ngFor="let routeSelected of routes">
+							<aol-layer-vector *ngIf="routeSelected.controls.selected" [zIndex]="750">
+								<aol-source-vector> <!-- ya no -->
+									<div>
+										<div *ngFor="let section of routeSelected.sections">
+											<aol-feature>
+												<aol-geometry-multilinestring>
+													<aol-collection-coordinates [coordinates]="[section['coords']]" [srid]="'EPSG:4326'">
+													</aol-collection-coordinates>
+												</aol-geometry-multilinestring>
+											</aol-feature>
+										</div>
+									</div>
+								</aol-source-vector>
+								<aol-style>
+									<aol-style-stroke [color]="routeSelected.color" [width]="4"></aol-style-stroke>
+									<aol-style-circle [radius]="3">
+										<aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+										<aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+									</aol-style-circle>
+								</aol-style>
+							</aol-layer-vector>
+						</div>
+					</aol-layer-group>
+				</aol-map>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<button type="button" class="btn btn-sm rounded-full font-weight-light " (click)="closeModal()">Cancelar</button>
+</div>
+
+<ng-template #modalConfirmationDelete role="document" let-modal class="center-modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="center-modal">
+				<div class="modal-header">
+					<h4 class="modal-title pull-left">Confirmación de eliminación</h4>
+					<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeSubModal()">
+						<span aria-hidden="true" class="visually-hidden">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>¿Desea eliminar?</p>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-outliner-danger" (click)="deleteRoutes()">Eliminar </button>
+				  <button type="button" class="btn btn-outliner secondary" data-dismiss="modal" >Cancelar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #modalConfirmationDeletePoints role="document" let-modal class="center-modal">
+	<div class="modal-content">
+		<div class="center-modal">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">Confirmación de eliminación</h4>
+				<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeSubModal()">
+					<span aria-hidden="true" class="visually-hidden">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>¿Desea eliminar puntos?</p>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-outliner-danger" (click)="deleteRoutesPoints()">Eliminar </button>
+			<button type="button" class="btn btn-outliner secondary" data-dismiss="modal" >Cancelar</button>
+			</div>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #modaMovePoints role="document" let-modal class="center-modal">
+		<div class="modal-content">
+			<div class="center-modal">
+				<div class="modal-header">
+					<h4 class="modal-title pull-left">Copiar puntos</h4>
+					<button type="button" class="btn-close close pull-right" aria-label="Close" (click)="closeSubModal()">
+						<span aria-hidden="true" class="visually-hidden">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<table class="table table-s">
+						<tr><th>Desde</th><th>A</th><th></th></tr>
+						<tr>
+							<td><select  [(ngModel)]="routeA"><option *ngFor="let route of routes" [ngValue]="route">{{route.name}}</option></select></td>
+							<td><select [(ngModel)]="routeB"><option *ngFor="let route of routes" [ngValue]="route">{{route.name}}</option></select></td>
+							<td><input  type="checkbox" id="chkOverwrite" [(ngModel)]="copyOverwrite" /><label for="chkOverwrite">Reemplazar</label></td>
+						</tr>
+					</table>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-success" (click)="copyPoints(routeA,routeB,copyOverwrite)"> {{completedMessage}} </button>
+				  <button type="button" class="btn btn-outliner secondary" (click)="closeSubModal()" >Cancelar</button>
+				</div>
+			</div>
+		</div>
+</ng-template>

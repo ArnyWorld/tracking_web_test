@@ -50,7 +50,9 @@ export class ModalImportGeojsonComponent {
 					})
 				});
 				var route = {
-					name : name+ "-"+feature.properties.Name,
+					//([A-Z])\w+(?<=(RefName\<\/td>\n\n\<td\>))[a-zA-Z0-9\-]*(?=<\/td>) for name
+					name : (name!=""?name+ "-":"")+feature.properties.name,
+					//name : feature.properties.name,
 					color : rxColor,//feature.properties.description.match(rxColor)[0],
 					distance : rxDistance,//parseFloat(feature.properties.description.match(rxDistance)[0].replaceAll("<td>","").replaceAll("<","").replaceAll(",",".").replaceAll(" ","").replaceAll("\n",""))*1000,
 					points : points,

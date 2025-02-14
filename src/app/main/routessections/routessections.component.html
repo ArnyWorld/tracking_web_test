@@ -227,7 +227,13 @@
     <ng-template #modalImportGeo role="document" let-modal class="center-modal">
         <app-modal-import-geojson (onClose)="this.modalRef.hide();"></app-modal-import-geojson>
     </ng-template>
-    
+    <ng-template #modalImportKml role="document" let-modal class="center-modal">
+        <app-modal-import-kml (onClose)="this.modalRef.hide();"></app-modal-import-kml>
+    </ng-template>    
+    <ng-template #modalEditRoutes role="document" let-modal class="center-modal">
+        <app-modal-edit-routes (onClose)="this.modalRef.hide();"></app-modal-edit-routes>
+    </ng-template>
+
     <app-panel-right [selected]="'Routes'">
         <div ngProjectAs="Routes" >
             <div *ngIf="mode == StatesEnum.ROUTE_VIEWER" >
@@ -235,8 +241,10 @@
                 <div class="list-group list-group-flush border-bottom " >
             <div id="box" style="width:50px;height:50px; background-color:#000"></div>
                     <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
+						<span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark mb-3 " (click)="openModal(modalEditRoutes,null)">Editar Rutas</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImport,null)">Importar json</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportGeo,null)">Importar geojson</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="openModal(modalImportKml,null)">Importar kml</span>                        
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR">Crear Ruta por trayectos</span>
                         <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.ROUTE_CREATOR_AREA">Crear Rutas por areas</span>
                     </a>
