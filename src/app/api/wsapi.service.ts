@@ -24,7 +24,7 @@ export class WSapiService {
 	}
 
 	getDevices() {
-		return this.http.get(this.apiUrl + `/devices`);
+		return this.http.get(this.apiUrl + `/devicesAll`);
 	}
 	getAllDevices() {
 		return this.http.get(this.apiUrl + `/devicesAll`);

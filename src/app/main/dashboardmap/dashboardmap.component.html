@@ -62,8 +62,11 @@
                 
                 <aol-layer-tile [opacity]="opacityMap">
                     <aol-source-osm *ngIf="layerMap=='osm'" ></aol-source-osm> 
-                    <aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz>
-                    <aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz>
+                    <!-- <aol-source-xyz *ngIf="layerMap=='local_bw'" url="https://trackingserver.kernotec.com/kmap2/{z}/{x}/{y}.png" >	</aol-source-xyz> -->
+                    <!-- <aol-source-xyz *ngIf="layerMap=='local_osm'" url="https://trackingserver.kernotec.com/kmap1/{z}/{x}/{y}.png" >	</aol-source-xyz> -->
+					 
+					<aol-source-xyz *ngIf="layerMap=='local_bw'"  url="http://172.20.50.59:6050/{z}/{x}/{y}.png">	</aol-source-xyz> 
+					<aol-source-xyz *ngIf="layerMap=='local_osm'" url="http://172.20.50.59:6060/{z}/{x}/{y}.png">	</aol-source-xyz> 
                 </aol-layer-tile>
 
             
@@ -622,6 +625,11 @@
 					 Sesion F: {{device?.states?.SESSION_END>0?(device?.states?.SESSION_END | date:'dd/MM/yyyy HH:mm:ss'):'' }}<br>
 					 Hora: {{device?.last.t | date:'dd/MM/yyyy HH:mm:ss' }}<br>
 					 Latencia: {{device.ms}}ms<br>
+					 Evento: {{device?.states?.EVENT}}<br>
+					 Encendido: {{device?.states?.IGNITION}}<br>
+					 BateriaVehiculo: {{device?.states?.BATTERY_EXT}}<br>
+					 
+					 Velocidad: {{device?.states?.SPEED}}<br>
                      Track Id : {{device?.states?.LAST_TRACK_ID}}<br>
 					 Hace: {{device.elapsed}}ms<br>
                      --Emergency: {{ device.states['IS_EMERGENCY'] }}<br>

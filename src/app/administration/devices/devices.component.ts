@@ -163,7 +163,8 @@ export class DevicesComponent implements OnInit {
 	}
 	registerAll(){
 		let syncDevices = [];
-		this.devices.forEach((device:any)=>{
+		this.noDevices.forEach((device:any)=>{
+			
 			let syncDevice = {
 				id:device.id,
 				info_brand:device.config['INFO_BRAND'],

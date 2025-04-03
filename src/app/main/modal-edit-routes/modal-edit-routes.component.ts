@@ -59,10 +59,11 @@ export class ModalEditRoutesComponent implements OnInit {
 			});
 			this.pointsService.register(points).subscribe((result: any) => {
 				console.log("puntos creados result:", result);	
+				this.routesService.update({update_date:Date.now()},routeB.id).subscribe((response)=>{},(err)=>{});
 			});
 		};
 		let progress = 0;
-		let success = routeB.points.length-1; //routeB.sections.reduce((s1,s2) => s1 + s2.coords.length , 0) ;
+		let success = routeB.points.length; //routeB.sections.reduce((s1,s2) => s1 + s2.coords.length , 0) ;
 		let increaseProgress = ()=>{ progress++; this.completedMessage=(Math.round((progress/success)*100))+"% completado"; if(progress == success) callbackEnd() };
 		console.log("success",success);
 		let tasks = [];

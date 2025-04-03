@@ -29,6 +29,14 @@ export class SessionsService {
 		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}/${id}`);
 	}
 
+	historyDevice(id: string = '') {
+		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}?device_id[equal]=${id}`);
+	}
+
+	historyPersonal(id: string = '') {
+		return this.http.get(this.apiUrl + this.prefix + `/${this.apiName}?personal_id[equal]=${id}`);
+	}
+
 	getAll(
 	) {
 		return this.http.get(

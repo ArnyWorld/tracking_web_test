@@ -89,7 +89,7 @@ export class SessionsComponent implements OnInit {
 			this.Schedules = res.content;
 			console.log("this.Schedules",this.Schedules);
 		});
-		this.sessionsService.historyPersonal('d77cda3d-8d32-4b0c-ae7d-cf7aa1bc111a').subscribe((res:any)=>{
+		this.sessionsService.getAll().subscribe((res:any)=>{
 			this.sessions = res.content;
 			this.sessionsFiltred = this.sessions;
 			console.log("this.sessions",this.sessions);
