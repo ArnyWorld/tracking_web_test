@@ -8,6 +8,7 @@ import { AngularOpenlayersModule } from "ng-openlayers";
 import { DashboardmapComponent } from './dashboardmap/dashboardmap.component';
 import { PanelFloatNavComponent } from '../panel-float-nav/panel-float-nav.component';
 import { PanelRightComponent } from '../panel-right/panel-right.component';
+import { PanelRightEmptyComponent } from '../panel-right-empty/panel-right-empty.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { DashboardmappolyComponent } from './dashboardmappoly/dashboardmappoly.component';
 import { environment } from '../../environments/environment';
@@ -33,6 +34,7 @@ import { TracksComponent } from '../administration/tracks/tracks.component';
 import { TrackplayerComponent } from "./trackplayer/trackplayer.component";
 import { TrackplayermapComponent } from './trackplayermap/trackplayermap.component';
 import { ReportComponent } from './report/report.component';
+import { GeofencesComponent } from './geofences/geofences.component';
 
 @Injectable()
 export class SocketOne extends Socket {
@@ -47,6 +49,7 @@ export class SocketOne extends Socket {
     DashboardmapComponent,
 	PanelFloatNavComponent,
 	PanelRightComponent,
+	PanelRightEmptyComponent,
 	ModalImportComponent,
 	ModalImportDistrictsComponent,
 	DashboardmappolyComponent,
@@ -67,6 +70,7 @@ export class SocketOne extends Socket {
 	TrackplayerComponent,
 	BotcomliveComponent,
 	TrackplayermapComponent,
+	GeofencesComponent,
   ],
   imports: [
     TabsModule,

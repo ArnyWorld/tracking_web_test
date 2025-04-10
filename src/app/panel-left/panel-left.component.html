@@ -119,6 +119,21 @@
                     <li><a class="link-dark rounded" routerLink="administrar/sessions" > Sesiones</a></li>
                     <li><a class="link-dark rounded" routerLink="administrar/devices" > Dispositivos en línea</a></li>
                     <li><a class="link-dark rounded" routerLink="administrar/tracks" > Trayectos</a></li>
+                    <li class="mb-1 ms-3">
+						<button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#assets-collapse" aria-expanded="true">
+							Activos
+						</button>
+						<div class="collapse show" id="assets-collapse">
+							<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+								<!-- <li><a href="#" class="link-dark rounded" routerLink="/administrar" >Administrar</a></li> -->
+								
+			<!--    				<li><a class="link-dark rounded" routerLink="administrar/Users" > Users</a></li> -->
+								<li><a class="link-dark rounded" routerLink="administrar/assetregistry"> Registro</a></li>
+								<li><a class="link-dark rounded" routerLink="administrar/deviceassign" > Asignación de dispositivos</a></li>
+								<li><a class="link-dark rounded" routerLink="administrar/assetrecords" > Movimientos </a></li>
+							</ul>
+						</div>
+					</li>
 				</ul>
 			</div>
 		</li>
@@ -129,10 +144,25 @@
 			<div class="collapse" id="dashboard-collapse">
 				<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
     			<!--	<li><a class="link-dark rounded" routerLink="routesedit" > Routes</a></li> -->
-    				<li><a class="link-dark rounded" routerLink="routessections" > Rutas </a></li>
     				<li><a class="link-dark rounded" routerLink="districts" > Distritos</a></li>
 					<!-- <li><a class="link-dark rounded" routerLink="botcom" > Bots record</a></li> -->
 					<li><a class="link-dark rounded" routerLink="botcomlive" > Bot Live</a></li>
+					<li class="mb-1 ms-3">
+						<button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#assets-collapse" aria-expanded="true">
+							Diseño
+						</button>
+						<div class="collapse show" id="assets-collapse">
+							<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+								<!-- <li><a href="#" class="link-dark rounded" routerLink="/administrar" >Administrar</a></li> -->
+								
+			<!--    				<li><a class="link-dark rounded" routerLink="administrar/Users" > Users</a></li> -->
+    							<li><a class="link-dark rounded" routerLink="routessections" > [OLD]Rutas </a></li>
+								<li><a class="link-dark rounded" routerLink="routes"> Rutas</a></li>
+								<li><a class="link-dark rounded" routerLink="routeimports"> Importar Rutas</a></li>
+								<li><a class="link-dark rounded" routerLink="geofences" > Geocercas</a></li>
+							</ul>
+						</div>
+					</li>
 				</ul>
 			</div>
 		</li>

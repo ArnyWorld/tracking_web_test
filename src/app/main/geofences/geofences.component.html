@@ -1,0 +1,261 @@
+<div class="divMain">
+    <!-- <app-panel-float-nav></app-panel-float-nav> -->
+    <div class="divMid">
+        <div id="overlayMenuLeft" style="z-index:9999">
+            <div (click)="layerMap='osm'" role="button" class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>OpenStreeth Map</div>
+            <div (click)="layerMap='local_osm'" role="button" class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>Local Osm</div>
+            <div (click)="layerMap='local_bw'" role="button" class="mt-3 btnBlock"><span class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-map"></i> </span>Local Black/white</div>
+        </div>
+
+        <div id="overlayMenu" style="z-index:9999" *ngIf="mode == StatesEnum.ROUTE_CREATOR">
+            <div role="button" class="mt-3 btnBlock" (click)="selectedRoute.controls.showArea=!selectedRoute.controls.showArea">Editar<span [style]="{'background-color':selectedRoute.controls.showArea?'#222288':'','color':selectedRoute.controls.showArea?'#fff':''}" class="btn btn-sm btn-outline-secondary rounded-pill "><i class="fas fa-solid fa-bezier-curve"></i> </span></div>
+        </div>
+
+        <div id="overlayMenu" style="z-index:9999; top:850px" *ngIf="selectedRoute">
+            <!-- <div role="button" class="mt-3 btnBlock"> Total Points : <strong>{{sumAllPoints(selectedRoute)}}</strong> </div>
+            <div role="button" class="mt-3 btnBlock"> Decimate Points : <strong>{{sumAllPointsDecimate(selectedRoute)}}</strong> </div> -->
+        </div>
+        <!-- <div style="height: 100%; overflow: hidden;"> -->
+        <!-- <div style="height: 100%;width:1600px; overflow: hidden;"> -->
+        <div style="height: 100%;width:1400px; overflow: hidden;">
+            <!-- <aol-map #map width="100%" height="100%" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">      -->
+            <aol-map #map [width]="mapWidth" [height]="mapHeight" (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">
+                <!-- <aol-map #map width="2000px" height="2000px" style="width:100%; height:100%;"   (pointerMove)="dispatchCursor($event)" (olClick)="onClick($event)" (onkeypress)="keyPress($event)">    -->
+                <aol-interaction-default> </aol-interaction-default>
+                <aol-interaction-draw [snapTolerance]="35" *ngIf="mode == StatesEnum.GEOFENCE_POLYGON_CREATOR" type="Polygon" (drawStart)="startDraw($event.feature)" (drawEnd)="endDraw($event.feature, $event)">
+                </aol-interaction-draw>
+                <aol-interaction-draw *ngIf="mode == StatesEnum.GEOFENCE_POINT_CREATOR" type="Point" (drawStart)="startDrawPoint($event.feature)" (drawEnd)="endDrawPoint($event.feature, $event)">
+                </aol-interaction-draw>
+                <aol-interaction-select [layers]="" (olSelect)="select($event)" [wrapX]="false"></aol-interaction-select>
+                <aol-control-defaults></aol-control-defaults>
+                <aol-view [zoom]="zoom">
+                    <!-- <aol-coordinate [x]="1" [y]="46.292896" [srid]="'EPSG:4326'" (click)="selected($event)"></aol-coordinate> -->
+                    <aol-coordinate [y]="-16.5319308" [x]="-68.0698635" [srid]="'EPSG:4326'"></aol-coordinate>
+                </aol-view>
+
+                <aol-layer-tile>
+                    <aol-source-osm *ngIf="layerMap=='osm'"></aol-source-osm>
+                    <aol-source-xyz *ngIf="layerMap=='local_bw'" url="http://172.20.50.67:6050/{z}/{x}/{y}.png" crossOrigin="anonymous"> </aol-source-xyz>
+                    <aol-source-xyz *ngIf="layerMap=='local_osm'" url="http://172.20.50.67:6060/{z}/{x}/{y}.png" crossOrigin="anonymous"> </aol-source-xyz>
+                </aol-layer-tile>
+
+                <aol-layer-group>
+                    <aol-layer-vector *ngIf="selectedRoute && selectedRoute.controls.show && selectedRoute.controls.showRoutePoints">
+                        <aol-source-vector>
+                            <aol-source-vector>
+                                <aol-feature *ngFor="let pc of selectedRoute.splitCoordsLine">
+                                    <aol-geometry-point>
+                                        <aol-coordinate [x]="pc[0]" [y]="pc[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                    </aol-geometry-point>
+                                </aol-feature>
+                            </aol-source-vector>
+                            <aol-style>
+                                <aol-style-circle [radius]="5">
+                                    <aol-style-stroke [color]="'#fff'"></aol-style-stroke>
+                                    <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                </aol-style-circle>
+                            </aol-style>
+                        </aol-source-vector>
+                    </aol-layer-vector>
+
+
+                    <div *ngIf="selectedGeofence">
+
+                        <aol-layer-vector [zIndex]="750" *ngIf="selectedGeofence.controls.show && selectedGeofence.type=='POLYGONS' ">
+                            <aol-source-vector>
+                                <div *ngFor="let section of selectedGeofence.sections">
+                                    <aol-layer-vector [opacity]="0.5">
+                                        <aol-source-vector>
+                                            <aol-style>
+                                                <aol-style-stroke [color]="section.over?'rgba(10, 10, 150)':'rgba(100, 0, 0)'" [width]="section.over?8:6"></aol-style-stroke>
+                                                <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                                <!-- <aol-style-fill [color]="section.over?'rgba(50, 200, 50, 250)':'rgba(50, 200, 50, 50)'" ></aol-style-fill> -->
+                                            </aol-style>
+                                            <aol-feature>
+                                                <aol-geometry-polygon>
+                                                    <aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+                                                    </aol-collection-coordinates>
+                                                </aol-geometry-polygon>
+                                            </aol-feature>
+                                        </aol-source-vector>
+                                    </aol-layer-vector>
+                                </div>
+                            </aol-source-vector>
+                        </aol-layer-vector>
+                        <aol-layer-vector [zIndex]="750" *ngIf="selectedGeofence.controls.show && selectedGeofence.type=='POINTS' ">
+                            <aol-source-vector>
+                                <div *ngFor="let section of selectedGeofence.sections">
+                                    <aol-layer-vector [opacity]="0.5">
+                                        <aol-source-vector >
+                                            <aol-feature>
+                                                <aol-geometry-circle [radius]="section.radius">
+                                                    <aol-coordinate [x]="section.coords[0]" [y]="section.coords[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                                </aol-geometry-circle>
+                                                <aol-style>
+        
+                                                    <aol-style-stroke [color]="section.over?'rgba(10, 10, 150)':'rgba(100, 0, 0)'" [width]="section.over?8:6"></aol-style-stroke>
+                                                    <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                                </aol-style>
+                                            </aol-feature>
+                                        </aol-source-vector>
+                                        <aol-overlay>
+                                            <aol-coordinate [x]="section.coords[0]" [y]="section.coords[1]" [srid]="'EPSG:4326'"> </aol-coordinate>
+                                            <aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':true}">
+                                                <div class="marker-device2">
+                                                    <div class="pin1" [ngClass]="{'pin1-active':true}">
+                                                        <i class="fas fa-map d-block fa-xs" [style.color]="'#ffffff'"></i>
+                                                    </div>
+                                                    <span class="tooltipx">{{section.radius}}</span>
+                                                </div>
+                                            </aol-content>
+                                        </aol-overlay>
+                                    </aol-layer-vector>
+                                </div>
+                            </aol-source-vector>
+                        </aol-layer-vector>
+                    </div>
+                    <!-- </div> -->
+                    <div *ngIf="mode == StatesEnum.GEOFENCE_POLYGON_CREATOR">
+                        <div *ngFor="let section of newGeofence.sections">
+                            <aol-layer-vector [opacity]="section.over?1.0:0.5">
+                                <aol-source-vector *ngIf="section.show">
+                                    <aol-style>
+                                        <aol-style-stroke [color]="section.over?'rgba(10, 10, 150)':'rgba(100, 0, 0)'" [width]="section.over?8:6"></aol-style-stroke>
+                                        <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                        <!-- <aol-style-fill [color]="section.over?'rgba(50, 200, 50, 250)':'rgba(50, 200, 50, 50)'" ></aol-style-fill> -->
+                                    </aol-style>
+                                    <aol-feature>
+                                        <aol-geometry-polygon>
+                                            <aol-collection-coordinates [coordinates]="section.coords" [srid]="'EPSG:4326'">
+                                            </aol-collection-coordinates>
+                                        </aol-geometry-polygon>
+                                    </aol-feature>
+                                </aol-source-vector>
+                            </aol-layer-vector>
+                        </div>
+                    </div>
+                    <div *ngIf="mode == StatesEnum.GEOFENCE_POINT_CREATOR">
+                        <div *ngFor="let section of newGeofence.sections">
+                            <aol-layer-vector [opacity]="section.over?1.0:0.5">
+                                <aol-source-vector *ngIf="section.show">
+                                    <aol-feature>
+                                        <aol-geometry-circle [radius]="section.radius">
+                                            <aol-coordinate [x]="section.coords[0]" [y]="section.coords[1]" [srid]="'EPSG:4326'"></aol-coordinate>
+                                        </aol-geometry-circle>
+                                        <aol-style>
+
+                                            <aol-style-stroke [color]="section.over?'rgba(10, 10, 150)':'rgba(100, 0, 0)'" [width]="section.over?8:6"></aol-style-stroke>
+                                            <aol-style-fill [color]="'#33cc77ff'"></aol-style-fill>
+                                        </aol-style>
+                                    </aol-feature>
+                                </aol-source-vector>
+                                <aol-overlay>
+                                    <aol-coordinate [x]="section.coords[0]" [y]="section.coords[1]" [srid]="'EPSG:4326'"> </aol-coordinate>
+                                    <aol-content class="marker-device-container" [ngClass]="{'marker-device-selected':true}">
+                                        <div class="marker-device2">
+                                            <div class="pin1" [ngClass]="{'pin1-active':true}">
+                                                <i class="fas fa-map d-block fa-xs" [style.color]="'#ffffff'"></i>
+                                            </div>
+                                            <span class="tooltipx">{{section.radius}}</span>
+                                        </div>
+                                    </aol-content>
+                                </aol-overlay>
+                            </aol-layer-vector>
+                        </div>
+                    </div>
+                </aol-layer-group>
+            </aol-map>
+        </div>
+    </div>
+
+    <ng-template #modalImport role="document" let-modal class="center-modal">
+        <app-modal-import (onClose)="this.modalRef.hide();"></app-modal-import>
+    </ng-template>
+    <ng-template #modalImportGeo role="document" let-modal class="center-modal">
+        <app-modal-import-geojson (onClose)="this.modalRef.hide();"></app-modal-import-geojson>
+    </ng-template>
+    <ng-template #modalImportKml role="document" let-modal class="center-modal">
+        <app-modal-import-kml (onClose)="this.modalRef.hide();"></app-modal-import-kml>
+    </ng-template>
+    <ng-template #modalEditRoutes role="document" let-modal class="center-modal">
+        <app-modal-edit-routes (onClose)="this.modalRef.hide();"></app-modal-edit-routes>
+    </ng-template>
+
+    <app-panel-right-empty [selected]="'Geocercas'" [tabs]="['Geocercas']">
+        <div ngProjectAs="Routes">
+            <div *ngIf="mode == StatesEnum.ROUTE_VIEWER">
+
+                <div class="list-group list-group-flush border-bottom ">
+                    <!-- <div id="box" style="width:50px;height:50px; background-color:#000"></div> -->
+                    <a role="button" class="list-group-item list-group-item-action py-3 lh-tight h-100" style="text-align: center;">
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.GEOFENCE_POLYGON_CREATOR">Crear por area</span>
+                        <span *ngIf="mode == StatesEnum.ROUTE_VIEWER" style="text-align: center; width:100%" class="btn btn-sm btn-outline-dark  " (click)="mode = StatesEnum.GEOFENCE_POINT_CREATOR">Crear por area circular</span>
+                    </a>
+
+                    <a role="button" [style]="{'background-color':selectedGeofence?.id==geofence.id?'#bbbbff88':'white'}" class="list-group-item list-group-item-action py-3 lh-tight" *ngFor="let geofence of geofences" (click)="selectGeofence(geofence)">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <strong class="mb-1">{{geofence.name}}</strong>
+                            <small><button class="btn btn-sm btn-outline"> <i class="fas fa-map"></i> </button></small>
+                            <small>Area: {{geofence.area}} m<sup>2</sup></small>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+            <div *ngIf="mode == StatesEnum.GEOFENCE_POLYGON_CREATOR" class="m-2">
+                <h4>Creación de Area</h4>
+                <label class="fw-light" for="route">Nombre </label>
+                <input class="form-control" id="name" name="route" type="text" required [(ngModel)]="newGeofence.name" />
+
+                <div class="row p-5">
+                    <div class="col-12">
+                        <div *ngFor="let section of newGeofence.sections;index as i" class="row">
+                            <div class="form-check form-check-sm" (mouseenter)="onMouseIn(section)" (mouseleave)="onMouseOut(section)">
+                                <input class="form-check-input form-check-input-sm" type="checkbox" id="check-section-{{section.uuid}}" name="check-section-{{section.uuid}}" [(ngModel)]="section.show" />
+                                <label class="form-check-label form-check-label-sm" for="check-section-{{section.uuid}}">Section {{i+1}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input class="form-control form-control-sm" id="name" name="name" type="number" [(ngModel)]="newGeofence.area" required disabled />
+                <label class="fw-light" for="name">Miniatura</label>
+                <div class="border">
+                    <img [src]="thumbRoute" style="width:100%" />
+                </div>
+                <div class="text-end mt-5">
+                    <span *ngIf="mode == StatesEnum.GEOFENCE_POLYGON_CREATOR" class="btn btn-sm btn-outline-dark rounded-full " (click)="saveGeofence(newGeofence,'POLYGONS')">{{createProgress}}</span>
+                    <span *ngIf="mode == StatesEnum.GEOFENCE_POLYGON_CREATOR" class="btn btn-sm btn-outline rounded-full " (click)="mode = StatesEnum.ROUTE_VIEWER">Cancelar</span>
+                </div>
+            </div>
+            <div *ngIf="mode == StatesEnum.GEOFENCE_POINT_CREATOR" class="m-2">
+                <h4>Creación de Area circular</h4>
+                <label class="fw-light" for="route">Nombre</label>
+                <input class="form-control" id="name" name="route" type="text" required [(ngModel)]="newGeofence.name" />
+                <!-- <small>Radio<input type="range" min="1" max="300" [(ngModel)]="newGeoFence.radius"></small> -->
+
+                <div class="row p-5">
+                    <div class="col-12">
+                        <div *ngFor="let section of newGeofence.sections;index as i" class="row">
+                            <div class="form-check form-check-sm" (mouseenter)="onMouseIn(section)" (mouseleave)="onMouseOut(section)">
+                                <input class="form-check-input form-check-input-sm" type="checkbox" id="check-section-{{section.uuid}}" name="check-section-{{section.uuid}}" [(ngModel)]="section.show" />
+                                <label class="form-check-label form-check-label-sm" for="check-section-{{section.uuid}}">Section {{i+1}}</label>
+                                <small><input type="range" min="1" max="300" [(ngModel)]="section.radius"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="fw-light" for="name">Miniatura</label>
+                <div class="border">
+                    <img [src]="thumbRoute" style="width:100%" />
+                </div>
+                <div class="text-end mt-5">
+                    <span *ngIf="mode == StatesEnum.GEOFENCE_POINT_CREATOR" class="btn btn-sm btn-outline-dark rounded-full " (click)="saveGeofence(newGeofence,'POINTS')">{{createProgress}}</span>
+                    <span *ngIf="mode == StatesEnum.GEOFENCE_POINT_CREATOR" class="btn btn-sm btn-outline rounded-full " (click)="mode = StatesEnum.ROUTE_VIEWER">Cancelar</span>
+                </div>
+            </div>
+            <!-- <li><a class="link-dark rounded" routerLink="routesedit" > crear Route</a></li> -->
+        </div>
+    </app-panel-right-empty>
+</div>

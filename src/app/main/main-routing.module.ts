@@ -7,11 +7,13 @@ import { RoutessectionsComponent } from './routessections/routessections.compone
 import { DistrictsComponent } from './districts/districts.component';
 import { BotcomComponent } from './botcom/botcom.component';
 import { BotcomliveComponent } from './botcomlive/botcomlive.component';
+import { GeofencesComponent } from './geofences/geofences.component';
 
 const routes: Routes = [
 	{ path: '', component: DashboardmapComponent },
 	{ path: 'routesedit', component: DashboardmappolyComponent },
 	{ path: 'routessections', component: RoutessectionsComponent },
+	{ path: 'geofences', component: GeofencesComponent },
 	{ path: 'districts', component: DistrictsComponent },
 	{ path: 'botcom', component: BotcomComponent },	
 	{ path: 'botcomlive', component: BotcomliveComponent },		
