@@ -215,6 +215,7 @@ export class GeofencesComponent implements OnInit{
 		var newSection = {... this.defaulsection};
 		newSection.uuid = this.newRoute.currentSection;
 		newSection.area = Math.round(area * 100) / 100;
+		newSection.type = "POINTS";
 		newSection.coords = coords;
 		newSection.show = true;		
 		newSection.radius = 10
